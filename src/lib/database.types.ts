@@ -248,6 +248,8 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          email: string | null
+          espace_id: string | null
           est_admin: boolean
           id: string
           nom: string
@@ -256,6 +258,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email?: string | null
+          espace_id?: string | null
           est_admin?: boolean
           id: string
           nom?: string
@@ -264,13 +268,23 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email?: string | null
+          espace_id?: string | null
           est_admin?: boolean
           id?: string
           nom?: string
           prenom?: string
           telephone?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_espace_id_fkey"
+            columns: ["espace_id"]
+            isOneToOne: false
+            referencedRelation: "espaces"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       services: {
         Row: {
