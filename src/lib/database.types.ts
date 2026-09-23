@@ -312,7 +312,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      annuler_demande: { Args: { p_demande: string }; Returns: undefined }
+      avancer_demande: {
+        Args: { p_demande: string }
+        Returns: Database["public"]["Enums"]["statut_demande"]
+      }
+      creer_demande: {
+        Args: {
+          p_adresse?: string
+          p_lat: number
+          p_lng: number
+          p_message?: string
+          p_service: string
+        }
+        Returns: string
+      }
       est_admin: { Args: never; Returns: boolean }
+      mettre_a_jour_intervenant: {
+        Args: {
+          p_disponible?: boolean
+          p_lat?: number
+          p_lng?: number
+          p_rayon_km?: number
+        }
+        Returns: undefined
+      }
+      repondre_demande: {
+        Args: { p_accepter: boolean; p_demande: string }
+        Returns: undefined
+      }
+      tableau_demandeur: { Args: never; Returns: Json }
+      tableau_intervenant: { Args: never; Returns: Json }
     }
     Enums: {
       statut_demande:
