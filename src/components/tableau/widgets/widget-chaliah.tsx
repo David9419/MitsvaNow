@@ -31,7 +31,7 @@ export function WidgetChaliah({ demandes }: { demandes: DemandeIntervenant[] }) 
         action={<span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">{liste.length}</span>}
       >
         {liste.length === 0 ? (
-          <p className="rounded-xl bg-muted/60 p-4 text-center text-sm text-muted-foreground">
+          <p className="flex flex-1 items-center justify-center rounded-xl bg-muted/60 p-4 text-center text-sm text-muted-foreground">
             Les personnes que vous accompagnerez apparaîtront ici, avec leur progression.
           </p>
         ) : (

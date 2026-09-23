@@ -18,7 +18,13 @@ export async function chargerSession() {
     supabase.from("profiles").select("prenom").eq("id", user.id).maybeSingle(),
     supabase.from("intervenants").select("id").eq("id", user.id).maybeSingle(),
   ])
-  return { supabase, user, prenom: profil?.prenom || "", estIntervenant: Boolean(intervenant) }
+  const prenom = (profil?.prenom || "").trim()
+  return {
+    supabase,
+    user,
+    prenom: prenom.charAt(0).toUpperCase() + prenom.slice(1),
+    estIntervenant: Boolean(intervenant),
+  }
 }
 
 export async function chargerTableauIntervenant(supabase: Awaited<ReturnType<typeof createClient>>) {

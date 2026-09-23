@@ -77,6 +77,32 @@ export function CarteLocalisation({
           <span>50 km</span>
         </div>
       </div>
+
+      {/* Petit radar : la zone grandit avec le rayon */}
+      <div className="relative mt-auto flex min-h-36 flex-1 items-center justify-center overflow-hidden rounded-xl bg-muted/40 pt-4">
+        <div className="relative size-32">
+          {[100, 66, 33].map((t) => (
+            <span
+              key={t}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/15"
+              style={{ width: `${t}%`, height: `${t}%` }}
+            />
+          ))}
+          <span
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 ring-2 ring-primary/40 transition-all duration-700 ease-out"
+            style={{ width: `${20 + (valeur / 50) * 80}%`, height: `${20 + (valeur / 50) * 80}%` }}
+          />
+          {etat === "active" && (
+            <span className="absolute inset-0 animate-sweep rounded-full bg-[conic-gradient(from_0deg,transparent_0deg,transparent_290deg,color-mix(in_oklab,var(--primary)_35%,transparent)_360deg)]" />
+          )}
+          <span className="absolute top-1/2 left-1/2 flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg">
+            <MapPin className="size-3.5" />
+          </span>
+        </div>
+        <span className="absolute bottom-2 left-3 text-[11px] text-muted-foreground">
+          Zone de {valeur} km autour de vous
+        </span>
+      </div>
     </CarteWidget>
   )
 }

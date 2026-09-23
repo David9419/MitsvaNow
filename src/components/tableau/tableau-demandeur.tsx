@@ -3,10 +3,10 @@
 import Link from "next/link"
 import { useCallback, useRef, useState } from "react"
 import { toast } from "sonner"
-import { ArrowLeft, BellRing, CheckCircle2, History, LogOut, PlayCircle, Plus, Sparkles } from "lucide-react"
+import { BellRing, CheckCircle2, History, Lightbulb, PlayCircle, Plus, Sparkles } from "lucide-react"
 
-import { deconnexion } from "@/app/(auth)/actions"
 import { BanniereLocalisation } from "@/components/tableau/banniere-localisation"
+import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { CarteStat } from "@/components/tableau/carte-stat"
 import { EnTeteTableau, PastilleEnTete } from "@/components/tableau/en-tete-tableau"
 import { FormulaireDemande, type ServiceDisponible } from "@/components/tableau/formulaire-demande"
@@ -21,6 +21,7 @@ import { ESPACES } from "@/lib/espaces"
 import { demanderPermissionNotifications, jouerSon, notifierNavigateur } from "@/lib/tableau/alertes"
 import { messageErreur } from "@/lib/tableau/outils"
 import type { DemandeDemandeur } from "@/lib/tableau/types"
+import { cn } from "@/lib/utils"
 
 const MESSAGES: Record<string, (d: DemandeDemandeur) => string> = {
   acceptee: (d) => `${d.intervenant_prenom ?? "Un intervenant"} a accepté votre demande !`,
@@ -112,12 +113,20 @@ export function TableauDemandeur({
   const terminees = demandes.filter((d) => d.statut === "terminee").length
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6">
       <BanniereLocalisation
         etat={loc.etat}
         onActiver={activerLocalisation}
         texte="Pour trouver l'intervenant le plus proche de vous, Mivtsa Now a besoin de votre position."
       />
+
+      <BarreTableau icon={espace.icon} espace={estIntervenant ? "Mes demandes personnelles" : "Espace Demandeurs"}>
+        {estIntervenant && (
+          <Button asChild size="sm" variant="outline">
+            <Link href="/accueil">Mon tableau de bord</Link>
+          </Button>
+        )}
+      </BarreTableau>
 
       <EnTeteTableau
         icon={espace.icon}
@@ -132,27 +141,11 @@ export function TableauDemandeur({
           </>
         }
         droite={
-          <div className="flex gap-2 md:flex-col md:items-end">
-            <Button asChild size="lg" className="bg-accent text-accent-foreground shadow-lg hover:bg-accent/90">
-              <a href="#nouvelle">
-                <Plus /> Nouvelle demande
-              </a>
-            </Button>
-            <div className="flex gap-2">
-              {estIntervenant && (
-                <Button asChild size="sm" variant="secondary">
-                  <Link href="/accueil">
-                    <ArrowLeft /> Mon tableau de bord
-                  </Link>
-                </Button>
-              )}
-              <form action={deconnexion}>
-                <Button size="sm" variant="secondary" type="submit" aria-label="Se déconnecter">
-                  <LogOut />
-                </Button>
-              </form>
-            </div>
-          </div>
+          <Button asChild size="lg" className="bg-accent text-accent-foreground shadow-lg hover:bg-accent/90">
+            <a href="#nouvelle">
+              <Plus /> Nouvelle demande
+            </a>
+          </Button>
         }
       />
 
@@ -163,41 +156,49 @@ export function TableauDemandeur({
         <CarteStat icon={CheckCircle2} label="Avis donnés" valeur={demandes.filter((d) => d.note).length} accent="muted" detail="Merci !" delai={240} />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        <div className="flex flex-col gap-6 lg:col-span-3">
-          {actives.length > 0 && (
-            <section id="suivi" className="flex scroll-mt-24 flex-col gap-4">
-              <h2 className="flex items-center gap-2 font-heading text-lg font-bold">
-                <span className="relative flex size-2.5">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />
-                  <span className="relative inline-flex size-2.5 rounded-full bg-success" />
-                </span>
-                Suivi en direct
-              </h2>
-              {actives.map((d) => (
-                <SuiviDemande key={d.id} demande={d} onAnnuler={annuler} />
-              ))}
-            </section>
-          )}
-
-          <section id="nouvelle" className="scroll-mt-24">
-            <CarteWidget icon={Plus} titre="Nouvelle demande" sousTitre="En 4 petites étapes" delai={150}>
-              <FormulaireDemande
-                services={services}
-                position={loc.position}
-                etatLocalisation={loc.etat}
-                onActiverLocalisation={activerLocalisation}
-                onEnvoyer={envoyer}
-              />
-            </CarteWidget>
-          </section>
-        </div>
-
-        <aside className="flex flex-col gap-4 lg:col-span-2">
+      {actives.length > 0 && (
+        <section id="suivi" className="flex scroll-mt-24 flex-col gap-4">
           <h2 className="flex items-center gap-2 font-heading text-lg font-bold">
-            <History className="size-5 text-primary" /> Historique
+            <span className="relative flex size-2.5">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />
+              <span className="relative inline-flex size-2.5 rounded-full bg-success" />
+            </span>
+            Suivi en direct
           </h2>
-          <HistoriqueDemandes demandes={passees} onNoter={noter} />
+          <div className={cn("grid gap-4", actives.length > 1 && "xl:grid-cols-2")}>
+            {actives.map((d) => (
+              <SuiviDemande key={d.id} demande={d} onAnnuler={annuler} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div className="grid items-start gap-6 lg:grid-cols-3">
+        <section id="nouvelle" className="scroll-mt-24 lg:col-span-2">
+          <CarteWidget icon={Plus} titre="Nouvelle demande" sousTitre="En 4 petites étapes" delai={150}>
+            <FormulaireDemande
+              services={services}
+              position={loc.position}
+              etatLocalisation={loc.etat}
+              onActiverLocalisation={activerLocalisation}
+              onEnvoyer={envoyer}
+            />
+          </CarteWidget>
+        </section>
+
+        <aside className="flex flex-col gap-6">
+          <CarteWidget icon={History} titre="Historique" sousTitre="Vos demandes passées" delai={250}>
+            <div className="max-h-96 overflow-y-auto pr-1">
+              <HistoriqueDemandes demandes={passees} onNoter={noter} />
+            </div>
+          </CarteWidget>
+          <CarteWidget icon={Lightbulb} titre="Bon à savoir" delai={350}>
+            <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+              <li>📍 Activez la localisation : l&apos;intervenant le plus proche est trouvé plus vite.</li>
+              <li>🔔 Gardez cette page ouverte : vous êtes prévenu dès qu&apos;il accepte.</li>
+              <li>⭐ Après l&apos;intervention, laissez une note pour remercier l&apos;intervenant.</li>
+            </ul>
+          </CarteWidget>
         </aside>
       </div>
     </main>

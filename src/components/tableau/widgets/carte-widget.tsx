@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react"
 import type { ReactNode } from "react"
 
+import { cn } from "@/lib/utils"
+
 /** Cadre commun des cartes du tableau de bord. */
 export function CarteWidget({
   icon: Icon,
@@ -9,6 +11,7 @@ export function CarteWidget({
   action,
   children,
   delai = 0,
+  className,
 }: {
   icon: LucideIcon
   titre: string
@@ -16,10 +19,14 @@ export function CarteWidget({
   action?: ReactNode
   children: ReactNode
   delai?: number
+  className?: string
 }) {
   return (
     <section
-      className="animate-in fade-in slide-in-from-bottom-4 rounded-2xl border bg-card p-5 shadow-sm duration-700 fill-mode-both"
+      className={cn(
+        "flex animate-in fade-in slide-in-from-bottom-4 flex-col rounded-2xl border bg-card p-5 shadow-sm duration-700 fill-mode-both",
+        className
+      )}
       style={{ animationDelay: `${delai}ms` }}
     >
       <header className="mb-4 flex items-start justify-between gap-3">

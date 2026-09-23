@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   Hourglass,
   Inbox,
-  LogOut,
   PlayCircle,
   ShieldAlert,
   Sparkles,
@@ -16,15 +15,15 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { deconnexion } from "@/app/(auth)/actions"
 import { BanniereLocalisation } from "@/components/tableau/banniere-localisation"
+import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { CarteDemandeIntervenant } from "@/components/tableau/carte-demande-intervenant"
 import { CarteLocalisation } from "@/components/tableau/carte-disponibilite"
 import { CarteServices } from "@/components/tableau/carte-services"
 import { CarteStat } from "@/components/tableau/carte-stat"
 import { EnTeteTableau, PastilleEnTete } from "@/components/tableau/en-tete-tableau"
 import { WidgetBahourim } from "@/components/tableau/widgets/widget-bahourim"
-import { WidgetChabbat } from "@/components/tableau/widgets/widget-chabbat"
+import { WidgetEquipeFeminine } from "@/components/tableau/widgets/widget-equipe-feminine"
 import { WidgetChaliah } from "@/components/tableau/widgets/widget-chaliah"
 import { WidgetSofer } from "@/components/tableau/widgets/widget-sofer"
 import { Button } from "@/components/ui/button"
@@ -57,7 +56,7 @@ const CONFIG: Record<
   },
   "equipe-feminine": {
     theme: "bg-gradient-to-br from-accent via-accent to-accent/70 text-accent-foreground",
-    accroche: (p) => `Bonjour ${p}, Chabbat approche !`,
+    accroche: (p) => `Bonjour ${p}, prête à aider ?`,
     texte: "'Hallot, bougies, accompagnement : recevez les demandes des femmes et des familles près de chez vous.",
     terminees: { label: "Visites réalisées", icon: Sparkles },
   },
@@ -205,64 +204,60 @@ export function TableauIntervenant({
 
   const widget: Record<string, ReactNode> = {
     bahourim: <WidgetBahourim demandes={demandes} />,
-    "equipe-feminine": <WidgetChabbat position={loc.position ?? (moi.lat != null ? { lat: moi.lat, lng: moi.lng! } : null)} />,
+    "equipe-feminine": <WidgetEquipeFeminine demandes={demandes} />,
     "sofer-rav-rabbanit": <WidgetSofer demandes={demandes} />,
     chaliah: <WidgetChaliah demandes={demandes} />,
   }
 
+  const interrupteur = (
+    <label
+      className={cn(
+        "flex cursor-pointer items-center gap-3 rounded-full border bg-card py-1.5 pr-2 pl-4 shadow-sm transition-all duration-500",
+        moi.disponible && "border-success/50 shadow-md shadow-success/15 ring-4 ring-success/15"
+      )}
+    >
+      <span className="relative flex size-2.5">
+        {moi.disponible && <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />}
+        <span className={cn("relative inline-flex size-2.5 rounded-full", moi.disponible ? "bg-success" : "bg-muted-foreground")} />
+      </span>
+      <span className="text-sm font-semibold">{moi.disponible ? "Disponible" : "En pause"}</span>
+      <Switch checked={moi.disponible} onCheckedChange={changerDisponibilite} aria-label="Disponibilité" />
+    </label>
+  )
+
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6">
       <BanniereLocalisation
         etat={loc.etat}
         onActiver={activerLocalisation}
         texte="Pour recevoir les demandes des personnes proches de vous, Mivtsa Now a besoin de votre position."
       />
 
+      <BarreTableau icon={espace.icon} espace={`Espace ${espace.nom}`}>
+        {interrupteur}
+        <Button asChild size="sm" variant="outline" className="hidden md:inline-flex">
+          <Link href="/accueil/demandes">Faire une demande pour moi</Link>
+        </Button>
+      </BarreTableau>
+
       <EnTeteTableau
         icon={espace.icon}
         theme={config.theme}
         surtitre={`Espace ${espace.nom}`}
         titre={config.accroche(prenom)}
-        texte={config.texte}
+        texte={
+          moi.disponible
+            ? config.texte
+            : "Vous êtes en pause. Activez « Disponible » en haut à droite pour recevoir les demandes proches de vous."
+        }
         badges={
           <>
             <PastilleEnTete>{libelleType(moi.type)}</PastilleEnTete>
             <PastilleEnTete>
               {valide ? "✓ Profil validé" : moi.validation === "refuse" ? "Profil refusé" : "⏳ En attente de validation"}
             </PastilleEnTete>
+            <PastilleEnTete>{moi.disponible ? "● En activité" : "❚❚ En pause"}</PastilleEnTete>
           </>
-        }
-        droite={
-          <div className="flex flex-col items-stretch gap-3 md:items-end">
-            <label
-              className={cn(
-                "flex cursor-pointer items-center gap-4 rounded-2xl bg-background/95 px-5 py-4 text-foreground shadow-lg transition-all",
-                moi.disponible && "ring-4 ring-success/40"
-              )}
-            >
-              <span className="relative flex size-3">
-                {moi.disponible && <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />}
-                <span className={cn("relative inline-flex size-3 rounded-full", moi.disponible ? "bg-success" : "bg-muted-foreground")} />
-              </span>
-              <span>
-                <span className="block text-sm font-bold">{moi.disponible ? "Disponible" : "En pause"}</span>
-                <span className="block text-xs text-muted-foreground">
-                  {moi.disponible ? "Vous recevez les demandes" : "Activez pour recevoir"}
-                </span>
-              </span>
-              <Switch checked={moi.disponible} onCheckedChange={changerDisponibilite} aria-label="Disponibilité" />
-            </label>
-            <div className="flex gap-2 md:justify-end">
-              <Button asChild size="sm" variant="secondary">
-                <Link href="/accueil/demandes">Faire une demande pour moi</Link>
-              </Button>
-              <form action={deconnexion}>
-                <Button size="sm" variant="secondary" type="submit" aria-label="Se déconnecter">
-                  <LogOut />
-                </Button>
-              </form>
-            </div>
-          </div>
         }
       />
 
@@ -284,6 +279,7 @@ export function TableauIntervenant({
         <CarteStat icon={TrendingUp} label="Cette semaine" valeur={semaine} accent="muted" detail="Depuis lundi" delai={240} />
       </div>
 
+      {/* Ligne 1 : les demandes + la zone d'intervention */}
       <div className="grid gap-6 lg:grid-cols-3">
         <section className="flex flex-col gap-4 lg:col-span-2">
           <div className="flex gap-1 rounded-xl bg-muted p-1">
@@ -317,9 +313,9 @@ export function TableauIntervenant({
             ))}
           </div>
 
-          <div key={onglet} className="flex flex-col gap-3">
+          <div key={onglet} className="flex flex-1 flex-col gap-3">
             {listes[onglet].length === 0 ? (
-              <div className="flex animate-in fade-in flex-col items-center gap-3 rounded-2xl border border-dashed bg-card/50 px-6 py-14 text-center duration-500">
+              <div className="flex flex-1 animate-in fade-in flex-col items-center justify-center gap-3 rounded-2xl border border-dashed bg-card/50 px-6 py-10 text-center duration-500">
                 <span className="relative flex size-16 items-center justify-center">
                   {onglet === "a-traiter" && moi.disponible && (
                     <span className="absolute inset-0 animate-ping rounded-full bg-primary/20" />
@@ -341,7 +337,7 @@ export function TableauIntervenant({
                   {onglet === "a-traiter"
                     ? moi.disponible
                       ? "Dès qu'une personne proche aura besoin de vous, elle apparaîtra ici avec un son et une notification."
-                      : "Activez « Disponible » en haut pour recevoir des demandes."
+                      : "Activez « Disponible » en haut à droite pour recevoir des demandes."
                     : "Les demandes apparaîtront ici au fur et à mesure."}
                 </p>
               </div>
@@ -353,21 +349,23 @@ export function TableauIntervenant({
           </div>
         </section>
 
-        <aside className="flex flex-col gap-6">
-          <CarteLocalisation
-            etat={loc.etat}
-            aUnePosition={moi.lat != null}
-            rayon={Number(moi.rayon_km)}
-            onActiver={activerLocalisation}
-            onRayon={(km) =>
-              appeler({ p_rayon_km: km })
-                .then(() => toast.success(`Rayon réglé sur ${km} km`))
-                .catch((e) => toast.error(messageErreur(e)))
-            }
-          />
-          {widget[moi.espace_slug]}
-          <CarteServices services={donnees.services} onBasculer={basculerService} />
-        </aside>
+        <CarteLocalisation
+          etat={loc.etat}
+          aUnePosition={moi.lat != null}
+          rayon={Number(moi.rayon_km)}
+          onActiver={activerLocalisation}
+          onRayon={(km) =>
+            appeler({ p_rayon_km: km })
+              .then(() => toast.success(`Rayon réglé sur ${km} km`))
+              .catch((e) => toast.error(messageErreur(e)))
+          }
+        />
+      </div>
+
+      {/* Ligne 2 : les outils de l'espace + les services, cartes de même hauteur */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {widget[moi.espace_slug]}
+        <CarteServices services={donnees.services} onBasculer={basculerService} />
       </div>
     </main>
   )

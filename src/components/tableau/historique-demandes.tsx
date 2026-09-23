@@ -45,7 +45,7 @@ export function HistoriqueDemandes({
 }) {
   if (demandes.length === 0) {
     return (
-      <p className="rounded-2xl border border-dashed p-8 text-center text-sm text-muted-foreground">
+      <p className="rounded-xl bg-muted/60 p-6 text-center text-sm text-muted-foreground">
         Votre historique apparaîtra ici.
       </p>
     )
@@ -55,7 +55,7 @@ export function HistoriqueDemandes({
       {demandes.map((d, i) => (
         <li
           key={d.id}
-          className="flex animate-in fade-in slide-in-from-bottom-2 flex-wrap items-center justify-between gap-3 rounded-2xl border bg-card p-4 fill-mode-both"
+          className="flex animate-in fade-in slide-in-from-bottom-2 flex-wrap items-center justify-between gap-3 rounded-xl border p-3 fill-mode-both"
           style={{ animationDelay: `${i * 60}ms` }}
         >
           <div>

@@ -33,7 +33,7 @@ export function WidgetBahourim({ demandes }: { demandes: DemandeIntervenant[] })
   return (
     <>
       <CarteWidget icon={Target} titre="Objectif de la semaine" sousTitre="Mitsvot accomplies depuis lundi" delai={200}>
-        <div className="flex items-center gap-6">
+        <div className="flex flex-1 items-center gap-6">
           <div className="relative size-32 shrink-0">
             <svg viewBox="0 0 120 120" className="size-full -rotate-90">
               <circle cx="60" cy="60" r={R} className="fill-none stroke-muted" strokeWidth="10" />

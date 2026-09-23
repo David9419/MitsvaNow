@@ -19,7 +19,7 @@ export function WidgetSofer({ demandes }: { demandes: DemandeIntervenant[] }) {
     <>
       <CarteWidget icon={CalendarClock} titre="Prochains rendez-vous" sousTitre="Demandes acceptées à honorer" delai={200}>
         {rdv.length === 0 ? (
-          <p className="rounded-xl bg-muted/60 p-4 text-center text-sm text-muted-foreground">
+          <p className="flex flex-1 items-center justify-center rounded-xl bg-muted/60 p-4 text-center text-sm text-muted-foreground">
             Aucun rendez-vous pour le moment.
           </p>
         ) : (
@@ -52,7 +52,7 @@ export function WidgetSofer({ demandes }: { demandes: DemandeIntervenant[] }) {
 
       <CarteWidget icon={BarChart3} titre="Consultations par service" sousTitre="Depuis votre inscription" delai={300}>
         {lignes.length === 0 ? (
-          <p className="rounded-xl bg-muted/60 p-4 text-center text-sm text-muted-foreground">
+          <p className="flex flex-1 items-center justify-center rounded-xl bg-muted/60 p-4 text-center text-sm text-muted-foreground">
             Vos statistiques apparaîtront ici.
           </p>
         ) : (
