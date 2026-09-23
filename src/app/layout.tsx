@@ -3,6 +3,7 @@ import { Figtree, Unbounded } from "next/font/google";
 
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const figtree = Figtree({
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
           <SiteHeader />
           {children}
+          <Toaster position="top-center" richColors closeButton />
         </ThemeProvider>
       </body>
     </html>

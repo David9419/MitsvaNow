@@ -1,0 +1,42 @@
+import "server-only"
+
+import { redirect } from "next/navigation"
+
+import type { ServiceDisponible } from "@/components/tableau/formulaire-demande"
+import { createClient } from "@/lib/supabase/server"
+import type { DemandeDemandeur, DonneesIntervenant } from "@/lib/tableau/types"
+
+/** Utilisateur connecté + prénom + fiche intervenant (s'il en a une). */
+export async function chargerSession() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) redirect("/connexion")
+
+  const [{ data: profil }, { data: intervenant }] = await Promise.all([
+    supabase.from("profiles").select("prenom").eq("id", user.id).maybeSingle(),
+    supabase.from("intervenants").select("id").eq("id", user.id).maybeSingle(),
+  ])
+  return { supabase, user, prenom: profil?.prenom || "", estIntervenant: Boolean(intervenant) }
+}
+
+export async function chargerTableauIntervenant(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const { data } = await supabase.rpc("tableau_intervenant")
+  return data as unknown as DonneesIntervenant
+}
+
+export async function chargerTableauDemandeur(supabase: Awaited<ReturnType<typeof createClient>>) {
+  const [{ data }, { data: services }] = await Promise.all([
+    supabase.rpc("tableau_demandeur"),
+    supabase.from("services").select("id, nom, ordre, espaces(slug)").eq("actif", true).order("ordre"),
+  ])
+  return {
+    demandes: ((data as unknown as { demandes: DemandeDemandeur[] } | null)?.demandes ?? []),
+    services: (services ?? []).map<ServiceDisponible>((s) => ({
+      id: s.id,
+      nom: s.nom,
+      espace_slug: s.espaces?.slug ?? "",
+    })),
+  }
+}
