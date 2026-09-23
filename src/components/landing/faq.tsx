@@ -49,7 +49,10 @@ export function Faq() {
             {item.q}
           </AccordionTrigger>
           <AccordionContent className="text-base leading-relaxed text-muted-foreground">
-            {item.r}
+            {/* La réponse apparaît en fondu à chaque ouverture */}
+            <div className="animate-in fade-in slide-in-from-top-2 duration-700 ease-out">
+              {item.r}
+            </div>
           </AccordionContent>
         </AccordionItem>
       ))}

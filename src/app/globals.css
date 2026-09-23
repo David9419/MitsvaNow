@@ -147,7 +147,7 @@
   --animate-blip: blip 4s linear infinite;
   --animate-clignote: clignote 1.2s ease-in-out infinite;
   --animate-trajet: trajet 1s linear infinite;
-  --animate-defile: defile 40s linear infinite;
+  --animate-defile: defile 45s linear infinite;
   --animate-degrade: degrade 6s ease-in-out infinite;
 
   @keyframes float {
@@ -211,7 +211,7 @@
   }
   @keyframes defile {
     to {
-      transform: translateX(-50%);
+      transform: translateX(-100%);
     }
   }
   @keyframes degrade {

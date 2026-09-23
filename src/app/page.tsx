@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react"
 
+import { BandeauServices } from "@/components/landing/bandeau-services"
 import { Faq } from "@/components/landing/faq"
 import { Radar } from "@/components/landing/radar"
 import { Reveal } from "@/components/landing/reveal"
@@ -58,19 +59,6 @@ const statuts = [
   { icon: CheckCircle2, nom: "Acceptée", texte: "Un intervenant a dit oui" },
   { icon: PlayCircle, nom: "En cours", texte: "Il est en route ou sur place" },
   { icon: Clock, nom: "Terminée", texte: "Mission accomplie !" },
-]
-
-const servicesDefilants = [
-  "Téfilines",
-  "'Hallot pour Chabbat",
-  "Cachérisation",
-  "Cours de Torah",
-  "Bougies de Chabbat",
-  "Vérification de téfilines",
-  "Question de halakha",
-  "Loulav & étrog",
-  "Chofar",
-  "Accompagnement",
 ]
 
 export default function Home() {
@@ -146,21 +134,7 @@ export default function Home() {
       </section>
 
       {/* ---------- Bandeau des services qui défile ---------- */}
-      <section
-        aria-label="Exemples de services"
-        className="relative -rotate-1 border-y bg-primary py-4 text-primary-foreground shadow-lg"
-      >
-        <div className="flex w-max animate-defile gap-10 hover:[animation-play-state:paused]">
-          {[...servicesDefilants, ...servicesDefilants].map((s, i) => (
-            <span key={i} className="flex items-center gap-10 font-heading text-lg font-semibold whitespace-nowrap">
-              {s}
-              <span aria-hidden className="text-accent">
-                ✡
-              </span>
-            </span>
-          ))}
-        </div>
-      </section>
+      <BandeauServices />
 
       {/* ---------- Comment ça marche ---------- */}
       <section id="comment" className="scroll-mt-20 py-24">
