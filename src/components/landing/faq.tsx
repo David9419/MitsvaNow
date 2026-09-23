@@ -48,9 +48,9 @@ export function Faq() {
           <AccordionTrigger className="text-left text-base hover:text-primary hover:no-underline">
             {item.q}
           </AccordionTrigger>
-          <AccordionContent className="text-base leading-relaxed text-muted-foreground">
+          <AccordionContent className="text-base leading-relaxed text-muted-foreground duration-500">
             {/* La réponse apparaît en fondu à chaque ouverture */}
-            <div className="animate-in fade-in slide-in-from-top-2 duration-700 ease-out">
+            <div className="reponse-fondu">
               {item.r}
             </div>
           </AccordionContent>

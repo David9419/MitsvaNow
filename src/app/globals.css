@@ -243,19 +243,6 @@
   transform: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-  }
-}
 
 /* Onde au clic sur les boutons (voir components/ui/button.tsx) */
 .onde-clic {
@@ -302,4 +289,21 @@
       transform: translateX(6px);
     }
   }
+}
+
+/* Réponses de la FAQ : apparition en fondu + léger flou */
+@keyframes reponse-fondu {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+.reponse-fondu {
+  animation: reponse-fondu 0.7s ease-out both;
 }
