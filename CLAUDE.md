@@ -15,6 +15,10 @@ L'équipe ne sait pas coder. Claude doit :
 - **Tailwind CSS** — mise en forme
 - **shadcn/ui** — composants d'interface prêts à l'emploi (boutons, cartes, formulaires…)
 
+## Projet Supabase
+- Toujours utiliser le projet **« Mivstaim Now »** (id `otwsxjchgbwporwldrkw`, région eu-west-1).
+- Ne jamais toucher à l'autre projet (IdeaVault).
+
 ## Conventions
 - Textes de l'interface en français.
 - Les clés secrètes Supabase vont dans `.env.local` (jamais dans Git).
