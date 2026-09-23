@@ -10,10 +10,14 @@ Le cahier des charges complet est dans [`Project.md`](./Project.md).
    ```bash
    npm install
    ```
-2. Démarrer le site :
+2. Créer le fichier des clés Supabase (une seule fois) :
+   ```bash
+   cp .env.example .env.local
+   ```
+3. Démarrer le site :
    ```bash
    npm run dev
    ```
-3. Ouvrir <http://localhost:3000> dans le navigateur.
+4. Ouvrir <http://localhost:3000> dans le navigateur.
 
 Pour arrêter le site : appuyer sur `Ctrl + C` dans le terminal.
