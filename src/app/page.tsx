@@ -1,32 +1,34 @@
 import Link from "next/link"
 import {
   ArrowRight,
-  BookOpen,
   CheckCircle2,
   Clock,
   HandHeart,
   Hourglass,
+  LogIn,
   MapPin,
   PlayCircle,
-  ScrollText,
   Send,
-  ShieldCheck,
   Sparkles,
+  UserPlus,
   Users,
-  Wheat,
 } from "lucide-react"
 
+import { Faq } from "@/components/landing/faq"
 import { Radar } from "@/components/landing/radar"
 import { Reveal } from "@/components/landing/reveal"
+import { SiteFooter } from "@/components/site-footer"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { ESPACES } from "@/lib/espaces"
 
 const etapes = [
   {
@@ -51,46 +53,24 @@ const etapes = [
   },
 ]
 
-const espaces = [
-  {
-    icon: ScrollText,
-    nom: "Bahourim",
-    intervenants: "Les bahourim",
-    description:
-      "Envie de mettre les téfilines ? Le bahour le plus proche vient vous les mettre.",
-    exemples: ["Téfilines", "Loulav & étrog", "Chofar"],
-  },
-  {
-    icon: Wheat,
-    nom: "Équipe féminine",
-    intervenants: "Les femmes de l'équipe",
-    description:
-      "Besoin de 'hallot pour Chabbat ? Une femme de l'équipe vient les faire avec vous ou vous les apporte.",
-    exemples: ["'Hallot", "Bougies de Chabbat", "Accompagnement"],
-  },
-  {
-    icon: ShieldCheck,
-    nom: "Sofer / Rav / Rabbanit",
-    intervenants: "Sofer, rav, rabbanit",
-    description:
-      "Cachériser un four, vérifier des téfilines ou poser une question de halakha.",
-    exemples: ["Cachérisation", "Vérification", "Halakha"],
-  },
-  {
-    icon: BookOpen,
-    nom: "Chaliah",
-    intervenants: "Les chlou'him",
-    description:
-      "Éduquer sans imposer : des cours, un accompagnement et une orientation progressive vers la Torah.",
-    exemples: ["Cours", "Accompagnement", "Orientation"],
-  },
-]
-
 const statuts = [
   { icon: Hourglass, nom: "En attente", texte: "On cherche l'intervenant" },
   { icon: CheckCircle2, nom: "Acceptée", texte: "Un intervenant a dit oui" },
   { icon: PlayCircle, nom: "En cours", texte: "Il est en route ou sur place" },
   { icon: Clock, nom: "Terminée", texte: "Mission accomplie !" },
+]
+
+const servicesDefilants = [
+  "Téfilines",
+  "'Hallot pour Chabbat",
+  "Cachérisation",
+  "Cours de Torah",
+  "Bougies de Chabbat",
+  "Vérification de téfilines",
+  "Question de halakha",
+  "Loulav & étrog",
+  "Chofar",
+  "Accompagnement",
 ]
 
 export default function Home() {
@@ -104,9 +84,13 @@ export default function Home() {
             className="absolute top-40 -right-24 size-96 animate-blob rounded-full bg-accent/25 blur-3xl"
             style={{ animationDelay: "-5s" }}
           />
+          <div
+            className="absolute bottom-0 left-1/3 size-72 animate-blob rounded-full bg-success/10 blur-3xl"
+            style={{ animationDelay: "-9s" }}
+          />
         </div>
 
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 md:grid-cols-2 md:py-24">
+        <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 py-16 md:grid-cols-2 md:py-24">
           <div className="flex flex-col items-start gap-6">
             <Badge
               variant="outline"
@@ -121,7 +105,9 @@ export default function Home() {
 
             <h1 className="animate-in fade-in slide-in-from-bottom-4 text-4xl leading-tight font-bold tracking-tight delay-100 duration-700 fill-mode-both md:text-6xl">
               Une mitsva ?<br />
-              <span className="text-primary">Quelqu&apos;un arrive.</span>
+              <span className="animate-degrade bg-gradient-to-r from-primary via-primary/45 to-primary bg-[length:200%_auto] bg-clip-text text-transparent">
+                Quelqu&apos;un arrive.
+              </span>
             </h1>
 
             <p className="animate-in fade-in slide-in-from-bottom-4 max-w-lg text-lg text-muted-foreground delay-200 duration-700 fill-mode-both">
@@ -134,28 +120,52 @@ export default function Home() {
             </p>
 
             <div className="animate-in fade-in slide-in-from-bottom-4 flex flex-wrap gap-3 delay-300 duration-700 fill-mode-both">
-              <Button asChild size="lg" className="group">
-                <Link href="#espaces">
+              <Button asChild size="lg" className="group shadow-lg shadow-primary/25">
+                <Link href="/inscription">
                   Faire une demande
                   <ArrowRight className="transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="#rejoindre">Devenir intervenant</Link>
+                <Link href="/inscription?role=intervenant">Devenir intervenant</Link>
               </Button>
             </div>
+
+            <p className="animate-in fade-in text-sm text-muted-foreground delay-500 duration-700 fill-mode-both">
+              Déjà inscrit ?{" "}
+              <Link href="/connexion" className="font-medium text-primary hover:underline">
+                Se connecter
+              </Link>
+            </p>
           </div>
 
-          <div className="animate-in fade-in zoom-in-95 delay-200 duration-1000 fill-mode-both">
+          <div className="animate-in fade-in zoom-in-90 px-4 delay-200 duration-1000 fill-mode-both">
             <Radar />
           </div>
         </div>
       </section>
 
+      {/* ---------- Bandeau des services qui défile ---------- */}
+      <section
+        aria-label="Exemples de services"
+        className="relative -rotate-1 border-y bg-primary py-4 text-primary-foreground shadow-lg"
+      >
+        <div className="flex w-max animate-defile gap-10 hover:[animation-play-state:paused]">
+          {[...servicesDefilants, ...servicesDefilants].map((s, i) => (
+            <span key={i} className="flex items-center gap-10 font-heading text-lg font-semibold whitespace-nowrap">
+              {s}
+              <span aria-hidden className="text-accent">
+                ✡
+              </span>
+            </span>
+          ))}
+        </div>
+      </section>
+
       {/* ---------- Comment ça marche ---------- */}
-      <section id="comment" className="scroll-mt-20 py-20">
+      <section id="comment" className="scroll-mt-20 py-24">
         <div className="mx-auto max-w-6xl px-4">
-          <Reveal className="mx-auto mb-12 max-w-2xl text-center">
+          <Reveal className="mx-auto mb-14 max-w-2xl text-center">
             <Badge variant="secondary" className="mb-4">
               Comment ça marche
             </Badge>
@@ -168,22 +178,23 @@ export default function Home() {
             </p>
           </Reveal>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <Reveal className="absolute top-16 right-[12%] left-[12%] hidden lg:block">
+              <div className="ligne-progression h-0.5 bg-gradient-to-r from-primary/0 via-primary/40 to-primary/0" />
+            </Reveal>
             {etapes.map((e, i) => (
-              <Reveal key={e.titre} delay={i * 120}>
-                <Card className="group relative h-full transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <Reveal key={e.titre} delay={i * 150}>
+                <Card className="group relative h-full transition-all duration-300 hover:-translate-y-2 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10">
                   <CardHeader>
                     <div className="mb-2 flex items-center justify-between">
-                      <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
+                      <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-primary group-hover:text-primary-foreground">
                         <e.icon className="size-6" />
                       </div>
-                      <span className="font-heading text-4xl font-bold text-muted">
+                      <span className="font-heading text-4xl font-bold text-muted transition-colors group-hover:text-primary/30">
                         {i + 1}
                       </span>
                     </div>
-                    <CardTitle className="font-heading text-base">
-                      {e.titre}
-                    </CardTitle>
+                    <CardTitle className="font-heading text-base">{e.titre}</CardTitle>
                     <CardDescription>{e.texte}</CardDescription>
                   </CardHeader>
                 </Card>
@@ -194,9 +205,9 @@ export default function Home() {
       </section>
 
       {/* ---------- Les 4 espaces ---------- */}
-      <section id="espaces" className="scroll-mt-20 bg-secondary/50 py-20">
+      <section id="espaces" className="scroll-mt-20 bg-secondary/50 py-24">
         <div className="mx-auto max-w-6xl px-4">
-          <Reveal className="mx-auto mb-12 max-w-2xl text-center">
+          <Reveal className="mx-auto mb-14 max-w-2xl text-center">
             <Badge variant="secondary" className="mb-4 bg-card">
               Les 4 espaces
             </Badge>
@@ -204,21 +215,20 @@ export default function Home() {
               Le bon intervenant pour chaque besoin
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Chaque espace a ses intervenants et ses services. D&apos;autres
-              services viendront s&apos;ajouter.
+              Choisissez votre espace pour créer votre compte ou vous connecter.
             </p>
           </Reveal>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {espaces.map((e, i) => (
-              <Reveal key={e.nom} delay={(i % 2) * 120}>
-                <Card className="group relative h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl">
+            {ESPACES.map((e, i) => (
+              <Reveal key={e.slug} delay={(i % 2) * 150}>
+                <Card className="group relative h-full overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/15">
                   <div
                     aria-hidden
-                    className="absolute -top-16 -right-16 size-40 rounded-full bg-primary/5 transition-transform duration-500 group-hover:scale-150"
+                    className="absolute -top-16 -right-16 size-40 rounded-full bg-primary/5 transition-transform duration-700 group-hover:scale-[3]"
                   />
                   <CardHeader className="relative">
-                    <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6">
+                    <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-12">
                       <e.icon className="size-7" />
                     </div>
                     <CardTitle className="font-heading text-xl">{e.nom}</CardTitle>
@@ -236,6 +246,21 @@ export default function Home() {
                       ))}
                     </div>
                   </CardContent>
+                  <CardFooter className="relative mt-auto flex flex-wrap gap-3">
+                    <Button asChild className="group/btn">
+                      <Link href={`/inscription?espace=${e.slug}`}>
+                        <UserPlus />
+                        Créer un compte
+                        <ArrowRight className="transition-transform group-hover/btn:translate-x-1" />
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline">
+                      <Link href={`/connexion?espace=${e.slug}`}>
+                        <LogIn />
+                        Se connecter
+                      </Link>
+                    </Button>
+                  </CardFooter>
                 </Card>
               </Reveal>
             ))}
@@ -244,9 +269,9 @@ export default function Home() {
       </section>
 
       {/* ---------- Suivi ---------- */}
-      <section className="py-20">
+      <section className="py-24">
         <div className="mx-auto max-w-6xl px-4">
-          <Reveal className="mx-auto mb-12 max-w-2xl text-center">
+          <Reveal className="mx-auto mb-14 max-w-2xl text-center">
             <Badge variant="secondary" className="mb-4">
               Suivi en direct
             </Badge>
@@ -255,20 +280,22 @@ export default function Home() {
             </h2>
           </Reveal>
 
-          <div className="relative grid gap-8 md:grid-cols-4">
-            <div
-              aria-hidden
-              className="absolute top-7 right-[12.5%] left-[12.5%] hidden h-0.5 bg-gradient-to-r from-primary via-accent to-success md:block"
-            />
+          <div className="relative grid gap-10 md:grid-cols-4">
+            <Reveal className="absolute top-7 right-[12.5%] left-[12.5%] hidden md:block">
+              <div className="ligne-progression h-1 rounded-full bg-gradient-to-r from-primary via-accent to-success" />
+            </Reveal>
             {statuts.map((s, i) => (
-              <Reveal key={s.nom} delay={i * 150} className="relative text-center">
+              <Reveal key={s.nom} delay={300 + i * 250} className="relative text-center">
                 <div
                   className={
                     i === statuts.length - 1
-                      ? "relative mx-auto flex size-14 items-center justify-center rounded-full bg-success text-success-foreground shadow-lg"
-                      : "relative mx-auto flex size-14 items-center justify-center rounded-full border-2 border-primary bg-card text-primary shadow-md"
+                      ? "relative mx-auto flex size-14 items-center justify-center rounded-full bg-success text-success-foreground shadow-lg shadow-success/30 transition-transform hover:scale-110"
+                      : "relative mx-auto flex size-14 items-center justify-center rounded-full border-2 border-primary bg-card text-primary shadow-md transition-transform hover:scale-110"
                   }
                 >
+                  {i === 0 && (
+                    <span className="absolute inset-0 animate-ping rounded-full border-2 border-primary" />
+                  )}
                   <s.icon className="size-6" />
                 </div>
                 <h3 className="mt-4 text-base font-semibold">{s.nom}</h3>
@@ -279,10 +306,33 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ---------- FAQ ---------- */}
+      <section id="faq" className="scroll-mt-20 bg-secondary/50 py-24">
+        <div className="mx-auto grid max-w-6xl gap-12 px-4 md:grid-cols-[1fr_1.5fr]">
+          <Reveal>
+            <Badge variant="secondary" className="mb-4 bg-card">
+              Questions fréquentes
+            </Badge>
+            <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
+              Vous vous posez des questions ?
+            </h2>
+            <p className="mt-4 text-muted-foreground">
+              Voici les réponses aux questions qu&apos;on nous pose le plus
+              souvent.
+            </p>
+          </Reveal>
+          <Reveal delay={150}>
+            <Card className="px-6 py-2">
+              <Faq />
+            </Card>
+          </Reveal>
+        </div>
+      </section>
+
       {/* ---------- Devenir intervenant ---------- */}
-      <section id="rejoindre" className="scroll-mt-20 px-4 pb-20">
+      <section id="rejoindre" className="scroll-mt-20 px-4 py-24">
         <Reveal className="mx-auto max-w-6xl">
-          <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-14 text-center text-primary-foreground md:px-16">
+          <div className="relative overflow-hidden rounded-3xl bg-primary px-6 py-16 text-center text-primary-foreground shadow-2xl shadow-primary/30 md:px-16">
             <div
               aria-hidden
               className="absolute -top-20 -left-20 size-72 animate-blob rounded-full bg-accent/30 blur-3xl"
@@ -303,28 +353,21 @@ export default function Home() {
                 demandes des personnes proches de vous.
               </p>
               <Button
+                asChild
                 size="lg"
-                className="bg-accent text-accent-foreground hover:bg-accent/90"
+                className="group bg-accent text-accent-foreground shadow-lg hover:bg-accent/90"
               >
-                Devenir intervenant
-                <Send />
+                <Link href="/inscription?role=intervenant">
+                  Devenir intervenant
+                  <Send className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                </Link>
               </Button>
-              <p className="text-sm opacity-75">Les inscriptions ouvrent bientôt.</p>
             </div>
           </div>
         </Reveal>
       </section>
 
-      {/* ---------- Pied de page ---------- */}
-      <footer className="border-t">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-muted-foreground md:flex-row">
-          <p className="font-heading font-bold">
-            <span className="text-foreground">Mivtsa</span>{" "}
-            <span className="text-primary">Now</span>
-          </p>
-          <p>© {new Date().getFullYear()} Mivtsa Now — Tous droits réservés.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </main>
   )
 }

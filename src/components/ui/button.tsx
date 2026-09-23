@@ -1,10 +1,12 @@
+"use client"
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 import { Slot } from "radix-ui"
 
 const buttonVariants = cva(
-  "inline-flex shrink-0 items-center justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap transition-all outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "relative isolate inline-flex shrink-0 items-center overflow-hidden transition-[color,background-color,border-color,box-shadow,transform] active:scale-[0.96] justify-center gap-2 rounded-md text-sm font-medium whitespace-nowrap outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
@@ -37,11 +39,26 @@ const buttonVariants = cva(
   }
 )
 
+/** Petite onde qui part du doigt / de la souris au clic. */
+function creerOnde(event: React.PointerEvent<HTMLElement>) {
+  const el = event.currentTarget
+  const rect = el.getBoundingClientRect()
+  const taille = Math.max(rect.width, rect.height) * 2
+  const onde = document.createElement("span")
+  onde.className = "onde-clic"
+  onde.style.width = onde.style.height = `${taille}px`
+  onde.style.left = `${event.clientX - rect.left - taille / 2}px`
+  onde.style.top = `${event.clientY - rect.top - taille / 2}px`
+  el.appendChild(onde)
+  onde.addEventListener("animationend", () => onde.remove())
+}
+
 function Button({
   className,
   variant = "default",
   size = "default",
   asChild = false,
+  onPointerDown,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
@@ -55,6 +72,10 @@ function Button({
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
+      onPointerDown={(event: React.PointerEvent<HTMLButtonElement>) => {
+        creerOnde(event)
+        onPointerDown?.(event)
+      }}
       {...props}
     />
   )
