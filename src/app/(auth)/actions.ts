@@ -63,15 +63,16 @@ export async function inscription(
 
   const intervenant = champs.role === "intervenant"
   const espace = trouverEspace(champs.espace)
+  if (!espace) return { erreur: "Choisissez votre espace.", champs }
   if (intervenant) {
-    if (!espace)
-      return { erreur: "Choisissez l'espace dans lequel vous voulez intervenir.", champs }
     if (!espace.types.some((t) => t.valeur === champs.type_intervenant))
       return { erreur: "Choisissez votre rôle dans cet espace.", champs }
   }
 
   const origine = (await headers()).get("origin") ?? "http://localhost:3000"
   const supabase = await createClient()
+  // Si quelqu'un était déjà connecté, on le déconnecte avant de créer le nouveau compte
+  await supabase.auth.signOut()
   const { data, error } = await supabase.auth.signUp({
     email: champs.email,
     password: motDePasse,
@@ -81,9 +82,8 @@ export async function inscription(
         prenom: champs.prenom,
         nom: champs.nom,
         telephone: champs.telephone,
-        ...(intervenant && espace
-          ? { espace: espace.slug, type_intervenant: champs.type_intervenant }
-          : {}),
+        espace: espace.slug,
+        ...(intervenant ? { type_intervenant: champs.type_intervenant } : {}),
       },
     },
   })
@@ -116,6 +116,8 @@ export async function connexion(
     return { erreur: "Merci de remplir votre e-mail et votre mot de passe.", champs: { email } }
 
   const supabase = await createClient()
+  // On repart de zéro : l'ancienne session est fermée avant la nouvelle connexion
+  await supabase.auth.signOut()
   const { error } = await supabase.auth.signInWithPassword({
     email,
     password: motDePasse,

@@ -1,10 +1,10 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
-// Pages réservées aux personnes connectées
+// Pages réservées aux personnes connectées.
+// (Connexion et inscription restent toujours accessibles : on redemande
+// l'e-mail et le mot de passe, ou on crée un autre compte.)
 const PAGES_PRIVEES = ["/accueil"]
-// Pages inutiles quand on est déjà connecté
-const PAGES_CONNEXION = ["/connexion", "/inscription"]
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request })
@@ -48,13 +48,10 @@ export async function proxy(request: NextRequest) {
   if (!user && PAGES_PRIVEES.some((p) => pathname.startsWith(p))) {
     return redirection("/connexion")
   }
-  if (user && PAGES_CONNEXION.some((p) => pathname.startsWith(p))) {
-    return redirection("/accueil")
-  }
 
   return response
 }
 
 export const config = {
-  matcher: ["/accueil/:path*", "/connexion", "/inscription"],
+  matcher: ["/accueil/:path*"],
 }

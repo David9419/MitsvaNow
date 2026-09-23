@@ -1,23 +1,32 @@
 "use client"
 
 import { useState, type ComponentProps } from "react"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Lock, type LucideIcon } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-/** Un champ de formulaire avec son étiquette. */
+/** Un champ de formulaire avec son étiquette et son icône. */
 export function Champ({
   label,
   id,
-  aide,
+  icon: Icon,
   ...props
-}: ComponentProps<typeof Input> & { label: string; id: string; aide?: string }) {
+}: ComponentProps<typeof Input> & { label: string; id: string; icon?: LucideIcon }) {
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={id}>{label}</Label>
-      <Input id={id} name={id} className="h-11" {...props} />
-      {aide && <p className="text-xs text-muted-foreground">{aide}</p>}
+      <div className="group relative">
+        {Icon && (
+          <Icon className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+        )}
+        <Input
+          id={id}
+          name={id}
+          className={`h-12 bg-card transition-shadow focus-visible:shadow-md ${Icon ? "pl-10" : ""}`}
+          {...props}
+        />
+      </div>
     </div>
   )
 }
@@ -36,7 +45,8 @@ export function ChampMotDePasse({
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor="mot_de_passe">{label}</Label>
-      <div className="relative">
+      <div className="group relative">
+        <Lock className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
         <Input
           id="mot_de_passe"
           name="mot_de_passe"
@@ -44,7 +54,8 @@ export function ChampMotDePasse({
           autoComplete={autoComplete}
           required
           minLength={8}
-          className="h-11 pr-11"
+          placeholder="••••••••"
+          className="h-12 bg-card pr-11 pl-10 transition-shadow focus-visible:shadow-md"
         />
         <button
           type="button"
