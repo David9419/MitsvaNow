@@ -31,16 +31,3 @@ export async function adresseDePosition(lat: number, lng: number): Promise<strin
     return null
   }
 }
-
-/** Nom de la ville d'une position (ex. « Paris »). */
-export async function villeDePosition(lat: number, lng: number): Promise<string | null> {
-  try {
-    const r = await fetch(`${BASE}/reverse?format=json&zoom=10&accept-language=fr&lat=${lat}&lon=${lng}`)
-    if (!r.ok) return null
-    const d: { address?: Record<string, string> } = await r.json()
-    const a = d.address
-    return a ? (a.city ?? a.town ?? a.village ?? a.municipality ?? a.county ?? null) : null
-  } catch {
-    return null
-  }
-}

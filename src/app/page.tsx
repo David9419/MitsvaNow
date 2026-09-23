@@ -1,4 +1,3 @@
-import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -14,8 +13,6 @@ import {
 
 import { ApercuEtapes } from "@/components/landing/apercu-etapes"
 import { BandeauServices } from "@/components/landing/bandeau-services"
-import { CarteLumiere } from "@/components/landing/carte-lumiere"
-import { CompteurChabbat } from "@/components/landing/compteur-chabbat"
 import { Faq } from "@/components/landing/faq"
 import { Radar } from "@/components/landing/radar"
 import { Reveal } from "@/components/landing/reveal"
@@ -163,7 +160,6 @@ export default function Home() {
                 delay={(i % 2) * 150}
                 className={e.role === "demandeur" ? "md:col-span-2" : undefined}
               >
-                <CarteLumiere className="h-full rounded-xl">
                 <Card
                   className={
                     e.role === "demandeur"
@@ -181,7 +177,7 @@ export default function Home() {
                     className="absolute -top-16 -right-16 size-40 rounded-full bg-primary/5 transition-transform duration-700 group-hover:scale-[3]"
                   />
                   <CardHeader className="relative">
-                    <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-12">
+                    <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30">
                       <e.icon className="size-7" />
                     </div>
                     <CardTitle className="font-heading text-xl">{e.nom}</CardTitle>
@@ -215,18 +211,10 @@ export default function Home() {
                     </Button>
                   </CardFooter>
                 </Card>
-                </CarteLumiere>
               </Reveal>
             ))}
           </div>
         </div>
-      </section>
-
-      {/* ---------- Compte à rebours de Chabbat ---------- */}
-      <section id="chabbat" className="scroll-mt-20 px-4 pt-24">
-        <Reveal className="mx-auto max-w-6xl">
-          <CompteurChabbat />
-        </Reveal>
       </section>
 
       {/* ---------- Suivi ---------- */}
@@ -265,45 +253,6 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* ---------- À propos ---------- */}
-      <section id="a-propos" className="scroll-mt-20 px-4 pb-24">
-        <Reveal className="mx-auto max-w-4xl">
-          <CarteLumiere className="overflow-hidden rounded-3xl border bg-card p-8 shadow-sm sm:p-10">
-            <div className="flex flex-col items-center gap-8 text-center md:flex-row md:text-left">
-              <div className="relative shrink-0">
-                <div aria-hidden className="absolute inset-0 animate-ping rounded-full bg-primary/10 [animation-duration:3s]" />
-                <Image src="/logo-mark.png" alt="" width={112} height={98} className="relative h-24 w-auto animate-float" />
-              </div>
-              <div>
-                <Badge variant="secondary" className="mb-3">
-                  À propos
-                </Badge>
-                <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
-                  <TexteFlou texte="Une mitsva de plus, là où vous êtes" />
-                </h2>
-                <p className="mt-4 text-muted-foreground">
-                  Mivtsa Now est né d&apos;une idée simple : quand quelqu&apos;un a
-                  envie de faire une mitsva, il y a souvent une personne
-                  disponible tout près pour l&apos;aider. Nous faisons le lien, avec
-                  le sourire, sans jugement et sans pression.
-                </p>
-                <div className="mt-5 flex flex-wrap justify-center gap-2 md:justify-start">
-                  {["❤️ Bienveillance", "📍 Proximité", "🤝 Entraide", "✨ Gratuit"].map((v, i) => (
-                    <span
-                      key={v}
-                      className="mot-flou rounded-full bg-muted px-3 py-1 text-sm font-medium"
-                      style={{ animationDelay: `${300 + i * 120}ms` }}
-                    >
-                      {v}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </CarteLumiere>
-        </Reveal>
       </section>
 
       {/* ---------- FAQ ---------- */}

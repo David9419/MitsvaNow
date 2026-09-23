@@ -285,53 +285,6 @@
   animation: entree-flou 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-/* Lumière qui suit la souris sur les cartes (voir components/landing/carte-lumiere.tsx) */
-.carte-lumiere {
-  position: relative;
-  isolation: isolate;
-}
-.carte-lumiere::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  border-radius: inherit;
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  background: radial-gradient(
-    420px circle at var(--x, 50%) var(--y, 50%),
-    color-mix(in oklab, var(--primary) 14%, transparent),
-    transparent 60%
-  );
-}
-.carte-lumiere:hover::after {
-  opacity: 1;
-}
-
-/* Flamme de bougie qui vacille */
-@keyframes flamme {
-  0%,
-  100% {
-    transform: scale(1) rotate(-2deg);
-    opacity: 1;
-  }
-  25% {
-    transform: scale(1.08, 0.94) rotate(2deg);
-    opacity: 0.9;
-  }
-  50% {
-    transform: scale(0.95, 1.06) rotate(-1deg);
-  }
-  75% {
-    transform: scale(1.04, 0.97) rotate(1.5deg);
-    opacity: 0.95;
-  }
-}
-.flamme {
-  transform-origin: 50% 100%;
-  animation: flamme 1.6s ease-in-out infinite;
-}
 
 
 /* Onde au clic sur les boutons (voir components/ui/button.tsx) */
@@ -438,19 +391,3 @@
   animation: apercu-trajet 3s ease-in-out 1.2s both;
 }
 
-/* Chiffre du compte à rebours qui change en douceur */
-@keyframes chiffre-flou {
-  from {
-    opacity: 0.2;
-    filter: blur(6px);
-    transform: translateY(-0.25em);
-  }
-  to {
-    opacity: 1;
-    filter: none;
-    transform: none;
-  }
-}
-.chiffre-flou {
-  animation: chiffre-flou 0.45s ease-out both;
-}
