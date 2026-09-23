@@ -230,17 +230,107 @@
   }
 }
 
-/* Apparition au défilement (voir components/landing/reveal.tsx) */
+/* Apparition au défilement, en sortant d'un flou (voir components/landing/reveal.tsx) */
 .reveal {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(36px) scale(0.98);
+  filter: blur(12px);
   transition:
-    opacity 0.7s ease,
-    transform 0.7s ease;
+    opacity 1s ease,
+    transform 1s cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 1s ease;
 }
 .reveal.is-visible {
   opacity: 1;
   transform: none;
+  filter: none;
+}
+
+/* Texte qui apparaît mot par mot, en flou (voir components/landing/texte-flou.tsx) */
+@keyframes mot-flou {
+  from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+.mot-flou {
+  display: inline-block;
+  animation: mot-flou 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+/* Dans un bloc qui n'est pas encore visible, les mots attendent */
+.reveal:not(.is-visible) .mot-flou {
+  animation-play-state: paused;
+}
+
+/* Arrivée sur la page : tout sort d'un flou */
+@keyframes entree-flou {
+  from {
+    opacity: 0;
+    filter: blur(20px);
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+.entree-flou {
+  animation: entree-flou 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+/* Lumière qui suit la souris sur les cartes (voir components/landing/carte-lumiere.tsx) */
+.carte-lumiere {
+  position: relative;
+  isolation: isolate;
+}
+.carte-lumiere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(
+    420px circle at var(--x, 50%) var(--y, 50%),
+    color-mix(in oklab, var(--primary) 14%, transparent),
+    transparent 60%
+  );
+}
+.carte-lumiere:hover::after {
+  opacity: 1;
+}
+
+/* Flamme de bougie qui vacille */
+@keyframes flamme {
+  0%,
+  100% {
+    transform: scale(1) rotate(-2deg);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.08, 0.94) rotate(2deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(0.95, 1.06) rotate(-1deg);
+  }
+  75% {
+    transform: scale(1.04, 0.97) rotate(1.5deg);
+    opacity: 0.95;
+  }
+}
+.flamme {
+  transform-origin: 50% 100%;
+  animation: flamme 1.6s ease-in-out infinite;
 }
 
 
@@ -306,4 +396,61 @@
 }
 .reponse-fondu {
   animation: reponse-fondu 0.7s ease-out both;
+}
+
+/* Aperçu « Comment ça marche » */
+@keyframes apercu-progression {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+.apercu-progression {
+  animation-name: apercu-progression;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes apercu-choix {
+  0%,
+  40% {
+    border-color: var(--border);
+  }
+  60%,
+  100% {
+    border-color: var(--primary);
+    box-shadow: 0 8px 20px color-mix(in oklab, var(--primary) 20%, transparent);
+  }
+}
+.apercu-choix {
+  animation: apercu-choix 1.2s ease forwards 0.6s;
+}
+@keyframes apercu-trajet {
+  from {
+    width: 10%;
+  }
+  to {
+    width: 70%;
+  }
+}
+.apercu-trajet {
+  animation: apercu-trajet 3s ease-in-out 1.2s both;
+}
+
+/* Chiffre du compte à rebours qui change en douceur */
+@keyframes chiffre-flou {
+  from {
+    opacity: 0.2;
+    filter: blur(6px);
+    transform: translateY(-0.25em);
+  }
+  to {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+}
+.chiffre-flou {
+  animation: chiffre-flou 0.45s ease-out both;
 }

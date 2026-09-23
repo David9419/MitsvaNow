@@ -45,7 +45,7 @@ export function Faq() {
     <Accordion type="single" collapsible className="w-full">
       {questions.map((item, i) => (
         <AccordionItem key={i} value={`q${i}`}>
-          <AccordionTrigger className="text-left text-base hover:text-primary hover:no-underline">
+          <AccordionTrigger className="text-left font-sans text-base font-semibold hover:text-primary hover:no-underline">
             {item.q}
           </AccordionTrigger>
           <AccordionContent className="text-base leading-relaxed text-muted-foreground duration-500">

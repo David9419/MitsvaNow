@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import {
   ArrowRight,
@@ -6,18 +7,19 @@ import {
   HandHeart,
   Hourglass,
   LogIn,
-  MapPin,
   PlayCircle,
   Send,
-  Sparkles,
   UserPlus,
-  Users,
 } from "lucide-react"
 
+import { ApercuEtapes } from "@/components/landing/apercu-etapes"
 import { BandeauServices } from "@/components/landing/bandeau-services"
+import { CarteLumiere } from "@/components/landing/carte-lumiere"
+import { CompteurChabbat } from "@/components/landing/compteur-chabbat"
 import { Faq } from "@/components/landing/faq"
 import { Radar } from "@/components/landing/radar"
 import { Reveal } from "@/components/landing/reveal"
+import { TexteFlou } from "@/components/landing/texte-flou"
 import { SiteFooter } from "@/components/site-footer"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -30,29 +32,6 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ESPACES } from "@/lib/espaces"
-
-const etapes = [
-  {
-    icon: Sparkles,
-    titre: "Dites ce dont vous avez besoin",
-    texte: "Téfilines, 'hallot, cachérisation, un cours… choisissez le service.",
-  },
-  {
-    icon: MapPin,
-    titre: "Partagez votre position",
-    texte: "Autorisez la localisation ou saisissez simplement votre adresse.",
-  },
-  {
-    icon: Users,
-    titre: "On trouve le plus proche",
-    texte: "La plateforme contacte l'intervenant disponible le plus près de vous.",
-  },
-  {
-    icon: HandHeart,
-    titre: "Il vient vous aider",
-    texte: "L'intervenant accepte et se déplace. Vous suivez tout en direct.",
-  },
-]
 
 const statuts = [
   { icon: Hourglass, nom: "En attente", texte: "On cherche l'intervenant" },
@@ -78,7 +57,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="mx-auto grid max-w-6xl items-center gap-14 px-4 py-16 md:grid-cols-2 md:py-24">
+        <div className="entree-flou mx-auto grid max-w-6xl items-center gap-14 px-4 py-16 md:grid-cols-2 md:py-24">
           <div className="flex flex-col items-start gap-6">
             <Badge
               variant="outline"
@@ -91,11 +70,15 @@ export default function Home() {
               Des intervenants près de chez vous
             </Badge>
 
-            <h1 className="animate-in fade-in slide-in-from-bottom-4 text-4xl leading-tight font-bold tracking-tight delay-100 duration-700 fill-mode-both md:text-6xl">
-              Une mitsva ?<br />
-              <span className="animate-degrade bg-gradient-to-r from-primary via-primary/45 to-primary bg-[length:200%_auto] bg-clip-text text-transparent">
-                Quelqu&apos;un arrive.
-              </span>
+            <h1 className="text-4xl leading-tight font-bold tracking-tight md:text-6xl">
+              <TexteFlou texte="Une mitsva ?" delai={200} pas={120} />
+              <br />
+              <TexteFlou
+                texte="Quelqu'un arrive."
+                delai={450}
+                pas={140}
+                classeMot="bg-gradient-to-r from-primary via-primary/55 to-primary bg-[length:200%_auto] bg-clip-text text-transparent"
+              />
             </h1>
 
             <p className="animate-in fade-in slide-in-from-bottom-4 max-w-lg text-lg text-muted-foreground delay-200 duration-700 fill-mode-both">
@@ -144,37 +127,16 @@ export default function Home() {
               Comment ça marche
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              4 étapes, quelques minutes
+              <TexteFlou texte="4 étapes, quelques minutes" />
             </h2>
             <p className="mt-4 text-muted-foreground">
               Pas besoin de connaître quelqu&apos;un : la plateforme s&apos;occupe
               de trouver la bonne personne, au bon endroit.
             </p>
           </Reveal>
-
-          <div className="relative grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <Reveal className="absolute top-16 right-[12%] left-[12%] hidden lg:block">
-              <div className="ligne-progression h-0.5 bg-gradient-to-r from-primary/0 via-primary/40 to-primary/0" />
-            </Reveal>
-            {etapes.map((e, i) => (
-              <Reveal key={e.titre} delay={i * 150}>
-                <Card className="group relative h-full transition-all duration-300 hover:-translate-y-2 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/10">
-                  <CardHeader>
-                    <div className="mb-2 flex items-center justify-between">
-                      <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-primary group-hover:text-primary-foreground">
-                        <e.icon className="size-6" />
-                      </div>
-                      <span className="font-heading text-4xl font-bold text-muted transition-colors group-hover:text-primary/30">
-                        {i + 1}
-                      </span>
-                    </div>
-                    <CardTitle className="font-heading text-base">{e.titre}</CardTitle>
-                    <CardDescription>{e.texte}</CardDescription>
-                  </CardHeader>
-                </Card>
-              </Reveal>
-            ))}
-          </div>
+          <Reveal>
+            <ApercuEtapes />
+          </Reveal>
         </div>
       </section>
 
@@ -186,7 +148,7 @@ export default function Home() {
               Les 5 espaces
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Le bon intervenant pour chaque besoin
+              <TexteFlou texte="Le bon intervenant pour chaque besoin" />
             </h2>
             <p className="mt-4 text-muted-foreground">
               Un espace pour ceux qui ont un besoin, quatre espaces pour ceux
@@ -201,6 +163,7 @@ export default function Home() {
                 delay={(i % 2) * 150}
                 className={e.role === "demandeur" ? "md:col-span-2" : undefined}
               >
+                <CarteLumiere className="h-full rounded-xl">
                 <Card
                   className={
                     e.role === "demandeur"
@@ -252,10 +215,18 @@ export default function Home() {
                     </Button>
                   </CardFooter>
                 </Card>
+                </CarteLumiere>
               </Reveal>
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ---------- Compte à rebours de Chabbat ---------- */}
+      <section id="chabbat" className="scroll-mt-20 px-4 pt-24">
+        <Reveal className="mx-auto max-w-6xl">
+          <CompteurChabbat />
+        </Reveal>
       </section>
 
       {/* ---------- Suivi ---------- */}
@@ -266,7 +237,7 @@ export default function Home() {
               Suivi en direct
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Vous savez toujours où en est votre demande
+              <TexteFlou texte="Vous savez toujours où en est votre demande" />
             </h2>
           </Reveal>
 
@@ -296,15 +267,54 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ---------- À propos ---------- */}
+      <section id="a-propos" className="scroll-mt-20 px-4 pb-24">
+        <Reveal className="mx-auto max-w-4xl">
+          <CarteLumiere className="overflow-hidden rounded-3xl border bg-card p-8 shadow-sm sm:p-10">
+            <div className="flex flex-col items-center gap-8 text-center md:flex-row md:text-left">
+              <div className="relative shrink-0">
+                <div aria-hidden className="absolute inset-0 animate-ping rounded-full bg-primary/10 [animation-duration:3s]" />
+                <Image src="/logo-mark.png" alt="" width={112} height={98} className="relative h-24 w-auto animate-float" />
+              </div>
+              <div>
+                <Badge variant="secondary" className="mb-3">
+                  À propos
+                </Badge>
+                <h2 className="text-2xl font-bold tracking-tight md:text-3xl">
+                  <TexteFlou texte="Une mitsva de plus, là où vous êtes" />
+                </h2>
+                <p className="mt-4 text-muted-foreground">
+                  Mivtsa Now est né d&apos;une idée simple : quand quelqu&apos;un a
+                  envie de faire une mitsva, il y a souvent une personne
+                  disponible tout près pour l&apos;aider. Nous faisons le lien, avec
+                  le sourire, sans jugement et sans pression.
+                </p>
+                <div className="mt-5 flex flex-wrap justify-center gap-2 md:justify-start">
+                  {["❤️ Bienveillance", "📍 Proximité", "🤝 Entraide", "✨ Gratuit"].map((v, i) => (
+                    <span
+                      key={v}
+                      className="mot-flou rounded-full bg-muted px-3 py-1 text-sm font-medium"
+                      style={{ animationDelay: `${300 + i * 120}ms` }}
+                    >
+                      {v}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CarteLumiere>
+        </Reveal>
+      </section>
+
       {/* ---------- FAQ ---------- */}
       <section id="faq" className="scroll-mt-20 bg-secondary/50 py-24">
-        <div className="mx-auto grid max-w-6xl gap-12 px-4 md:grid-cols-[1fr_1.5fr]">
+        <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 md:grid-cols-[1fr_1.5fr]">
           <Reveal>
             <Badge variant="secondary" className="mb-4 bg-card">
               Questions fréquentes
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              Vous vous posez des questions ?
+              <TexteFlou texte="Vous vous posez des questions ?" />
             </h2>
             <p className="mt-4 text-muted-foreground">
               Voici les réponses aux questions qu&apos;on nous pose le plus
@@ -335,7 +345,7 @@ export default function Home() {
             <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-6">
               <HandHeart className="size-12 animate-float" />
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                Vous voulez aider ?
+                <TexteFlou texte="Vous voulez aider ?" />
               </h2>
               <p className="text-lg opacity-90">
                 Bahour, femme de l&apos;équipe, sofer, rav, rabbanit ou
