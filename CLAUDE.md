@@ -23,7 +23,9 @@ L'équipe ne sait pas coder. Claude doit :
 
 ## Cahier des charges
 
-> ⚠️ À COMPLÉTER — ces sections n'ont pas encore été fournies.
+> 📄 Le cahier des charges détaillé (espaces, charte graphique, schéma de base de données, étapes) est dans **`Project.md`**. Il fait foi.
+>
+> ⚠️ Les sections ci-dessous non couvertes par `Project.md` restent à compléter.
 
 ### Tableau des mitsvot
 _(à coller)_
@@ -36,3 +38,5 @@ _(à coller)_
 
 ### Identité graphique
 _(à coller : couleurs, polices, logo, ton)_
+
+@AGENTS.md
