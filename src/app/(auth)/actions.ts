@@ -46,7 +46,6 @@ export async function inscription(
     nom: texte(formData, "nom"),
     telephone: texte(formData, "telephone"),
     email: texte(formData, "email"),
-    role: texte(formData, "role"),
     espace: texte(formData, "espace"),
     type_intervenant: texte(formData, "type_intervenant"),
   }
@@ -61,12 +60,13 @@ export async function inscription(
   if (motDePasse.length < 8)
     return { erreur: "Le mot de passe doit contenir au moins 8 caractères.", champs }
 
-  const intervenant = champs.role === "intervenant"
   const espace = trouverEspace(champs.espace)
   if (!espace) return { erreur: "Choisissez votre espace.", champs }
+  // L'espace choisi décide du rôle : « Demandeurs » ou l'un des 4 espaces d'intervenants
+  const intervenant = espace.role === "intervenant"
   if (intervenant) {
     if (!espace.types.some((t) => t.valeur === champs.type_intervenant))
-      return { erreur: "Choisissez votre rôle dans cet espace.", champs }
+      return { erreur: "Précisez votre rôle : sofer, rav ou rabbanit.", champs }
   }
 
   const origine = (await headers()).get("origin") ?? "http://localhost:3000"

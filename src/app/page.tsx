@@ -34,8 +34,8 @@ import { ESPACES } from "@/lib/espaces"
 const etapes = [
   {
     icon: Sparkles,
-    titre: "Choisissez un espace",
-    texte: "Bahourim, équipe féminine, sofer / rav / rabbanit ou chaliah.",
+    titre: "Dites ce dont vous avez besoin",
+    texte: "Téfilines, 'hallot, cachérisation, un cours… choisissez le service.",
   },
   {
     icon: MapPin,
@@ -109,7 +109,7 @@ export default function Home() {
 
             <div className="animate-in fade-in slide-in-from-bottom-4 flex flex-wrap gap-3 delay-300 duration-700 fill-mode-both">
               <Button asChild size="lg" className="group shadow-lg shadow-primary/25">
-                <Link href="/inscription">
+                <Link href="/inscription?espace=demandeurs">
                   Faire une demande
                   <ArrowRight className="transition-transform group-hover:translate-x-1" />
                 </Link>
@@ -183,20 +183,36 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4">
           <Reveal className="mx-auto mb-14 max-w-2xl text-center">
             <Badge variant="secondary" className="mb-4 bg-card">
-              Les 4 espaces
+              Les 5 espaces
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
               Le bon intervenant pour chaque besoin
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Choisissez votre espace pour créer votre compte ou vous connecter.
+              Un espace pour ceux qui ont un besoin, quatre espaces pour ceux
+              qui viennent aider. Choisissez le vôtre.
             </p>
           </Reveal>
 
           <div className="grid gap-6 md:grid-cols-2">
             {ESPACES.map((e, i) => (
-              <Reveal key={e.slug} delay={(i % 2) * 150}>
-                <Card className="group relative h-full overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/15">
+              <Reveal
+                key={e.slug}
+                delay={(i % 2) * 150}
+                className={e.role === "demandeur" ? "md:col-span-2" : undefined}
+              >
+                <Card
+                  className={
+                    e.role === "demandeur"
+                      ? "group relative h-full overflow-hidden border-primary/30 bg-gradient-to-br from-primary/10 via-card to-accent/10 ring-1 ring-primary/20 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/20"
+                      : "group relative h-full overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/15"
+                  }
+                >
+                  {e.role === "demandeur" && (
+                    <Badge className="absolute top-5 right-5 z-10 bg-accent text-accent-foreground">
+                      Vous avez un besoin ?
+                    </Badge>
+                  )}
                   <div
                     aria-hidden
                     className="absolute -top-16 -right-16 size-40 rounded-full bg-primary/5 transition-transform duration-700 group-hover:scale-[3]"
@@ -224,7 +240,7 @@ export default function Home() {
                     <Button asChild className="group/btn">
                       <Link href={`/inscription?espace=${e.slug}`}>
                         <UserPlus />
-                        Créer un compte
+                        {e.role === "demandeur" ? "Faire une demande" : "Créer un compte"}
                         <ArrowRight className="transition-transform group-hover/btn:translate-x-1" />
                       </Link>
                     </Button>

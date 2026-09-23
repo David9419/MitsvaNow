@@ -77,7 +77,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
           {/* Les 4 espaces */}
           <div className="animate-in fade-in delay-1000 duration-700 fill-mode-both">
             <p className="mb-3 text-xs font-semibold tracking-widest uppercase opacity-70">
-              4 espaces
+              5 espaces
             </p>
             <div className="grid w-fit grid-cols-2 gap-2">
               {ESPACES.map((e) => (
