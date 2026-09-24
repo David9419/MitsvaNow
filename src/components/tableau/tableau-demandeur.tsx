@@ -7,6 +7,7 @@ import { BellRing, CheckCircle2, History, Lightbulb, PlayCircle, Plus, Sparkles 
 
 import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { CarteStat } from "@/components/tableau/carte-stat"
+import { CatalogueServices } from "@/components/tableau/catalogue-services"
 import { FenetreLocalisation, type LieuValide } from "@/components/tableau/fenetre-localisation"
 import { EnTeteTableau, PastilleEnTete } from "@/components/tableau/en-tete-tableau"
 import { FormulaireDemande, type ServiceDisponible } from "@/components/tableau/formulaire-demande"
@@ -57,6 +58,7 @@ export function TableauDemandeur({
   // Position enregistrée dans le profil (sert pour les demandes)
   const [lieu, setLieu] = useState<LieuValide | null>(positionInitiale)
   const [fenetre, setFenetre] = useState(positionInitiale == null)
+  const [preselection, setPreselection] = useState<{ espace: string; service: string; n: number } | null>(null)
 
   const enregistrerLieu = useCallback(
     async (l: LieuValide) => {
@@ -217,6 +219,14 @@ export function TableauDemandeur({
         </section>
       )}
 
+      <CatalogueServices
+        services={services}
+        onChoisir={(espace, service) => {
+          setPreselection((p) => ({ espace, service, n: (p?.n ?? 0) + 1 }))
+          document.getElementById("nouvelle")?.scrollIntoView({ behavior: "smooth", block: "start" })
+        }}
+      />
+
       <div className="grid items-start gap-6 lg:grid-cols-3">
         <section id="nouvelle" className="scroll-mt-24 lg:col-span-2">
           <CarteWidget icon={Plus} titre="Nouvelle demande" sousTitre="En 5 petites étapes" delai={150}>
@@ -224,6 +234,7 @@ export function TableauDemandeur({
               services={services}
               lieu={lieu}
               telephoneParDefaut={telephone}
+              preselection={preselection}
               onModifierLieu={() => setFenetre(true)}
               onEnvoyer={envoyer}
             />

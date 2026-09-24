@@ -6,7 +6,7 @@ import { ESPACES } from "@/lib/espaces"
 
 const points = [
   { icon: MapPin, titre: "Au plus près de vous", texte: "L'intervenant disponible le plus proche est prévenu en quelques secondes." },
-  { icon: ShieldCheck, titre: "Des intervenants de confiance", texte: "Chaque intervenant est validé par notre équipe." },
+  { icon: ShieldCheck, titre: "Des intervenants engagés", texte: "Bahourim, équipe féminine, rabbanim et chlou'him près de chez vous." },
   { icon: Sparkles, titre: "Simple et gratuit", texte: "Ouvert à tous, quel que soit votre niveau." },
 ]
 

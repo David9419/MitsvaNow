@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Check, Loader2, LocateFixed, MapPin, Pencil, Phone, Search, Send } from "lucide-react"
 
 import type { LieuValide } from "@/components/tableau/fenetre-localisation"
@@ -35,6 +35,7 @@ export function FormulaireDemande({
   services,
   lieu: maPosition,
   telephoneParDefaut,
+  preselection,
   onModifierLieu,
   onEnvoyer,
 }: {
@@ -42,6 +43,8 @@ export function FormulaireDemande({
   /** Position enregistrée de la personne */
   lieu: LieuValide | null
   telephoneParDefaut: string
+  /** Service choisi depuis « Les services » (n change à chaque clic) */
+  preselection?: { espace: string; service: string; n: number } | null
   onModifierLieu: () => void
   onEnvoyer: (d: {
     service: string
@@ -57,6 +60,14 @@ export function FormulaireDemande({
   const [mode, setMode] = useState<"gps" | "adresse">("gps")
   const [choisie, setChoisie] = useState<Suggestion | null>(null)
   const [telephone, setTelephone] = useState(telephoneParDefaut)
+
+  // Service choisi depuis « Les services » : on remplit les deux premières étapes
+  useEffect(() => {
+    if (!preselection) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- choix fait dans la liste des services
+    setEspace(preselection.espace)
+    setService(preselection.service)
+  }, [preselection])
   const [message, setMessage] = useState("")
   const [envoi, setEnvoi] = useState(false)
 

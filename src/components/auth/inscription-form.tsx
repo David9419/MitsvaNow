@@ -8,13 +8,25 @@ import { inscription } from "@/app/(auth)/actions"
 import { Champ, ChampMotDePasse, MessageErreur } from "@/components/auth/champ"
 import { RechercheAdresse } from "@/components/tableau/recherche-adresse"
 import { Button } from "@/components/ui/button"
-import { ESPACES, trouverEspace } from "@/lib/espaces"
+import { ESPACES, ESPACES_SERVICES, trouverEspace } from "@/lib/espaces"
 import { adresseDePosition } from "@/lib/tableau/adresses"
 import { cn } from "@/lib/utils"
 
-export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
+/**
+ * Formulaire d'inscription.
+ * - espaceFixe : on vient du bouton d'un espace → l'espace est déjà choisi, pas de liste
+ * - choix : sinon, la liste des espaces proposés (les 4 d'intervenants, ou les 5)
+ */
+export function InscriptionForm({
+  espaceFixe,
+  choix = "tous",
+}: {
+  espaceFixe?: string
+  choix?: "intervenants" | "tous"
+}) {
   const [etat, action, enCours] = useActionState(inscription, undefined)
-  const [espaceSlug, setEspaceSlug] = useState(trouverEspace(espaceInitial)?.slug ?? "")
+  const fixe = trouverEspace(espaceFixe)
+  const [espaceSlug, setEspaceSlug] = useState(fixe?.slug ?? "")
   const [type, setType] = useState("")
 
   const espace = trouverEspace(espaceSlug)
@@ -78,13 +90,29 @@ export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
   }
 
   const c = etat?.champs
+  const listeEspaces = choix === "intervenants" ? ESPACES_SERVICES : ESPACES
+  // Numéros des étapes : sans liste d'espaces, on commence directement par les informations
+  const n = fixe ? 0 : 1
 
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Créer un compte</h1>
+        {fixe && (
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary">
+            <fixe.icon className="size-4" /> Espace {fixe.nom}
+          </span>
+        )}
+        <h1 className="text-3xl font-bold tracking-tight">
+          {fixe?.role === "demandeur" ? "Faire une demande" : "Créer un compte"}
+        </h1>
         <p className="mt-2 text-muted-foreground">
-          Rejoignez Mivtsa Now en moins d&apos;une minute.
+          {!fixe
+            ? choix === "intervenants"
+              ? "Choisissez l'espace dans lequel vous voulez aider."
+              : "Rejoignez Mivtsa Now en moins d'une minute."
+            : fixe.role === "demandeur"
+              ? "Créez votre compte en moins d'une minute pour envoyer votre demande."
+              : `Rejoignez l'espace ${fixe.nom} et recevez les demandes près de chez vous.`}
         </p>
       </div>
 
@@ -92,11 +120,12 @@ export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
         <input type="hidden" name="espace" value={espaceSlug} />
         <input type="hidden" name="type_intervenant" value={intervenant ? typeChoisi : ""} />
 
-        {/* 1. L'espace */}
+        {/* 1. L'espace (seulement si on ne le connaît pas déjà) */}
+        {!fixe && (
         <div role="group" className="flex flex-col gap-3">
           <p className="text-sm font-semibold">1. Choisissez votre espace</p>
           <div className="grid grid-cols-2 gap-3">
-            {ESPACES.map((e) => {
+            {listeEspaces.map((e) => {
               const actif = espaceSlug === e.slug
               const large = e.role === "demandeur"
               return (
@@ -144,6 +173,7 @@ export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
             })}
           </div>
         </div>
+        )}
 
         {/* Précision du rôle (Sofer / Rav / Rabbanit) + rappel pour les intervenants */}
         {intervenant && (
@@ -170,15 +200,15 @@ export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
               </div>
             )}
             <p className="text-xs text-muted-foreground">
-              Vous vous inscrivez comme intervenant. Votre profil sera validé
-              par notre équipe avant de recevoir des demandes.
+              Dès votre compte créé, passez en « Disponible » : vous recevrez
+              les demandes des personnes proches de vous.
             </p>
           </div>
         )}
 
         {/* 3. Les informations personnelles */}
         <div role="group" className="flex flex-col gap-4">
-          <p className="text-sm font-semibold">2. Vos informations</p>
+          <p className="text-sm font-semibold">{n + 1}. Vos informations</p>
           <div className="grid gap-4 sm:grid-cols-2">
             <Champ label="Prénom" id="prenom" icon={User} autoComplete="given-name" placeholder="David" required defaultValue={c?.prenom} />
             <Champ label="Nom" id="nom" icon={User} autoComplete="family-name" placeholder="Cohen" required defaultValue={c?.nom} />
@@ -190,7 +220,7 @@ export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
 
         {/* 3. La localisation */}
         <div role="group" className="flex flex-col gap-3">
-          <p className="text-sm font-semibold">3. Votre position</p>
+          <p className="text-sm font-semibold">{n + 2}. Votre position</p>
           {lieu ? (
             <div className="flex animate-in fade-in items-center justify-between gap-3 rounded-xl border border-success/40 bg-success/10 p-3 text-sm">
               <span className="flex items-center gap-3">

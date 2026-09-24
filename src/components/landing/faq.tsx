@@ -19,8 +19,8 @@ const questions = [
     r: "Quand vous faites une demande, la plateforme regarde les intervenants disponibles de l'espace choisi et contacte celui qui est le plus près de vous. S'il ne peut pas, la demande passe automatiquement au suivant.",
   },
   {
-    q: "Qui sont les intervenants ? Sont-ils vérifiés ?",
-    r: "Ce sont des bahourim, des femmes de l'équipe, des soferim, des rabbanim, des rabbaniot et des chlou'him. Chaque intervenant est validé par notre équipe avant de pouvoir recevoir des demandes.",
+    q: "Qui sont les intervenants ?",
+    r: "Ce sont des bahourim, des femmes de l'équipe, des soferim, des rabbanim, des rabbaniot et des chlou'him. Chacun gère son espace : il se rend disponible quand il le souhaite et choisit les services qu'il propose.",
   },
   {
     q: "Ma position est-elle partagée avec tout le monde ?",
@@ -32,7 +32,7 @@ const questions = [
   },
   {
     q: "Comment devenir intervenant ?",
-    r: "Cliquez sur « Devenir intervenant », choisissez votre espace et créez votre compte. Notre équipe valide ensuite votre profil, puis vous pourrez recevoir les demandes proches de chez vous.",
+    r: "Cliquez sur « Devenir intervenant », choisissez votre espace et créez votre compte. Activez votre localisation, passez en « Disponible » : vous recevez tout de suite les demandes proches de chez vous.",
   },
   {
     q: "Puis-je être à la fois demandeur et intervenant ?",

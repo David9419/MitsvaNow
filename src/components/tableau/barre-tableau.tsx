@@ -1,8 +1,7 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
-import { ArrowLeft, LogOut, type LucideIcon } from "lucide-react"
+import { ArrowLeft, type LucideIcon } from "lucide-react"
 
-import { deconnexion } from "@/app/(auth)/actions"
 import { Button } from "@/components/ui/button"
 
 /** Barre du haut des tableaux de bord : « Quitter » à gauche, actions à droite. */
@@ -32,11 +31,6 @@ export function BarreTableau({
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {children}
-        <form action={deconnexion}>
-          <Button size="sm" variant="ghost" type="submit" className="text-muted-foreground">
-            <LogOut /> <span className="hidden sm:inline">Déconnexion</span>
-          </Button>
-        </form>
       </div>
     </div>
   )

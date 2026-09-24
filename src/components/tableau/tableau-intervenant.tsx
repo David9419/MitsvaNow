@@ -8,7 +8,6 @@ import {
   Hourglass,
   Inbox,
   PlayCircle,
-  ShieldAlert,
   Sparkles,
   TrendingUp,
   type LucideIcon,
@@ -103,7 +102,6 @@ export function TableauIntervenant({
   const moi = donnees.intervenant!
   const espace = ESPACES.find((e) => e.slug === moi.espace_slug) ?? ESPACES[1]
   const config = CONFIG[moi.espace_slug] ?? CONFIG.bahourim
-  const valide = moi.validation === "valide"
   const loc = useLocalisation({ suivre: moi.disponible })
 
   // Fenêtre de localisation : ouverte d'office tant qu'aucune position n'est enregistrée
@@ -328,24 +326,10 @@ export function TableauIntervenant({
         badges={
           <>
             <PastilleEnTete>{libelleType(moi.type)}</PastilleEnTete>
-            <PastilleEnTete>
-              {valide ? "✓ Profil validé" : moi.validation === "refuse" ? "Profil refusé" : "⏳ En attente de validation"}
-            </PastilleEnTete>
             <PastilleEnTete>{moi.disponible ? "● En activité" : "❚❚ En pause"}</PastilleEnTete>
           </>
         }
       />
-
-      {!valide && (
-        <div className="flex animate-in fade-in items-start gap-3 rounded-2xl border border-accent/50 bg-accent/10 p-4 text-sm duration-700">
-          <ShieldAlert className="mt-0.5 size-5 shrink-0 text-accent-foreground dark:text-accent" />
-          <p>
-            <strong>Votre profil est en cours de validation.</strong> Vous pouvez déjà
-            régler votre zone et vos services ; vous recevrez des demandes dès que
-            notre équipe aura validé votre profil.
-          </p>
-        </div>
-      )}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <CarteStat icon={Inbox} label="À traiter" valeur={aTraiter.length} accent="accent" detail="Propositions en attente" />

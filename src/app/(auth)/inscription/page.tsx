@@ -7,11 +7,15 @@ export const metadata: Metadata = { title: "Créer un compte — Mivtsa Now" }
 
 export default async function InscriptionPage(props: PageProps<"/inscription">) {
   const { espace, role } = await props.searchParams
-  // « Devenir intervenant » sans espace précis : on laisse choisir ; sinon « Demandeurs » par défaut
-  const espaceParDefaut = typeof espace === "string" ? espace : role === "intervenant" ? undefined : "demandeurs"
+  // Depuis le bouton d'un espace : l'espace est déjà choisi.
+  // « Devenir intervenant » : on choisit parmi les 4 espaces d'intervenants.
+  // Sinon (bouton « S'inscrire ») : on choisit parmi les 5 espaces.
   return (
     <AuthShell>
-      <InscriptionForm espaceInitial={espaceParDefaut} />
+      <InscriptionForm
+        espaceFixe={typeof espace === "string" ? espace : undefined}
+        choix={role === "intervenant" ? "intervenants" : "tous"}
+      />
     </AuthShell>
   )
 }
