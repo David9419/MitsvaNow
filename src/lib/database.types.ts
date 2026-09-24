@@ -343,6 +343,7 @@ export type Database = {
           p_lng: number
           p_message?: string
           p_service: string
+          p_telephone: string
         }
         Returns: string
       }

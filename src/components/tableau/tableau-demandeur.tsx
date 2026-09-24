@@ -36,6 +36,7 @@ export function TableauDemandeur({
   initial,
   services,
   positionInitiale,
+  telephone,
   estIntervenant = false,
 }: {
   utilisateurId: string
@@ -43,6 +44,8 @@ export function TableauDemandeur({
   initial: DemandeDemandeur[]
   services: ServiceDisponible[]
   positionInitiale: PositionEnregistree
+  /** Numéro du compte, proposé par défaut dans le formulaire */
+  telephone: string
   estIntervenant?: boolean
 }) {
   const [demandes, setDemandes] = useState(initial)
@@ -102,11 +105,19 @@ export function TableauDemandeur({
 
   useTempsReel("demandeur_id", utilisateurId, charger)
 
-  const envoyer = async (f: { service: string; lat: number; lng: number; adresse: string | null; message: string }) => {
+  const envoyer = async (f: {
+    service: string
+    lat: number
+    lng: number
+    adresse: string | null
+    telephone: string
+    message: string
+  }) => {
     const { error } = await supabase.rpc("creer_demande", {
       p_service: f.service,
       p_lat: f.lat,
       p_lng: f.lng,
+      p_telephone: f.telephone,
       p_adresse: f.adresse ?? undefined,
       p_message: f.message || undefined,
     })
@@ -208,8 +219,14 @@ export function TableauDemandeur({
 
       <div className="grid items-start gap-6 lg:grid-cols-3">
         <section id="nouvelle" className="scroll-mt-24 lg:col-span-2">
-          <CarteWidget icon={Plus} titre="Nouvelle demande" sousTitre="En 4 petites étapes" delai={150}>
-            <FormulaireDemande services={services} lieu={lieu} onModifierLieu={() => setFenetre(true)} onEnvoyer={envoyer} />
+          <CarteWidget icon={Plus} titre="Nouvelle demande" sousTitre="En 5 petites étapes" delai={150}>
+            <FormulaireDemande
+              services={services}
+              lieu={lieu}
+              telephoneParDefaut={telephone}
+              onModifierLieu={() => setFenetre(true)}
+              onEnvoyer={envoyer}
+            />
           </CarteWidget>
         </section>
 

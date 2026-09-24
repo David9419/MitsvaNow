@@ -17,6 +17,6 @@ export default async function AccueilPage() {
     }
   }
 
-  const { demandes, services, position } = await chargerTableauDemandeur(supabase)
-  return <TableauDemandeur utilisateurId={user.id} prenom={prenom} initial={demandes} services={services} positionInitiale={position} />
+  const { demandes, services, position, telephone } = await chargerTableauDemandeur(supabase)
+  return <TableauDemandeur utilisateurId={user.id} prenom={prenom} initial={demandes} services={services} positionInitiale={position} telephone={telephone} />
 }

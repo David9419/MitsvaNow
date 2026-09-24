@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Mes demandes — Mivtsa Now" }
 /** Les demandes personnelles (utile aux intervenants qui ont eux-mêmes un besoin). */
 export default async function MesDemandesPage() {
   const { supabase, user, prenom, estIntervenant } = await chargerSession()
-  const { demandes, services, position } = await chargerTableauDemandeur(supabase)
+  const { demandes, services, position, telephone } = await chargerTableauDemandeur(supabase)
   return (
     <TableauDemandeur
       utilisateurId={user.id}
@@ -16,6 +16,7 @@ export default async function MesDemandesPage() {
       initial={demandes}
       services={services}
       positionInitiale={position}
+      telephone={telephone}
       estIntervenant={estIntervenant}
     />
   )

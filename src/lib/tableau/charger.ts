@@ -33,10 +33,14 @@ export async function chargerTableauIntervenant(supabase: Awaited<ReturnType<typ
 }
 
 export async function chargerTableauDemandeur(supabase: Awaited<ReturnType<typeof createClient>>) {
-  const [{ data }, { data: services }, { data: position }] = await Promise.all([
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  const [{ data }, { data: services }, { data: position }, { data: profil }] = await Promise.all([
     supabase.rpc("tableau_demandeur"),
     supabase.from("services").select("id, nom, ordre, espaces(slug)").eq("actif", true).order("ordre"),
     supabase.rpc("ma_position"),
+    supabase.from("profiles").select("telephone").eq("id", user?.id ?? "").maybeSingle(),
   ])
   return {
     demandes: ((data as unknown as { demandes: DemandeDemandeur[] } | null)?.demandes ?? []),
@@ -46,5 +50,6 @@ export async function chargerTableauDemandeur(supabase: Awaited<ReturnType<typeo
       espace_slug: s.espaces?.slug ?? "",
     })),
     position: (position as unknown as PositionEnregistree) ?? null,
+    telephone: profil?.telephone ?? "",
   }
 }

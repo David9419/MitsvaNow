@@ -1,11 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Loader2, LocateFixed, MapPin, Pencil, Search, Send } from "lucide-react"
+import { Check, Loader2, LocateFixed, MapPin, Pencil, Phone, Search, Send } from "lucide-react"
 
 import type { LieuValide } from "@/components/tableau/fenetre-localisation"
 import { RechercheAdresse } from "@/components/tableau/recherche-adresse"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { ESPACES_SERVICES } from "@/lib/espaces"
 import type { Suggestion } from "@/lib/tableau/adresses"
 import { cn } from "@/lib/utils"
@@ -29,35 +30,53 @@ function Etape({ n, titre, fait }: { n: number; titre: string; fait: boolean }) 
   )
 }
 
-/** Formulaire en 4 étapes : espace → service → lieu → message. */
+/** Formulaire en 5 étapes : espace → service → lieu → téléphone → message. */
 export function FormulaireDemande({
   services,
   lieu: maPosition,
+  telephoneParDefaut,
   onModifierLieu,
   onEnvoyer,
 }: {
   services: ServiceDisponible[]
   /** Position enregistrée de la personne */
   lieu: LieuValide | null
+  telephoneParDefaut: string
   onModifierLieu: () => void
-  onEnvoyer: (d: { service: string; lat: number; lng: number; adresse: string | null; message: string }) => Promise<boolean>
+  onEnvoyer: (d: {
+    service: string
+    lat: number
+    lng: number
+    adresse: string | null
+    telephone: string
+    message: string
+  }) => Promise<boolean>
 }) {
   const [espace, setEspace] = useState<string>("")
   const [service, setService] = useState<string>("")
   const [mode, setMode] = useState<"gps" | "adresse">("gps")
   const [choisie, setChoisie] = useState<Suggestion | null>(null)
+  const [telephone, setTelephone] = useState(telephoneParDefaut)
   const [message, setMessage] = useState("")
   const [envoi, setEnvoi] = useState(false)
 
   const servicesEspace = services.filter((s) => s.espace_slug === espace)
   const lieu =
     mode === "gps" ? maPosition : choisie && { lat: choisie.lat, lng: choisie.lng, adresse: choisie.libelle }
-  const pret = Boolean(service && lieu)
+  const telephoneValide = /^[+0-9 ().-]{8,20}$/.test(telephone.trim())
+  const pret = Boolean(service && lieu && telephoneValide)
 
   const envoyer = async () => {
     if (!lieu || !service) return
     setEnvoi(true)
-    const ok = await onEnvoyer({ service, lat: lieu.lat, lng: lieu.lng, adresse: lieu.adresse, message })
+    const ok = await onEnvoyer({
+      service,
+      lat: lieu.lat,
+      lng: lieu.lng,
+      adresse: lieu.adresse,
+      telephone: telephone.trim(),
+      message,
+    })
     setEnvoi(false)
     if (ok) {
       setService("")
@@ -173,10 +192,35 @@ export function FormulaireDemande({
         </div>
       )}
 
-      {/* 4. Message + envoi */}
+      {/* 4. Téléphone */}
       {service && lieu && (
         <div className="animate-in fade-in slide-in-from-top-2 duration-500">
-          <Etape n={4} titre="Un mot pour l'intervenant (facultatif)" fait={message.length > 0} />
+          <Etape n={4} titre="Votre numéro de téléphone" fait={telephoneValide} />
+          <div className="relative">
+            <Phone className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              value={telephone}
+              onChange={(e) => setTelephone(e.target.value)}
+              placeholder="06 12 34 56 78"
+              aria-invalid={telephone.length > 0 && !telephoneValide}
+              className="h-12 bg-card pl-10"
+            />
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            {telephone.length > 0 && !telephoneValide
+              ? "Ce numéro n'a pas l'air valide."
+              : "L'intervenant pourra vous appeler directement, une fois la demande acceptée."}
+          </p>
+        </div>
+      )}
+
+      {/* 5. Message + envoi */}
+      {service && lieu && (
+        <div className="animate-in fade-in slide-in-from-top-2 duration-500">
+          <Etape n={5} titre="Un mot pour l'intervenant (facultatif)" fait={message.length > 0} />
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
