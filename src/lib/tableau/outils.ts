@@ -40,9 +40,16 @@ export const STATUTS: Record<
   annulee: { label: "Annulée", icon: CircleX, classe: "bg-muted text-muted-foreground ring-border" },
 }
 
-/** Lien d'itinéraire (Google Maps ou Waze sur téléphone) */
-export function lienItineraire(lat: number, lng: number) {
-  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
+/**
+ * Lien d'itinéraire vers une adresse : Plans sur iPhone / iPad / Mac,
+ * Google Maps ailleurs.
+ */
+export function lienItineraire(lat: number | null, lng: number | null, adresse?: string | null) {
+  const apple = typeof navigator !== "undefined" && /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)
+  const destination = lat != null && lng != null ? `${lat},${lng}` : encodeURIComponent(adresse ?? "")
+  return apple
+    ? `https://maps.apple.com/?daddr=${destination}&dirflg=d`
+    : `https://www.google.com/maps/dir/?api=1&destination=${destination}`
 }
 
 export function debutDeSemaine(date = new Date()) {

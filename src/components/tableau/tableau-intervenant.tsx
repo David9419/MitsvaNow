@@ -4,7 +4,6 @@ import Link from "next/link"
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { toast } from "sonner"
 import {
-  BellRing,
   CheckCircle2,
   Hourglass,
   Inbox,
@@ -15,6 +14,7 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
+import { AlerteDemande } from "@/components/tableau/alerte-demande"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { CarteDemandeIntervenant } from "@/components/tableau/carte-demande-intervenant"
 import { CarteLocalisation } from "@/components/tableau/carte-disponibilite"
@@ -34,7 +34,12 @@ import type { Database } from "@/lib/database.types"
 import { createClient } from "@/lib/supabase/client"
 import { ESPACES, libelleType } from "@/lib/espaces"
 import { adresseDePosition } from "@/lib/tableau/adresses"
-import { demanderPermissionNotifications, jouerSon, notifierNavigateur } from "@/lib/tableau/alertes"
+import {
+  demanderPermissionNotifications,
+  installerServiceWorker,
+  jouerSon,
+  notifierNouvelleDemande,
+} from "@/lib/tableau/alertes"
 import { debutDeSemaine, formaterDistance, messageErreur } from "@/lib/tableau/outils"
 import type { DonneesIntervenant } from "@/lib/tableau/types"
 import { cn } from "@/lib/utils"
@@ -90,6 +95,10 @@ export function TableauIntervenant({
   const [onglet, setOnglet] = useState<Onglet>("a-traiter")
   const supabase = useRef(createClient()).current
   const dejaVues = useRef(new Set(initial.demandes.filter((d) => d.statut === "en_attente").map((d) => d.id)))
+  // Demandes à afficher dans le message « Nouvelle demande » (les plus anciennes d'abord)
+  const [alertes, setAlertes] = useState<string[]>(() =>
+    initial.demandes.filter((d) => d.statut === "en_attente").map((d) => d.id).reverse()
+  )
 
   const moi = donnees.intervenant!
   const espace = ESPACES.find((e) => e.slug === moi.espace_slug) ?? ESPACES[1]
@@ -116,12 +125,18 @@ export function TableauIntervenant({
     nouvelles.forEach((x) => {
       dejaVues.current.add(x.id)
       jouerSon()
-      toast.success(`Nouvelle demande : ${x.service}`, {
-        description: `${x.demandeur_prenom} à ${formaterDistance(x.distance_m)} de vous`,
-        icon: <BellRing className="size-4" />,
-      })
-      notifierNavigateur("Nouvelle demande Mivtsa Now", `${x.service} — à ${formaterDistance(x.distance_m)}`)
+      // Notification du système (utile quand l'onglet est en arrière-plan)
+      if (document.visibilityState !== "visible") {
+        notifierNouvelleDemande({
+          id: x.id,
+          service: x.service,
+          nom: `${x.demandeur_prenom} ${x.demandeur_nom ?? ""}`.trim(),
+          adresse: x.adresse,
+          distance: formaterDistance(x.distance_m),
+        })
+      }
     })
+    if (nouvelles.length) setAlertes((a) => [...a, ...nouvelles.map((x) => x.id)])
     setDonnees(d)
   }, [supabase])
 
@@ -175,19 +190,45 @@ export function TableauIntervenant({
     }
   }
 
-  const repondre = async (id: string, accepter: boolean) => {
+  const repondre = useCallback(async (id: string, accepter: boolean) => {
+    setAlertes((a) => a.filter((x) => x !== id))
     const { error } = await supabase.rpc("repondre_demande", { p_demande: id, p_accepter: accepter })
     if (error) toast.error(messageErreur(error))
     else {
       toast.success(accepter ? "Demande acceptée !" : "Demande refusée", {
         description: accepter
-          ? "L'adresse et le téléphone sont maintenant affichés."
+          ? "Le téléphone est maintenant affiché. Bonne mitsva !"
           : "Elle a été proposée à l'intervenant suivant.",
       })
       if (accepter) setOnglet("en-cours")
     }
     await charger()
-  }
+  }, [supabase, charger])
+
+  // Service worker + réponses données depuis la notification du système
+  useEffect(() => {
+    installerServiceWorker()
+    const auMessage = (e: MessageEvent) => {
+      const m = e.data as { type?: string; demande?: string; reponse?: string }
+      if (m?.type !== "reponse-demande" || !m.demande) return
+      if (m.reponse === "accepter") repondre(m.demande, true)
+      else if (m.reponse === "refuser") repondre(m.demande, false)
+      else setOnglet("a-traiter")
+    }
+    navigator.serviceWorker?.addEventListener("message", auMessage)
+
+    // Page ouverte depuis la notification (?demande=…&reponse=…)
+    const params = new URLSearchParams(window.location.search)
+    const demande = params.get("demande")
+    const reponse = params.get("reponse")
+    if (demande && (reponse === "accepter" || reponse === "refuser")) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- réponse unique venant de la notification
+      repondre(demande, reponse === "accepter")
+    }
+    if (demande) window.history.replaceState(null, "", "/accueil")
+
+    return () => navigator.serviceWorker?.removeEventListener("message", auMessage)
+  }, [repondre])
 
   const avancer = async (id: string) => {
     const { data, error } = await supabase.rpc("avancer_demande", { p_demande: id })
@@ -252,6 +293,20 @@ export function TableauIntervenant({
         onValider={enregistrerLieu}
         texte="Pour recevoir les demandes des personnes proches de vous, Mivtsa Now a besoin de savoir où vous êtes."
       />
+
+      {(() => {
+        const enAttente = alertes
+          .map((id) => donnees.demandes.find((x) => x.id === id && x.statut === "en_attente"))
+          .filter((x): x is NonNullable<typeof x> => Boolean(x))
+        return enAttente[0] && !fenetre ? (
+          <AlerteDemande
+            demande={enAttente[0]}
+            restantes={enAttente.length - 1}
+            onRepondre={repondre}
+            onFermer={() => setAlertes((a) => a.filter((x) => x !== enAttente[0].id))}
+          />
+        ) : null
+      })()}
 
       <BarreTableau icon={espace.icon} espace={`Espace ${espace.nom}`}>
         {interrupteur}

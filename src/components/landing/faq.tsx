@@ -24,7 +24,7 @@ const questions = [
   },
   {
     q: "Ma position est-elle partagée avec tout le monde ?",
-    r: "Non. Votre position sert uniquement à trouver l'intervenant le plus proche. Seul l'intervenant qui accepte votre demande voit votre adresse.",
+    r: "Non. Votre position sert uniquement à trouver l'intervenant le plus proche. Seul l'intervenant à qui votre demande est proposée voit votre nom et votre adresse, et votre téléphone seulement s'il accepte.",
   },
   {
     q: "Que se passe-t-il si personne n'est disponible ?",

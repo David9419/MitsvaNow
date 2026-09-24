@@ -1,13 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { useActionState, useState } from "react"
-import { Check, Loader2, Mail, MailCheck, Phone, User } from "lucide-react"
+import { startTransition, useActionState, useState } from "react"
+import { Check, Keyboard, Loader2, LocateFixed, Mail, MailCheck, MapPin, Phone, User } from "lucide-react"
 
 import { inscription } from "@/app/(auth)/actions"
 import { Champ, ChampMotDePasse, MessageErreur } from "@/components/auth/champ"
+import { RechercheAdresse } from "@/components/tableau/recherche-adresse"
 import { Button } from "@/components/ui/button"
 import { ESPACES, trouverEspace } from "@/lib/espaces"
+import { adresseDePosition } from "@/lib/tableau/adresses"
 import { cn } from "@/lib/utils"
 
 export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
@@ -17,6 +19,46 @@ export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
 
   const espace = trouverEspace(espaceSlug)
   const intervenant = espace?.role === "intervenant"
+
+  // ---------- Localisation pendant l'inscription ----------
+  type Lieu = { lat: number; lng: number; adresse: string | null }
+  const [lieu, setLieu] = useState<Lieu | null>(null)
+  const [etatLoc, setEtatLoc] = useState<"attente" | "recherche" | "refusee" | "saisie">("attente")
+
+  const localiser = () =>
+    new Promise<Lieu | null>((resolve) => {
+      if (!navigator.geolocation) {
+        setEtatLoc("refusee")
+        return resolve(null)
+      }
+      setEtatLoc("recherche")
+      navigator.geolocation.getCurrentPosition(
+        async (p) => {
+          const l = { lat: p.coords.latitude, lng: p.coords.longitude, adresse: await adresseDePosition(p.coords.latitude, p.coords.longitude) }
+          setLieu(l)
+          setEtatLoc("attente")
+          resolve(l)
+        },
+        () => {
+          setEtatLoc("refusee")
+          resolve(null)
+        },
+        { enableHighAccuracy: true, timeout: 15000 }
+      )
+    })
+
+  // À l'envoi : si la position n'est pas encore connue, on la demande d'abord
+  const envoyer = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formulaire = e.currentTarget
+    let l = lieu
+    if (!l && etatLoc !== "refusee" && etatLoc !== "saisie") l = await localiser()
+    const donnees = new FormData(formulaire)
+    donnees.set("lat", l ? String(l.lat) : "")
+    donnees.set("lng", l ? String(l.lng) : "")
+    donnees.set("adresse", l?.adresse ?? "")
+    startTransition(() => action(donnees))
+  }
   // Un seul rôle possible dans l'espace : on le choisit automatiquement
   const typeChoisi = espace?.types.length === 1 ? espace.types[0].valeur : type
 
@@ -46,7 +88,7 @@ export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
         </p>
       </div>
 
-      <form action={action} className="flex flex-col gap-6">
+      <form onSubmit={envoyer} className="flex flex-col gap-6">
         <input type="hidden" name="espace" value={espaceSlug} />
         <input type="hidden" name="type_intervenant" value={intervenant ? typeChoisi : ""} />
 
@@ -146,12 +188,60 @@ export function InscriptionForm({ espaceInitial }: { espaceInitial?: string }) {
           <ChampMotDePasse autoComplete="new-password" aide="8 caractères minimum." />
         </div>
 
+        {/* 3. La localisation */}
+        <div role="group" className="flex flex-col gap-3">
+          <p className="text-sm font-semibold">3. Votre position</p>
+          {lieu ? (
+            <div className="flex animate-in fade-in items-center justify-between gap-3 rounded-xl border border-success/40 bg-success/10 p-3 text-sm">
+              <span className="flex items-center gap-3">
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-success text-success-foreground">
+                  <Check className="size-4" />
+                </span>
+                <span>
+                  <span className="block font-semibold">Localisation activée</span>
+                  <span className="text-muted-foreground">{lieu.adresse ?? "Position trouvée"}</span>
+                </span>
+              </span>
+              <Button type="button" size="sm" variant="ghost" onClick={() => { setLieu(null); setEtatLoc("saisie") }}>
+                Modifier
+              </Button>
+            </div>
+          ) : etatLoc === "saisie" ? (
+            <div className="animate-in fade-in flex flex-col gap-2">
+              <RechercheAdresse onChoisir={(s) => setLieu({ lat: s.lat, lng: s.lng, adresse: s.libelle })} />
+              <button type="button" onClick={localiser} className="self-start text-xs text-primary hover:underline">
+                Utiliser plutôt la localisation automatique
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2 rounded-xl border border-dashed bg-card p-4">
+              <p className="flex items-start gap-2 text-sm text-muted-foreground">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
+                {etatLoc === "refusee"
+                  ? "La localisation automatique n'est pas autorisée. Tapez votre adresse, ou continuez : vous pourrez l'indiquer plus tard."
+                  : intervenant
+                    ? "Pour recevoir les demandes des personnes proches de vous."
+                    : "Pour trouver l'intervenant le plus proche de chez vous."}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" size="sm" onClick={localiser} disabled={etatLoc === "recherche"}>
+                  {etatLoc === "recherche" ? <Loader2 className="animate-spin" /> : <LocateFixed />}
+                  {etatLoc === "recherche" ? "Localisation…" : "Activer ma localisation"}
+                </Button>
+                <Button type="button" size="sm" variant="ghost" onClick={() => setEtatLoc("saisie")}>
+                  <Keyboard /> Taper mon adresse
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
         <MessageErreur message={etat?.erreur} />
 
-        <Button type="submit" size="lg" disabled={enCours} className="h-12 text-base shadow-lg shadow-primary/25">
-          {enCours ? (
+        <Button type="submit" size="lg" disabled={enCours || etatLoc === "recherche"} className="h-12 text-base shadow-lg shadow-primary/25">
+          {enCours || etatLoc === "recherche" ? (
             <>
-              <Loader2 className="animate-spin" /> Création du compte…
+              <Loader2 className="animate-spin" /> {etatLoc === "recherche" ? "Localisation…" : "Création du compte…"}
             </>
           ) : (
             "Créer mon compte"

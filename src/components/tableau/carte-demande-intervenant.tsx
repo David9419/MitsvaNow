@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Clock, Loader2, MapPin, MessageSquareQuote, Navigation, Phone, Play, X } from "lucide-react"
+import { Check, Clock, Loader2, MapPin, MessageSquareQuote, Navigation, Phone, Play, Ruler, User, X } from "lucide-react"
 
 import { BadgeStatut } from "@/components/tableau/badge-statut"
 import { Button } from "@/components/ui/button"
@@ -30,6 +30,8 @@ export function CarteDemandeIntervenant({
     }
   }
   const nouvelle = d.statut === "en_attente"
+  const active = d.statut !== "terminee" && d.statut !== "annulee"
+  const itineraire = d.lat != null || d.adresse ? lienItineraire(d.lat, d.lng, d.adresse) : null
 
   return (
     <article
@@ -43,23 +45,53 @@ export function CarteDemandeIntervenant({
         <span className="absolute top-0 left-0 h-1 w-full animate-pulse bg-gradient-to-r from-accent via-primary to-accent" />
       )}
 
+      {/* Service + statut */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="font-heading text-base font-bold">{d.service}</h3>
-          <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">
-              {d.demandeur_prenom} {d.demandeur_nom}
-            </span>
-            <span className="flex items-center gap-1">
-              <Clock className="size-3.5" /> {ilYa(d.created_at)}
-            </span>
-            <span className="flex items-center gap-1">
-              <MapPin className="size-3.5" /> à {formaterDistance(d.distance_m)}
-            </span>
-          </p>
+          <p className="text-xs font-semibold tracking-wide text-primary uppercase">Service demandé</p>
+          <h3 className="font-heading text-lg font-bold">{d.service}</h3>
         </div>
         <BadgeStatut statut={d.statut} />
       </div>
+
+      {/* Qui, où, quand */}
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <p className="flex items-center gap-2 text-sm">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <User className="size-4" />
+          </span>
+          <span className="font-semibold">
+            {d.demandeur_prenom} {d.demandeur_nom}
+          </span>
+        </p>
+        <p className="flex items-center gap-3 text-sm text-muted-foreground sm:justify-end">
+          <span className="flex items-center gap-1">
+            <Ruler className="size-3.5" /> à {formaterDistance(d.distance_m)}
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="size-3.5" /> {ilYa(d.created_at)}
+          </span>
+        </p>
+      </div>
+
+      {d.adresse &&
+        (itineraire ? (
+          <a
+            href={itineraire}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 flex items-center gap-3 rounded-xl border p-3 text-sm transition-colors hover:border-primary/50 hover:bg-primary/5"
+            title="Ouvrir l'itinéraire"
+          >
+            <MapPin className="size-5 shrink-0 text-primary" />
+            <span className="flex-1 font-medium underline-offset-4 hover:underline">{d.adresse}</span>
+            <Navigation className="size-4 shrink-0 text-primary" />
+          </a>
+        ) : (
+          <p className="mt-3 flex items-center gap-3 rounded-xl border p-3 text-sm">
+            <MapPin className="size-5 shrink-0 text-primary" /> {d.adresse}
+          </p>
+        ))}
 
       {d.message && (
         <p className="mt-3 flex gap-2 rounded-xl bg-muted/60 p-3 text-sm">
@@ -67,15 +99,8 @@ export function CarteDemandeIntervenant({
           {d.message}
         </p>
       )}
-      {d.adresse && (
-        <p className="mt-3 flex items-center gap-2 text-sm">
-          <MapPin className="size-4 shrink-0 text-primary" /> {d.adresse}
-        </p>
-      )}
       {nouvelle && (
-        <p className="mt-3 text-xs text-muted-foreground">
-          L&apos;adresse et le téléphone s&apos;afficheront quand vous aurez accepté.
-        </p>
+        <p className="mt-3 text-xs text-muted-foreground">Le téléphone s&apos;affichera quand vous aurez accepté.</p>
       )}
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -91,7 +116,7 @@ export function CarteDemandeIntervenant({
             </Button>
             <Button variant="outline" onClick={() => agir("non", () => onRepondre(d.id, false))} disabled={!!enCours}>
               {enCours === "non" ? <Loader2 className="animate-spin" /> : <X />}
-              Refuser
+              Pas disponible
             </Button>
           </>
         )}
@@ -111,23 +136,19 @@ export function CarteDemandeIntervenant({
             Mission terminée
           </Button>
         )}
-        {(d.statut === "acceptee" || d.statut === "en_cours") && (
-          <>
-            {d.demandeur_telephone && (
-              <Button asChild variant="outline">
-                <a href={`tel:${d.demandeur_telephone}`}>
-                  <Phone /> Appeler
-                </a>
-              </Button>
-            )}
-            {d.lat != null && d.lng != null && (
-              <Button asChild variant="outline">
-                <a href={lienItineraire(d.lat, d.lng)} target="_blank" rel="noreferrer">
-                  <Navigation /> Itinéraire
-                </a>
-              </Button>
-            )}
-          </>
+        {active && itineraire && (
+          <Button asChild variant="outline">
+            <a href={itineraire} target="_blank" rel="noreferrer">
+              <Navigation /> Y aller
+            </a>
+          </Button>
+        )}
+        {active && d.demandeur_telephone && (
+          <Button asChild variant="outline">
+            <a href={`tel:${d.demandeur_telephone}`}>
+              <Phone /> Appeler
+            </a>
+          </Button>
         )}
       </div>
     </article>

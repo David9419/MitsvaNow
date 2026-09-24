@@ -69,6 +69,13 @@ export async function inscription(
       return { erreur: "Précisez votre rôle : sofer, rav ou rabbanit.", champs }
   }
 
+  // Position donnée pendant l'inscription (facultative)
+  const lat = Number(formData.get("lat"))
+  const lng = Number(formData.get("lng"))
+  const positionValide =
+    formData.get("lat") !== "" && Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
+  const adresse = texte(formData, "adresse").slice(0, 300)
+
   const origine = (await headers()).get("origin") ?? "http://localhost:3000"
   const supabase = await createClient()
   // Si quelqu'un était déjà connecté, on le déconnecte avant de créer le nouveau compte
@@ -84,6 +91,7 @@ export async function inscription(
         telephone: champs.telephone,
         espace: espace.slug,
         ...(intervenant ? { type_intervenant: champs.type_intervenant } : {}),
+        ...(positionValide ? { lat, lng, adresse: adresse || null } : {}),
       },
     },
   })

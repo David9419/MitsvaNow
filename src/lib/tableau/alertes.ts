@@ -34,6 +34,54 @@ export function notifierNavigateur(titre: string, corps: string) {
   }
 }
 
+/** Installe le service worker qui gère les notifications avec boutons. */
+export async function installerServiceWorker() {
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return null
+  try {
+    return await navigator.serviceWorker.register("/sw.js")
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Notification « Nouvelle demande » avec le logo et les boutons
+ * Accepter / Pas disponible (quand le navigateur le permet).
+ */
+export async function notifierNouvelleDemande(d: {
+  id: string
+  service: string
+  nom: string
+  adresse: string | null
+  distance: string
+}) {
+  if (typeof Notification === "undefined" || Notification.permission !== "granted") return
+  const titre = `Nouvelle demande : ${d.service}`
+  const corps = `${d.nom}\n📍 ${d.adresse ?? "Adresse non précisée"} (à ${d.distance})`
+  try {
+    const reg = await navigator.serviceWorker?.getRegistration("/")
+    if (reg) {
+      await reg.showNotification(titre, {
+        body: corps,
+        icon: "/icon.png",
+        badge: "/icon.png",
+        tag: d.id,
+        requireInteraction: true,
+        data: { demande: d.id },
+        // Les boutons s'affichent sur Chrome, Edge et Android
+        actions: [
+          { action: "accepter", title: "✅ Accepter" },
+          { action: "refuser", title: "Pas disponible" },
+        ],
+      } as NotificationOptions)
+      return
+    }
+  } catch {
+    // on se rabat sur une notification simple
+  }
+  notifierNavigateur(titre, corps)
+}
+
 export async function demanderPermissionNotifications() {
   if (typeof Notification === "undefined") return "denied"
   if (Notification.permission !== "default") return Notification.permission
