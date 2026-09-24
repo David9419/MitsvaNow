@@ -199,6 +199,7 @@ export type Database = {
       }
       intervenants: {
         Row: {
+          adresse: string | null
           created_at: string
           disponible: boolean
           espace_id: string
@@ -209,6 +210,7 @@ export type Database = {
           validation: Database["public"]["Enums"]["statut_validation"]
         }
         Insert: {
+          adresse?: string | null
           created_at?: string
           disponible?: boolean
           espace_id: string
@@ -219,6 +221,7 @@ export type Database = {
           validation?: Database["public"]["Enums"]["statut_validation"]
         }
         Update: {
+          adresse?: string | null
           created_at?: string
           disponible?: boolean
           espace_id?: string
@@ -247,12 +250,14 @@ export type Database = {
       }
       profiles: {
         Row: {
+          adresse: string | null
           created_at: string
           email: string | null
           espace_id: string | null
           est_admin: boolean
           id: string
           nom: string
+          position: unknown
           prenom: string
           telephone: string | null
         }
@@ -342,8 +347,14 @@ export type Database = {
         Returns: string
       }
       est_admin: { Args: never; Returns: boolean }
+      enregistrer_ma_position: {
+        Args: { p_adresse?: string; p_lat: number; p_lng: number }
+        Returns: undefined
+      }
+      ma_position: { Args: never; Returns: Json }
       mettre_a_jour_intervenant: {
         Args: {
+          p_adresse?: string
           p_disponible?: boolean
           p_lat?: number
           p_lng?: number

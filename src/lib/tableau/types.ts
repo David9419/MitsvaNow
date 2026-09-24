@@ -31,6 +31,7 @@ export type DonneesIntervenant = {
     espace_nom: string
     lat: number | null
     lng: number | null
+    adresse: string | null
   } | null
   demandes: DemandeIntervenant[]
   services: { id: string; nom: string; propose: boolean }[]
@@ -54,3 +55,6 @@ export type DemandeDemandeur = {
   distance_m: number | null
   note: number | null
 }
+
+/** Position enregistrée dans le profil (renvoyée par ma_position). */
+export type PositionEnregistree = { lat: number; lng: number; adresse: string | null } | null
