@@ -1,13 +1,13 @@
 "use client"
 
 import Link from "next/link"
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { BellRing, CheckCircle2, History, Lightbulb, PlayCircle, Plus, Sparkles } from "lucide-react"
 
-import { BanniereLocalisation } from "@/components/tableau/banniere-localisation"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { CarteStat } from "@/components/tableau/carte-stat"
+import { FenetreLocalisation, type LieuValide } from "@/components/tableau/fenetre-localisation"
 import { EnTeteTableau, PastilleEnTete } from "@/components/tableau/en-tete-tableau"
 import { FormulaireDemande, type ServiceDisponible } from "@/components/tableau/formulaire-demande"
 import { HistoriqueDemandes } from "@/components/tableau/historique-demandes"
@@ -20,7 +20,8 @@ import { createClient } from "@/lib/supabase/client"
 import { ESPACES } from "@/lib/espaces"
 import { demanderPermissionNotifications, jouerSon, notifierNavigateur } from "@/lib/tableau/alertes"
 import { messageErreur } from "@/lib/tableau/outils"
-import type { DemandeDemandeur } from "@/lib/tableau/types"
+import { adresseDePosition } from "@/lib/tableau/adresses"
+import type { DemandeDemandeur, PositionEnregistree } from "@/lib/tableau/types"
 import { cn } from "@/lib/utils"
 
 const MESSAGES: Record<string, (d: DemandeDemandeur) => string> = {
@@ -34,12 +35,14 @@ export function TableauDemandeur({
   prenom,
   initial,
   services,
+  positionInitiale,
   estIntervenant = false,
 }: {
   utilisateurId: string
   prenom: string
   initial: DemandeDemandeur[]
   services: ServiceDisponible[]
+  positionInitiale: PositionEnregistree
   estIntervenant?: boolean
 }) {
   const [demandes, setDemandes] = useState(initial)
@@ -47,6 +50,37 @@ export function TableauDemandeur({
   const statuts = useRef(new Map(initial.map((d) => [d.id, d.statut])))
   const loc = useLocalisation()
   const espace = ESPACES[0]
+
+  // Position enregistrée dans le profil (sert pour les demandes)
+  const [lieu, setLieu] = useState<LieuValide | null>(positionInitiale)
+  const [fenetre, setFenetre] = useState(positionInitiale == null)
+
+  const enregistrerLieu = useCallback(
+    async (l: LieuValide) => {
+      const { error } = await supabase.rpc("enregistrer_ma_position", {
+        p_lat: l.lat,
+        p_lng: l.lng,
+        p_adresse: l.adresse ?? undefined,
+      })
+      if (error) {
+        toast.error(messageErreur(error))
+        throw error
+      }
+      setLieu(l)
+    },
+    [supabase]
+  )
+
+  // Localisation déjà autorisée : on met à jour la position et l'adresse en silence
+  const dejaMiseAJour = useRef(false)
+  useEffect(() => {
+    const p = loc.position
+    if (!p || dejaMiseAJour.current) return
+    dejaMiseAJour.current = true
+    adresseDePosition(p.lat, p.lng).then((adresse) => {
+      enregistrerLieu({ lat: p.lat, lng: p.lng, adresse }).then(() => setFenetre(false)).catch(() => {})
+    })
+  }, [loc.position, enregistrerLieu])
 
   const charger = useCallback(async () => {
     const { data, error } = await supabase.rpc("tableau_demandeur")
@@ -67,13 +101,6 @@ export function TableauDemandeur({
   }, [supabase])
 
   useTempsReel("demandeur_id", utilisateurId, charger)
-
-  const activerLocalisation = async () => {
-    const p = await loc.activer()
-    if (p) toast.success("Localisation activée", { description: "Nous pourrons trouver l'intervenant le plus proche." })
-    else toast.error("Localisation refusée", { description: "Vous pouvez aussi taper votre adresse." })
-    return p
-  }
 
   const envoyer = async (f: { service: string; lat: number; lng: number; adresse: string | null; message: string }) => {
     const { error } = await supabase.rpc("creer_demande", {
@@ -114,10 +141,16 @@ export function TableauDemandeur({
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6">
-      <BanniereLocalisation
-        etat={loc.etat}
-        onActiver={activerLocalisation}
-        texte="Pour trouver l'intervenant le plus proche de vous, Mivtsa Now a besoin de votre position."
+      <FenetreLocalisation
+        ouverte={fenetre}
+        onFermer={() => setFenetre(false)}
+        activerGps={loc.activer}
+        onValider={async (l) => {
+          dejaMiseAJour.current = true
+          await enregistrerLieu(l)
+          toast.success("Position enregistrée", { description: l.adresse ?? undefined })
+        }}
+        texte="Pour trouver l'intervenant le plus proche de chez vous, Mivtsa Now a besoin de savoir où vous êtes."
       />
 
       <BarreTableau icon={espace.icon} espace={estIntervenant ? "Mes demandes personnelles" : "Espace Demandeurs"}>
@@ -133,7 +166,7 @@ export function TableauDemandeur({
         theme="bg-gradient-to-br from-primary via-primary to-primary/70 text-primary-foreground"
         surtitre={estIntervenant ? "Mes demandes personnelles" : "Espace Demandeurs"}
         titre={`Chalom ${prenom}, de quoi avez-vous besoin ?`}
-        texte="Téfilines, 'hallot, cachérisation, un cours… Faites votre demande : l'intervenant le plus proche vient vous aider."
+        texte="Téfilines, mezouza, 'hallot, bar-mitsva, cacheroute… Faites votre demande : l'intervenant le plus proche vient vous aider."
         badges={
           <>
             <PastilleEnTete>✓ Gratuit</PastilleEnTete>
@@ -176,13 +209,7 @@ export function TableauDemandeur({
       <div className="grid items-start gap-6 lg:grid-cols-3">
         <section id="nouvelle" className="scroll-mt-24 lg:col-span-2">
           <CarteWidget icon={Plus} titre="Nouvelle demande" sousTitre="En 4 petites étapes" delai={150}>
-            <FormulaireDemande
-              services={services}
-              position={loc.position}
-              etatLocalisation={loc.etat}
-              onActiverLocalisation={activerLocalisation}
-              onEnvoyer={envoyer}
-            />
+            <FormulaireDemande services={services} lieu={lieu} onModifierLieu={() => setFenetre(true)} onEnvoyer={envoyer} />
           </CarteWidget>
         </section>
 

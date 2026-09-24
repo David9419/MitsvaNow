@@ -86,7 +86,7 @@ export function WidgetBahourim({ demandes }: { demandes: DemandeIntervenant[] })
       <CarteWidget icon={Backpack} titre="Mon sac de mivtsa" sousTitre="Tout est prêt avant de partir ?" delai={300}>
         <Checklist
           cle="mn-sac-mivtsa"
-          elements={["Téfilines", "Kippa", "Feuillets du Chéma", "Siddour", "Boîte de tsédaka", "Téléphone chargé"]}
+          elements={["Téfilines", "Mezouzot et clous", "Boîtes de tsédaka", "Siddourim et livres", "Kippa", "Téléphone chargé"]}
         />
       </CarteWidget>
     </>

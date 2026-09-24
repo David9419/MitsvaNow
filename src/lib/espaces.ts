@@ -37,7 +37,7 @@ export const ESPACES: Espace[] = [
     icon: HandHelping,
     intervenants: "Pour vous qui avez un besoin",
     description:
-      "Téfilines, 'hallot, cachérisation, un cours, une question… Faites une demande : l'intervenant le plus proche vient vous aider.",
+      "Téfilines, mezouza, 'hallot, bar-mitsva, cacheroute… Faites une demande : l'intervenant le plus proche vient vous aider.",
     exemples: ["Faire une demande", "Suivi en direct", "Gratuit"],
     types: [],
   },
@@ -48,8 +48,8 @@ export const ESPACES: Espace[] = [
     icon: ScrollText,
     intervenants: "Les bahourim",
     description:
-      "Envie de mettre les téfilines ? Le bahour le plus proche vient vous les mettre.",
-    exemples: ["Téfilines", "Loulav & étrog", "Chofar"],
+      "Téfilines, mezouza, boîte de tsédaka, livres : le bahour le plus proche vient chez vous.",
+    exemples: ["Téfilines", "Mezouza", "Boîte de tsédaka", "Sefer / siddour"],
     types: [{ valeur: "bahour", label: "Bahour" }],
   },
   {
@@ -59,8 +59,8 @@ export const ESPACES: Espace[] = [
     icon: Wheat,
     intervenants: "Les femmes de l'équipe",
     description:
-      "Besoin de 'hallot pour Chabbat ? Une femme de l'équipe vient les faire avec vous ou vous les apporte.",
-    exemples: ["'Hallot", "Bougies de Chabbat", "Accompagnement"],
+      "'Hallot, bougies et horaires de Chabbat, cours, préparation de Chabbat : une femme de l'équipe vient vous aider.",
+    exemples: ["'Hallot", "Bougies & horaires", "Cours de Torah", "Préparer Chabbat"],
     types: [{ valeur: "femme", label: "Femme de l'équipe" }],
   },
   {
@@ -70,8 +70,8 @@ export const ESPACES: Espace[] = [
     icon: ShieldCheck,
     intervenants: "Sofer, rav, rabbanit",
     description:
-      "Cachériser un four, vérifier des téfilines ou poser une question de halakha.",
-    exemples: ["Cachérisation", "Vérification", "Halakha"],
+      "Cacheroute, bérakhot, aide dans une situation délicate, questions, accompagnement et mariages.",
+    exemples: ["Cacheroute", "Bérakhot", "Accompagnement", "Mariage"],
     types: [
       { valeur: "sofer", label: "Sofer" },
       { valeur: "rav", label: "Rav" },
@@ -85,8 +85,8 @@ export const ESPACES: Espace[] = [
     icon: BookOpen,
     intervenants: "Les chlou'him",
     description:
-      "Éduquer sans imposer : des cours, un accompagnement et une orientation progressive vers la Torah.",
-    exemples: ["Cours", "Accompagnement", "Orientation"],
+      "Éducation juive, bar-mitsva, paracha et visites aux personnes dans le besoin, sans jamais imposer.",
+    exemples: ["Éducation juive", "Bar-mitsva", "Paracha", "Visites"],
     types: [{ valeur: "chaliah", label: "Chaliah" }],
   },
 ]

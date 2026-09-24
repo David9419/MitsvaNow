@@ -14,7 +14,7 @@ export function WidgetEquipeFeminine({ demandes }: { demandes: DemandeIntervenan
       <CarteWidget icon={ListChecks} titre="Préparation de Chabbat" sousTitre="Pour les 'hallot et les visites" delai={200}>
         <Checklist
           cle="mn-prepa-chabbat"
-          elements={["Farine, levure, sucre, sel", "Pâte à 'hallot pétrie", "Bougies et allumettes", "Recette du prélèvement de la 'hala", "Sacs pour les livraisons"]}
+          elements={["Farine, levure, sucre, sel", "Pâte à 'hallot pétrie", "Bougies et allumettes", "Feuillets des horaires de Chabbat", "Sacs pour les livraisons"]}
         />
       </CarteWidget>
 

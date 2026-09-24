@@ -51,7 +51,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
               <span className="text-accent">Quelqu&apos;un arrive.</span>
             </h2>
             <p className="animate-in fade-in mt-5 text-lg opacity-85 delay-300 duration-700 fill-mode-both">
-              Téfilines, &apos;hallot, cachérisation, cours de Torah… Mivtsa Now
+              Téfilines, mezouza, &apos;hallot, bar-mitsva… Mivtsa Now
               vous met en relation avec l&apos;intervenant le plus proche.
             </p>
 

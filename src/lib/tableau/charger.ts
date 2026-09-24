@@ -4,7 +4,7 @@ import { redirect } from "next/navigation"
 
 import type { ServiceDisponible } from "@/components/tableau/formulaire-demande"
 import { createClient } from "@/lib/supabase/server"
-import type { DemandeDemandeur, DonneesIntervenant } from "@/lib/tableau/types"
+import type { DemandeDemandeur, DonneesIntervenant, PositionEnregistree } from "@/lib/tableau/types"
 
 /** Utilisateur connecté + prénom + fiche intervenant (s'il en a une). */
 export async function chargerSession() {
@@ -33,9 +33,10 @@ export async function chargerTableauIntervenant(supabase: Awaited<ReturnType<typ
 }
 
 export async function chargerTableauDemandeur(supabase: Awaited<ReturnType<typeof createClient>>) {
-  const [{ data }, { data: services }] = await Promise.all([
+  const [{ data }, { data: services }, { data: position }] = await Promise.all([
     supabase.rpc("tableau_demandeur"),
     supabase.from("services").select("id, nom, ordre, espaces(slug)").eq("actif", true).order("ordre"),
+    supabase.rpc("ma_position"),
   ])
   return {
     demandes: ((data as unknown as { demandes: DemandeDemandeur[] } | null)?.demandes ?? []),
@@ -44,5 +45,6 @@ export async function chargerTableauDemandeur(supabase: Awaited<ReturnType<typeo
       nom: s.nom,
       espace_slug: s.espaces?.slug ?? "",
     })),
+    position: (position as unknown as PositionEnregistree) ?? null,
   }
 }

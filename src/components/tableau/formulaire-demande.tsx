@@ -1,13 +1,13 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { Check, Loader2, LocateFixed, MapPin, Search, Send } from "lucide-react"
+import { useState } from "react"
+import { Check, Loader2, LocateFixed, MapPin, Pencil, Search, Send } from "lucide-react"
 
+import type { LieuValide } from "@/components/tableau/fenetre-localisation"
+import { RechercheAdresse } from "@/components/tableau/recherche-adresse"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import type { Position } from "@/hooks/use-localisation"
 import { ESPACES_SERVICES } from "@/lib/espaces"
-import { adresseDePosition, chercherAdresses, type Suggestion } from "@/lib/tableau/adresses"
+import type { Suggestion } from "@/lib/tableau/adresses"
 import { cn } from "@/lib/utils"
 
 export type ServiceDisponible = { id: string; nom: string; espace_slug: string }
@@ -32,66 +32,26 @@ function Etape({ n, titre, fait }: { n: number; titre: string; fait: boolean }) 
 /** Formulaire en 4 étapes : espace → service → lieu → message. */
 export function FormulaireDemande({
   services,
-  position,
-  etatLocalisation,
-  onActiverLocalisation,
+  lieu: maPosition,
+  onModifierLieu,
   onEnvoyer,
 }: {
   services: ServiceDisponible[]
-  position: Position | null
-  etatLocalisation: string
-  onActiverLocalisation: () => Promise<Position | null>
+  /** Position enregistrée de la personne */
+  lieu: LieuValide | null
+  onModifierLieu: () => void
   onEnvoyer: (d: { service: string; lat: number; lng: number; adresse: string | null; message: string }) => Promise<boolean>
 }) {
   const [espace, setEspace] = useState<string>("")
   const [service, setService] = useState<string>("")
   const [mode, setMode] = useState<"gps" | "adresse">("gps")
-  const [adresseGps, setAdresseGps] = useState<string | null>(null)
-  const [recherche, setRecherche] = useState("")
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [choisie, setChoisie] = useState<Suggestion | null>(null)
-  const [cherche, setCherche] = useState(false)
   const [message, setMessage] = useState("")
   const [envoi, setEnvoi] = useState(false)
 
-  // Adresse lisible de la position GPS
-  useEffect(() => {
-    if (!position) return
-    let annule = false
-    adresseDePosition(position.lat, position.lng).then((a) => !annule && setAdresseGps(a))
-    return () => {
-      annule = true
-    }
-  }, [position])
-
-  // Suggestions d'adresses pendant la saisie
-  const ctrl = useRef<AbortController | null>(null)
-  useEffect(() => {
-    if (mode !== "adresse" || recherche.trim().length < 4 || choisie?.libelle === recherche) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- on vide la liste quand la saisie est trop courte
-      setSuggestions([])
-      return
-    }
-    const t = setTimeout(async () => {
-      ctrl.current?.abort()
-      ctrl.current = new AbortController()
-      setCherche(true)
-      try {
-        setSuggestions(await chercherAdresses(recherche, ctrl.current.signal))
-      } catch {
-        // recherche annulée
-      } finally {
-        setCherche(false)
-      }
-    }, 450)
-    return () => clearTimeout(t)
-  }, [recherche, mode, choisie])
-
   const servicesEspace = services.filter((s) => s.espace_slug === espace)
   const lieu =
-    mode === "gps"
-      ? position && { lat: position.lat, lng: position.lng, adresse: adresseGps }
-      : choisie && { lat: choisie.lat, lng: choisie.lng, adresse: choisie.libelle }
+    mode === "gps" ? maPosition : choisie && { lat: choisie.lat, lng: choisie.lng, adresse: choisie.libelle }
   const pret = Boolean(service && lieu)
 
   const envoyer = async () => {
@@ -174,7 +134,7 @@ export function FormulaireDemande({
             {(
               [
                 { id: "gps", label: "Ma position", icon: LocateFixed },
-                { id: "adresse", label: "Une adresse", icon: Search },
+                { id: "adresse", label: "Une autre adresse", icon: Search },
               ] as const
             ).map((o) => (
               <button
@@ -192,51 +152,23 @@ export function FormulaireDemande({
           </div>
 
           {mode === "gps" ? (
-            position ? (
-              <div className="flex animate-in fade-in items-center gap-3 rounded-xl border border-success/40 bg-success/10 p-3 text-sm">
-                <MapPin className="size-5 shrink-0 text-success" />
-                <span>{adresseGps ?? "Position trouvée"}</span>
+            maPosition ? (
+              <div className="flex animate-in fade-in items-center justify-between gap-3 rounded-xl border border-success/40 bg-success/10 p-3 text-sm">
+                <span className="flex items-center gap-3">
+                  <MapPin className="size-5 shrink-0 text-success" />
+                  {maPosition.adresse ?? "Position enregistrée"}
+                </span>
+                <Button size="sm" variant="ghost" onClick={onModifierLieu}>
+                  <Pencil /> Modifier
+                </Button>
               </div>
             ) : (
-              <Button variant="outline" onClick={onActiverLocalisation} disabled={etatLocalisation === "demande"} className="w-full">
-                {etatLocalisation === "demande" ? <Loader2 className="animate-spin" /> : <LocateFixed />}
-                Utiliser ma position actuelle
+              <Button variant="outline" onClick={onModifierLieu} className="w-full">
+                <LocateFixed /> Me localiser
               </Button>
             )
           ) : (
-            <div className="relative">
-              <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={recherche}
-                onChange={(e) => {
-                  setRecherche(e.target.value)
-                  setChoisie(null)
-                }}
-                placeholder="Tapez votre adresse (ex. 12 rue de Rivoli, Paris)"
-                className="h-12 bg-card pl-10"
-              />
-              {cherche && <Loader2 className="absolute top-1/2 right-3.5 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
-              {suggestions.length > 0 && (
-                <ul className="absolute z-20 mt-2 w-full animate-in fade-in slide-in-from-top-1 overflow-hidden rounded-xl border bg-popover shadow-xl">
-                  {suggestions.map((s) => (
-                    <li key={`${s.lat}-${s.lng}`}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setChoisie(s)
-                          setRecherche(s.libelle)
-                          setSuggestions([])
-                        }}
-                        className="flex w-full items-start gap-2 px-4 py-3 text-left text-sm transition-colors hover:bg-muted"
-                      >
-                        <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
-                        {s.libelle}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            <RechercheAdresse onChoisir={setChoisie} />
           )}
         </div>
       )}

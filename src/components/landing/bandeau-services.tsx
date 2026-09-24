@@ -1,27 +1,31 @@
 import {
   BookOpen,
-  CookingPot,
+  Coins,
+  DoorOpen,
   Flame,
-  HeartHandshake,
-  Leaf,
-  Megaphone,
-  Scale,
+  GraduationCap,
+  HandHeart,
+  Heart,
+  Library,
   ScrollText,
   ShieldCheck,
+  Sparkles,
   Wheat,
 } from "lucide-react"
 
 const services = [
   { nom: "Téfilines", icon: ScrollText },
+  { nom: "Installation de mezouza", icon: DoorOpen },
   { nom: "'Hallot pour Chabbat", icon: Wheat },
-  { nom: "Cachérisation", icon: CookingPot },
-  { nom: "Cours de Torah", icon: BookOpen },
   { nom: "Bougies de Chabbat", icon: Flame },
-  { nom: "Vérification de téfilines", icon: ShieldCheck },
-  { nom: "Question de halakha", icon: Scale },
-  { nom: "Loulav & étrog", icon: Leaf },
-  { nom: "Chofar", icon: Megaphone },
-  { nom: "Accompagnement", icon: HeartHandshake },
+  { nom: "Vérification de la cacheroute", icon: ShieldCheck },
+  { nom: "Préparation à la bar-mitsva", icon: GraduationCap },
+  { nom: "Cours de Torah", icon: BookOpen },
+  { nom: "Boîte de tsédaka", icon: Coins },
+  { nom: "Livraison de siddour", icon: Library },
+  { nom: "Bérakhot", icon: Sparkles },
+  { nom: "Mariage", icon: Heart },
+  { nom: "Visites aux personnes seules", icon: HandHeart },
 ]
 
 /** Bandeau des services qui défile à l'infini (deux copies identiques côte à côte). */

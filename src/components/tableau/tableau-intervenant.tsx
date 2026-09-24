@@ -15,12 +15,12 @@ import {
   type LucideIcon,
 } from "lucide-react"
 
-import { BanniereLocalisation } from "@/components/tableau/banniere-localisation"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { CarteDemandeIntervenant } from "@/components/tableau/carte-demande-intervenant"
 import { CarteLocalisation } from "@/components/tableau/carte-disponibilite"
 import { CarteServices } from "@/components/tableau/carte-services"
 import { CarteStat } from "@/components/tableau/carte-stat"
+import { FenetreLocalisation, type LieuValide } from "@/components/tableau/fenetre-localisation"
 import { EnTeteTableau, PastilleEnTete } from "@/components/tableau/en-tete-tableau"
 import { WidgetBahourim } from "@/components/tableau/widgets/widget-bahourim"
 import { WidgetEquipeFeminine } from "@/components/tableau/widgets/widget-equipe-feminine"
@@ -33,6 +33,7 @@ import { useTempsReel } from "@/hooks/use-temps-reel"
 import type { Database } from "@/lib/database.types"
 import { createClient } from "@/lib/supabase/client"
 import { ESPACES, libelleType } from "@/lib/espaces"
+import { adresseDePosition } from "@/lib/tableau/adresses"
 import { demanderPermissionNotifications, jouerSon, notifierNavigateur } from "@/lib/tableau/alertes"
 import { debutDeSemaine, formaterDistance, messageErreur } from "@/lib/tableau/outils"
 import type { DonneesIntervenant } from "@/lib/tableau/types"
@@ -51,25 +52,25 @@ const CONFIG: Record<
   bahourim: {
     theme: "bg-gradient-to-br from-primary via-primary to-primary/75 text-primary-foreground",
     accroche: (p) => `Prêt pour le mivtsa, ${p} ?`,
-    texte: "Activez votre disponibilité : les personnes proches qui veulent mettre les téfilines vous seront proposées en direct.",
+    texte: "Téfilines, mezouza, boîtes de tsédaka, livres : les demandes des personnes proches vous sont proposées en direct.",
     terminees: { label: "Mitsvot accomplies", icon: Sparkles },
   },
   "equipe-feminine": {
     theme: "bg-gradient-to-br from-accent via-accent to-accent/70 text-accent-foreground",
     accroche: (p) => `Bonjour ${p}, prête à aider ?`,
-    texte: "'Hallot, bougies, accompagnement : recevez les demandes des femmes et des familles près de chez vous.",
+    texte: "'Hallot, bougies et horaires de Chabbat, cours, préparation de Chabbat : recevez les demandes près de chez vous.",
     terminees: { label: "Visites réalisées", icon: Sparkles },
   },
   "sofer-rav-rabbanit": {
     theme: "bg-gradient-to-br from-success via-success to-success/75 text-success-foreground",
     accroche: (p) => `Bienvenue, ${p}`,
-    texte: "Cachérisations, vérifications, questions de halakha : gérez vos consultations et vos rendez-vous.",
+    texte: "Cacheroute, bérakhot, questions, accompagnement et mariages : gérez vos consultations et vos rendez-vous.",
     terminees: { label: "Consultations faites", icon: CheckCircle2 },
   },
   chaliah: {
     theme: "bg-gradient-to-br from-foreground via-foreground to-foreground/85 text-background",
     accroche: (p) => `Chalom ${p}`,
-    texte: "Cours, accompagnement, orientation : suivez les personnes que vous guidez, à leur rythme.",
+    texte: "Éducation juive, bar-mitsva, paracha, visites : suivez les personnes que vous guidez, à leur rythme.",
     terminees: { label: "Séances données", icon: CheckCircle2 },
   },
 }
@@ -95,6 +96,16 @@ export function TableauIntervenant({
   const config = CONFIG[moi.espace_slug] ?? CONFIG.bahourim
   const valide = moi.validation === "valide"
   const loc = useLocalisation({ suivre: moi.disponible })
+
+  // Fenêtre de localisation : ouverte d'office tant qu'aucune position n'est enregistrée
+  const [fenetre, setFenetre] = useState(initial.intervenant?.lat == null)
+  const ouvertureAuto = useRef(initial.intervenant?.lat == null)
+  useEffect(() => {
+    if (moi.lat != null && ouvertureAuto.current) {
+      ouvertureAuto.current = false
+      setFenetre(false)
+    }
+  }, [moi.lat])
 
   // ---------- Chargement + alertes pour les nouvelles demandes ----------
   const charger = useCallback(async () => {
@@ -134,25 +145,26 @@ export function TableauIntervenant({
     const d = dernierEnvoi.current
     if (d && distanceMetres(d, p) < 150 && Date.now() - d.t < 120000) return
     dernierEnvoi.current = { lat: p.lat, lng: p.lng, t: Date.now() }
-    appeler({ p_lat: p.lat, p_lng: p.lng }).catch(() => {})
+    adresseDePosition(p.lat, p.lng).then((adresse) =>
+      appeler({ p_lat: p.lat, p_lng: p.lng, p_adresse: adresse ?? undefined }).catch(() => {})
+    )
   }, [loc.position, appeler])
 
-  const activerLocalisation = async () => {
-    const p = await loc.activer()
-    if (p) toast.success("Localisation activée", { description: "Votre position est à jour." })
-    else toast.error("Localisation refusée", { description: "Autorisez-la dans les réglages du navigateur." })
+  const enregistrerLieu = async (lieu: LieuValide) => {
+    dernierEnvoi.current = { lat: lieu.lat, lng: lieu.lng, t: Date.now() }
+    await appeler({ p_lat: lieu.lat, p_lng: lieu.lng, p_adresse: lieu.adresse ?? undefined })
+    toast.success("Position enregistrée", { description: lieu.adresse ?? "Votre zone est à jour." })
   }
 
   const changerDisponibilite = async (dispo: boolean) => {
     try {
-      let p = loc.position
-      if (dispo && !p) p = await loc.activer()
-      if (dispo && !p && moi.lat == null) {
-        toast.error("Activez d'abord votre localisation pour recevoir des demandes.")
+      if (dispo && moi.lat == null && !loc.position) {
+        toast("Indiquez d'abord où vous êtes", { description: "Votre position sert à vous proposer les demandes proches." })
+        setFenetre(true)
         return
       }
       if (dispo) demanderPermissionNotifications()
-      await appeler({ p_disponible: dispo, ...(p ? { p_lat: p.lat, p_lng: p.lng } : {}) })
+      await appeler({ p_disponible: dispo })
       toast(dispo ? "Vous êtes disponible" : "Vous êtes en pause", {
         description: dispo
           ? "Les demandes proches vous seront proposées en direct."
@@ -185,11 +197,17 @@ export function TableauIntervenant({
     await charger()
   }
 
-  const basculerService = async (id: string, propose: boolean) => {
-    const { error } = propose
-      ? await supabase.from("intervenant_services").insert({ intervenant_id: utilisateurId, service_id: id })
-      : await supabase.from("intervenant_services").delete().eq("intervenant_id", utilisateurId).eq("service_id", id)
-    if (error) toast.error(messageErreur(error))
+  /** Enregistre les services gardés (tous gardés = aucune restriction). */
+  const changerServices = async (idsActifs: string[]) => {
+    const tous = idsActifs.length === donnees.services.length
+    const { error: e1 } = await supabase.from("intervenant_services").delete().eq("intervenant_id", utilisateurId)
+    const { error: e2 } = tous
+      ? { error: null }
+      : await supabase
+          .from("intervenant_services")
+          .insert(idsActifs.map((id) => ({ intervenant_id: utilisateurId, service_id: id })))
+    if (e1 || e2) toast.error(messageErreur(e1 ?? e2))
+    else toast.success("Services mis à jour")
     await charger()
   }
 
@@ -227,10 +245,12 @@ export function TableauIntervenant({
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 py-6">
-      <BanniereLocalisation
-        etat={loc.etat}
-        onActiver={activerLocalisation}
-        texte="Pour recevoir les demandes des personnes proches de vous, Mivtsa Now a besoin de votre position."
+      <FenetreLocalisation
+        ouverte={fenetre}
+        onFermer={() => setFenetre(false)}
+        activerGps={loc.activer}
+        onValider={enregistrerLieu}
+        texte="Pour recevoir les demandes des personnes proches de vous, Mivtsa Now a besoin de savoir où vous êtes."
       />
 
       <BarreTableau icon={espace.icon} espace={`Espace ${espace.nom}`}>
@@ -351,9 +371,10 @@ export function TableauIntervenant({
 
         <CarteLocalisation
           etat={loc.etat}
+          adresse={moi.adresse}
           aUnePosition={moi.lat != null}
           rayon={Number(moi.rayon_km)}
-          onActiver={activerLocalisation}
+          onModifier={() => setFenetre(true)}
           onRayon={(km) =>
             appeler({ p_rayon_km: km })
               .then(() => toast.success(`Rayon réglé sur ${km} km`))
@@ -365,7 +386,7 @@ export function TableauIntervenant({
       {/* Ligne 2 : les outils de l'espace + les services, cartes de même hauteur */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {widget[moi.espace_slug]}
-        <CarteServices services={donnees.services} onBasculer={basculerService} />
+        <CarteServices services={donnees.services} onChanger={changerServices} />
       </div>
     </main>
   )

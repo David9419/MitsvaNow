@@ -79,8 +79,8 @@ export default function Home() {
             </h1>
 
             <p className="animate-in fade-in slide-in-from-bottom-4 max-w-lg text-lg text-muted-foreground delay-200 duration-700 fill-mode-both">
-              Mettre les téfilines, préparer les &apos;hallot, cachériser un
-              four, suivre un cours… Faites une demande et{" "}
+              Mettre les téfilines, installer une mezouza, préparer les
+              &apos;hallot, préparer une bar-mitsva… Faites une demande et{" "}
               <strong className="text-foreground">
                 Mivtsa Now trouve l&apos;intervenant disponible le plus proche
               </strong>{" "}

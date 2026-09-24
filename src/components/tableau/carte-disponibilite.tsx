@@ -1,6 +1,6 @@
 "use client"
 
-import { Loader2, LocateFixed, MapPin, Radar as RadarIcon } from "lucide-react"
+import { MapPin, Pencil, Radar as RadarIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -10,15 +10,17 @@ import type { EtatLocalisation } from "@/hooks/use-localisation"
 /** Position + rayon d'intervention. */
 export function CarteLocalisation({
   etat,
+  adresse,
   aUnePosition,
   rayon,
-  onActiver,
+  onModifier,
   onRayon,
 }: {
   etat: EtatLocalisation
+  adresse: string | null
   aUnePosition: boolean
   rayon: number
-  onActiver: () => void
+  onModifier: () => void
   onRayon: (km: number) => void
 }) {
   const [valeur, setValeur] = useState(rayon)
@@ -27,27 +29,25 @@ export function CarteLocalisation({
     setValeur(rayon)
   }, [rayon])
 
-  const libelle = {
-    active: { t: "Localisation active", c: "text-success", pulse: true },
-    demande: { t: "Recherche de votre position…", c: "text-muted-foreground", pulse: false },
-    refusee: { t: "Localisation bloquée par le navigateur", c: "text-destructive", pulse: false },
-    indisponible: { t: "Localisation indisponible", c: "text-destructive", pulse: false },
-    inconnu: { t: aUnePosition ? "Dernière position enregistrée" : "Localisation non activée", c: "text-muted-foreground", pulse: false },
-  }[etat]
+  const suivie = etat === "active"
 
   return (
     <CarteWidget icon={MapPin} titre="Ma zone d'intervention" sousTitre="Où vous recevez des demandes" delai={100}>
-      <div className="flex items-center justify-between gap-3 rounded-xl border p-3">
-        <span className={`flex items-center gap-2 text-sm font-medium ${libelle.c}`}>
-          <span className="relative flex size-2.5">
-            {libelle.pulse && <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />}
-            <span className="relative inline-flex size-2.5 rounded-full bg-current" />
-          </span>
-          {libelle.t}
-        </span>
-        <Button size="sm" variant="outline" onClick={onActiver} disabled={etat === "demande"}>
-          {etat === "demande" ? <Loader2 className="animate-spin" /> : <LocateFixed />}
-          {etat === "active" ? "Actualiser" : "Activer"}
+      <div className="flex items-start justify-between gap-3 rounded-xl border p-3">
+        <div className="min-w-0">
+          <p className={`flex items-center gap-2 text-xs font-semibold ${aUnePosition ? "text-success" : "text-destructive"}`}>
+            <span className="relative flex size-2.5">
+              {suivie && <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />}
+              <span className="relative inline-flex size-2.5 rounded-full bg-current" />
+            </span>
+            {aUnePosition ? (suivie ? "Localisé en direct" : "Position enregistrée") : "Aucune position"}
+          </p>
+          <p className="mt-1 line-clamp-2 text-sm font-medium">
+            {adresse ?? (aUnePosition ? "Adresse inconnue" : "Indiquez où vous êtes pour recevoir des demandes.")}
+          </p>
+        </div>
+        <Button size="sm" variant="outline" onClick={onModifier} className="shrink-0">
+          <Pencil /> {aUnePosition ? "Modifier" : "Me localiser"}
         </Button>
       </div>
 

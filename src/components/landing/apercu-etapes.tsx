@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 const DUREE = 5500
 
 const ETAPES = [
-  { icon: Search, titre: "Dites ce dont vous avez besoin", texte: "Téfilines, 'hallot, cachérisation, un cours… choisissez le service en deux clics." },
+  { icon: Search, titre: "Dites ce dont vous avez besoin", texte: "Téfilines, mezouza, 'hallot, bar-mitsva… choisissez le service en deux clics." },
   { icon: MapPin, titre: "Partagez votre position", texte: "Autorisez la localisation ou tapez simplement votre adresse." },
   { icon: Users, titre: "On trouve le plus proche", texte: "La plateforme contacte l'intervenant disponible le plus près de vous." },
   { icon: HandHeart, titre: "Il vient vous aider", texte: "L'intervenant accepte et se déplace. Vous suivez tout en direct." },
@@ -43,8 +43,8 @@ function Ecran1() {
       </div>
       <div className="flex animate-in fade-in slide-in-from-bottom-2 flex-wrap gap-1.5 delay-1000 duration-500 fill-mode-both">
         <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-semibold text-primary-foreground">Mettre les téfilines</span>
-        <span className="rounded-full border px-3 py-1 text-[10px]">Chofar</span>
-        <span className="rounded-full border px-3 py-1 text-[10px]">Loulav & étrog</span>
+        <span className="rounded-full border px-3 py-1 text-[10px]">Mezouza</span>
+        <span className="rounded-full border px-3 py-1 text-[10px]">Boîte de tsédaka</span>
       </div>
     </div>
   )
