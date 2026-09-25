@@ -6,6 +6,7 @@
 // Deux façons de l'appeler :
 //   - par la base de données (déclencheur), avec l'en-tête x-secret :
 //       { "demande": "<id>", "pour": "intervenant" | "demandeur" }
+//       ou { "verifier": "<id de la personne>" } (notification de test)
 //   - par une personne connectée, pour tester ses notifications :
 //       { "test": true }  (envoyée tout de suite)
 import { createClient } from "npm:@supabase/supabase-js@2"
@@ -83,6 +84,15 @@ Deno.serve(async (req) => {
     if (req.headers.get("x-secret")) {
       if (req.headers.get("x-secret") !== s.push_secret_declencheur)
         return reponse({ erreur: "Non autorisé" }, 401)
+      // Vérification technique : notification de test pour une personne précise
+      if (corps.verifier) {
+        const { data: abos } = await admin.rpc("abonnements_de", { p_utilisateur: corps.verifier })
+        const envoyes = await envoyer((abos ?? []) as Abonnement[], {
+          titre: "Mivtsa Now 🔔",
+          corps: "Test : les notifications arrivent bien sur cet appareil.",
+        })
+        return reponse({ envoyes })
+      }
       const pourDemandeur = corps.pour === "demandeur"
       const { data } = await admin.rpc(
         pourDemandeur ? "preparer_notification_demandeur" : "preparer_notification_push",

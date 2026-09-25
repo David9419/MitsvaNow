@@ -1,0 +1,12 @@
+<!-- Modèle d'e-mail « Mot de passe oublié » (Supabase → Authentication → Emails → Reset Password).
+     Le lien passe par /auth/callback avec token_hash : il marche sur n'importe quel appareil. -->
+<h2>Mivtsa Now — Nouveau mot de passe</h2>
+<p>Bonjour,</p>
+<p>Vous avez demandé à changer le mot de passe de votre compte Mivtsa Now.</p>
+<p>
+  <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=recovery"
+     style="display:inline-block;padding:12px 20px;background:#1d4ed8;color:#ffffff;border-radius:8px;text-decoration:none;font-weight:bold">
+    Créer mon nouveau mot de passe
+  </a>
+</p>
+<p>Ce lien est valable 1 heure. Si vous n'avez rien demandé, ignorez simplement cet e-mail.</p>

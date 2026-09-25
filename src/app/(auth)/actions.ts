@@ -29,8 +29,8 @@ function traduireErreur({ message, name }: { message: string; name?: string }) {
     return "Trop de tentatives. Réessayez dans quelques minutes."
   if (m.includes("same") && m.includes("password"))
     return "Choisissez un mot de passe différent de l'ancien."
-  if (m.includes("not authorized"))
-    return "Cette adresse e-mail ne peut pas recevoir l'e-mail de confirmation. (Réglage Supabase à faire : voir les instructions.)"
+  if (m.includes("not authorized") || m.includes("error sending"))
+    return "L'e-mail n'a pas pu partir : l'envoi d'e-mails n'est pas encore configuré (réglage « SMTP » dans Supabase)."
   if (m.includes("fetch failed") || m.includes("network"))
     return "Impossible de joindre le serveur. Vérifiez votre connexion internet et le fichier .env.local."
   return "Une erreur est survenue. Réessayez."
