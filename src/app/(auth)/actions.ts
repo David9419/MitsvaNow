@@ -159,7 +159,17 @@ export async function demanderNouveauMotDePasse(
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origine}/auth/callback?suite=/nouveau-mot-de-passe`,
   })
-  if (error) return { erreur: traduireErreur(error), champs: { email } }
+  if (error) {
+    console.error("Mot de passe oublié : envoi impossible", error.message)
+    const m = error.message.toLowerCase()
+    if (m.includes("rate limit") || m.includes("security purposes"))
+      return { erreur: "Trop de demandes. Attendez une minute puis réessayez.", champs: { email } }
+    // Sinon, c'est l'envoi de l'e-mail qui a échoué (réglage SMTP dans Supabase)
+    return {
+      erreur: "L'e-mail n'a pas pu partir. Le réglage d'envoi des e-mails (SMTP Gmail) dans Supabase est à vérifier.",
+      champs: { email },
+    }
+  }
 
   // Même message que le compte existe ou non (on ne dévoile pas qui est inscrit)
   return {
