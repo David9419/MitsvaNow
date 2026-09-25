@@ -38,8 +38,9 @@ Ensuite, chaque envoi sur la branche `main` met le site en ligne à jour automat
 
 ## Notifications sur le téléphone (même site fermé)
 
-- Le téléphone s'abonne depuis le tableau de bord intervenant (« Activer les notifications »).
-- Quand une demande est attribuée, la base de données appelle la fonction Supabase
+- Chaque espace a un bandeau « Activer les notifications » (et un bouton de test une fois activées).
+- Quand une demande est attribuée (intervenant) ou acceptée, en route, terminée (demandeur),
+  la base de données appelle la fonction Supabase
   `notifier-demande` (code dans `supabase/functions/notifier-demande/`), qui envoie la notification.
 - Les clés secrètes sont rangées dans le coffre-fort de Supabase (Vault) :
   `push_vapid_public`, `push_vapid_prive`, `push_secret_declencheur`. Jamais dans Git.

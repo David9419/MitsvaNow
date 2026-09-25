@@ -17,7 +17,7 @@ import { AlerteDemande } from "@/components/tableau/alerte-demande"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { CarteDemandeIntervenant } from "@/components/tableau/carte-demande-intervenant"
 import { CarteLocalisation } from "@/components/tableau/carte-disponibilite"
-import { BandeauNotifications, CarteNotifications } from "@/components/tableau/carte-notifications"
+import { BandeauNotifications } from "@/components/tableau/carte-notifications"
 import { CarteServices } from "@/components/tableau/carte-services"
 import { CarteStat } from "@/components/tableau/carte-stat"
 import { FenetreLocalisation, type LieuValide } from "@/components/tableau/fenetre-localisation"
@@ -336,7 +336,12 @@ export function TableauIntervenant({
         }
       />
 
-      <BandeauNotifications etat={push.etat} onActiver={() => push.activer()} />
+      <BandeauNotifications
+        etat={push.etat}
+        onActiver={() => push.activer()}
+        onTester={push.tester}
+        texte="Vous êtes prévenu dès qu'une personne proche a besoin de vous."
+      />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <CarteStat icon={Inbox} label="À traiter" valeur={aTraiter.length} accent="accent" detail="Propositions en attente" />
@@ -429,11 +434,10 @@ export function TableauIntervenant({
         />
       </div>
 
-      {/* Ligne 2 : les outils de l'espace, les services et les notifications, cartes de même hauteur */}
+      {/* Ligne 2 : les outils de l'espace + les services, cartes de même hauteur */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {widget[moi.espace_slug]}
         <CarteServices services={donnees.services} onChanger={changerServices} />
-        <CarteNotifications etat={push.etat} onActiver={() => push.activer()} onTester={push.tester} />
       </div>
     </main>
   )

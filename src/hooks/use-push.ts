@@ -46,8 +46,8 @@ export function usePush() {
         toast.error("Aucun appareil enregistré", { description: "Activez d'abord les notifications." })
         return
       }
-      toast("Notification envoyée dans 5 secondes", {
-        description: "Fermez le site ou verrouillez votre téléphone pour voir le résultat.",
+      toast.success(n > 1 ? `Notification envoyée à ${n} appareils` : "Notification envoyée", {
+        description: "Elle doit apparaître tout de suite sur votre téléphone.",
       })
     } catch (err) {
       toast.error(messageErreur(err))

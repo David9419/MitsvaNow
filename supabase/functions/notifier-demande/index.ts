@@ -1,11 +1,13 @@
-// Fonction Supabase « notifier-demande » : envoie la notification « Nouvelle
-// demande » sur le téléphone de l'intervenant, même quand le site est fermé.
+// Fonction Supabase « notifier-demande » : envoie les notifications sur le
+// téléphone, même quand le site est fermé :
+//   - à l'intervenant : « Nouvelle demande »
+//   - au demandeur : demande acceptée, intervenant en route, mitsva accomplie
 //
 // Deux façons de l'appeler :
 //   - par la base de données (déclencheur), avec l'en-tête x-secret :
-//       { "demande": "<id>" }
+//       { "demande": "<id>", "pour": "intervenant" | "demandeur" }
 //   - par une personne connectée, pour tester ses notifications :
-//       { "test": true }  (envoyée au bout de 5 secondes)
+//       { "test": true }  (envoyée tout de suite)
 import { createClient } from "npm:@supabase/supabase-js@2"
 import webpush from "npm:web-push@3.6.7"
 
@@ -55,12 +57,13 @@ async function envoyer(abonnements: Abonnement[], message: Record<string, unknow
           { TTL: 60 * 60, urgency: "high" }
         )
         envoyes++
+        console.log("Envoyée", new URL(a.endpoint).host)
       } catch (e) {
         const code = (e as { statusCode?: number }).statusCode
         if (code === 404 || code === 410) {
           await admin.from("abonnements_push").delete().eq("endpoint", a.endpoint)
         } else {
-          console.error("Envoi raté", code, (e as Error).message)
+          console.error("Envoi raté", new URL(a.endpoint).host, code, (e as Error).message)
         }
       }
     })
@@ -80,14 +83,19 @@ Deno.serve(async (req) => {
     if (req.headers.get("x-secret")) {
       if (req.headers.get("x-secret") !== s.push_secret_declencheur)
         return reponse({ erreur: "Non autorisé" }, 401)
-      const { data } = await admin.rpc("preparer_notification_push", { p_demande: corps.demande })
+      const pourDemandeur = corps.pour === "demandeur"
+      const { data } = await admin.rpc(
+        pourDemandeur ? "preparer_notification_demandeur" : "preparer_notification_push",
+        { p_demande: corps.demande }
+      )
       const n = data as { demande: string; titre: string; corps: string; abonnements: Abonnement[] } | null
       if (!n || !n.abonnements.length) return reponse({ envoyes: 0 })
       const envoyes = await envoyer(n.abonnements, {
         titre: n.titre,
         corps: n.corps,
         demande: n.demande,
-        actions: true,
+        // Boutons Accepter / Pas disponible seulement pour l'intervenant
+        actions: !pourDemandeur,
       })
       return reponse({ envoyes })
     }
@@ -101,18 +109,11 @@ Deno.serve(async (req) => {
     const { data: abonnements } = await admin.rpc("abonnements_de", { p_utilisateur: u.user.id })
     const liste = (abonnements ?? []) as Abonnement[]
     if (!liste.length) return reponse({ envoyes: 0 })
-    // Envoi en arrière-plan après une petite attente : le temps de fermer
-    // le site ou de verrouiller le téléphone (on répond tout de suite).
-    const envoi = new Promise((r) => setTimeout(r, 5000)).then(() =>
-      envoyer(liste, {
-        titre: "Mivtsa Now 🔔",
-        corps: "Ça marche ! Vous recevrez ici les nouvelles demandes, même site fermé.",
-      })
-    )
-    // @ts-ignore EdgeRuntime existe sur Supabase
-    if (typeof EdgeRuntime !== "undefined") EdgeRuntime.waitUntil(envoi)
-    else await envoi
-    return reponse({ envoyes: liste.length })
+    const envoyes = await envoyer(liste, {
+      titre: "Mivtsa Now 🔔",
+      corps: "Ça marche ! Les notifications sont bien activées sur cet appareil.",
+    })
+    return reponse({ envoyes })
   } catch (e) {
     console.error(e)
     return reponse({ erreur: (e as Error).message }, 500)

@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { BellRing, CheckCircle2, History, Lightbulb, PlayCircle, Plus, Sparkles } from "lucide-react"
 
 import { BarreTableau } from "@/components/tableau/barre-tableau"
+import { BandeauNotifications } from "@/components/tableau/carte-notifications"
 import { CarteStat } from "@/components/tableau/carte-stat"
 import { CatalogueServices } from "@/components/tableau/catalogue-services"
 import { FenetreLocalisation, type LieuValide } from "@/components/tableau/fenetre-localisation"
@@ -16,6 +17,7 @@ import { SuiviDemande } from "@/components/tableau/suivi-demande"
 import { CarteWidget } from "@/components/tableau/widgets/carte-widget"
 import { Button } from "@/components/ui/button"
 import { useLocalisation } from "@/hooks/use-localisation"
+import { usePush } from "@/hooks/use-push"
 import { useTempsReel } from "@/hooks/use-temps-reel"
 import { createClient } from "@/lib/supabase/client"
 import { ESPACES } from "@/lib/espaces"
@@ -53,6 +55,7 @@ export function TableauDemandeur({
   const supabase = useRef(createClient()).current
   const statuts = useRef(new Map(initial.map((d) => [d.id, d.statut])))
   const loc = useLocalisation()
+  const push = usePush()
   const espace = ESPACES[0]
 
   // Position enregistrée dans le profil (sert pour les demandes)
@@ -195,6 +198,13 @@ export function TableauDemandeur({
         }
       />
 
+      <BandeauNotifications
+        etat={push.etat}
+        onActiver={() => push.activer()}
+        onTester={push.tester}
+        texte="Vous êtes prévenu dès qu'un intervenant accepte votre demande et quand il est en route."
+      />
+
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <CarteStat icon={PlayCircle} label="En cours" valeur={actives.length} accent="primary" detail="Suivies en direct" />
         <CarteStat icon={Sparkles} label="Mitsvot accomplies" valeur={terminees} accent="success" detail="Grâce à vos demandes" delai={80} />
@@ -250,7 +260,7 @@ export function TableauDemandeur({
           <CarteWidget icon={Lightbulb} titre="Bon à savoir" delai={350}>
             <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
               <li>📍 Activez la localisation : l&apos;intervenant le plus proche est trouvé plus vite.</li>
-              <li>🔔 Gardez cette page ouverte : vous êtes prévenu dès qu&apos;il accepte.</li>
+              <li>🔔 Activez les notifications : vous êtes prévenu dès qu&apos;il accepte, même site fermé.</li>
               <li>⭐ Après l&apos;intervention, laissez une note pour remercier l&apos;intervenant.</li>
             </ul>
           </CarteWidget>
