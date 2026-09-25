@@ -19,6 +19,8 @@ const unbounded = Unbounded({
 export const metadata: Metadata = {
   title: "Mivtsa Now",
   description: "Trouvez l'intervenant disponible le plus proche.",
+  // Ouverte depuis l'écran d'accueil, l'application s'affiche en plein écran
+  appleWebApp: { capable: true, title: "Mivtsa Now", statusBarStyle: "default" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

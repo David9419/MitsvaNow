@@ -17,6 +17,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      abonnements_push: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          utilisateur_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          utilisateur_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          utilisateur_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "abonnements_push_utilisateur_id_fkey"
+            columns: ["utilisateur_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       avis: {
         Row: {
           commentaire: string | null
@@ -348,6 +383,10 @@ export type Database = {
         Returns: string
       }
       est_admin: { Args: never; Returns: boolean }
+      enregistrer_abonnement_push: {
+        Args: { p_auth: string; p_endpoint: string; p_p256dh: string }
+        Returns: undefined
+      }
       enregistrer_ma_position: {
         Args: { p_adresse?: string; p_lat: number; p_lng: number }
         Returns: undefined
@@ -361,6 +400,10 @@ export type Database = {
           p_lng?: number
           p_rayon_km?: number
         }
+        Returns: undefined
+      }
+      supprimer_abonnement_push: {
+        Args: { p_endpoint: string }
         Returns: undefined
       }
       repondre_demande: {

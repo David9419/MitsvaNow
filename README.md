@@ -31,7 +31,16 @@ Pour arrêter le site : appuyer sur `Ctrl + C` dans le terminal.
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 4. Cliquer sur **Deploy**.
 5. Dans Supabase → **Authentication → URL Configuration** :
-   - **Site URL** : l'adresse Vercel (ex. `https://mivtsa-now.vercel.app`)
-   - **Redirect URLs** : ajouter `https://mivtsa-now.vercel.app/**`
+   - **Site URL** : l'adresse Vercel (ex. `https://mitsva-now.vercel.app`)
+   - **Redirect URLs** : ajouter `https://mitsva-now.vercel.app/**`
 
 Ensuite, chaque envoi sur la branche `main` met le site en ligne à jour automatiquement.
+
+## Notifications sur le téléphone (même site fermé)
+
+- Le téléphone s'abonne depuis le tableau de bord intervenant (« Activer les notifications »).
+- Quand une demande est attribuée, la base de données appelle la fonction Supabase
+  `notifier-demande` (code dans `supabase/functions/notifier-demande/`), qui envoie la notification.
+- Les clés secrètes sont rangées dans le coffre-fort de Supabase (Vault) :
+  `push_vapid_public`, `push_vapid_prive`, `push_secret_declencheur`. Jamais dans Git.
+- Sur iPhone / iPad, il faut d'abord ajouter le site à l'écran d'accueil (Partager → « Sur l'écran d'accueil »).

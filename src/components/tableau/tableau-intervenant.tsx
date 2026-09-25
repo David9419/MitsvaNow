@@ -17,6 +17,7 @@ import { AlerteDemande } from "@/components/tableau/alerte-demande"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { CarteDemandeIntervenant } from "@/components/tableau/carte-demande-intervenant"
 import { CarteLocalisation } from "@/components/tableau/carte-disponibilite"
+import { BandeauNotifications, CarteNotifications } from "@/components/tableau/carte-notifications"
 import { CarteServices } from "@/components/tableau/carte-services"
 import { CarteStat } from "@/components/tableau/carte-stat"
 import { FenetreLocalisation, type LieuValide } from "@/components/tableau/fenetre-localisation"
@@ -28,6 +29,7 @@ import { WidgetSofer } from "@/components/tableau/widgets/widget-sofer"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { distanceMetres, useLocalisation } from "@/hooks/use-localisation"
+import { usePush } from "@/hooks/use-push"
 import { useTempsReel } from "@/hooks/use-temps-reel"
 import type { Database } from "@/lib/database.types"
 import { createClient } from "@/lib/supabase/client"
@@ -103,6 +105,7 @@ export function TableauIntervenant({
   const espace = ESPACES.find((e) => e.slug === moi.espace_slug) ?? ESPACES[1]
   const config = CONFIG[moi.espace_slug] ?? CONFIG.bahourim
   const loc = useLocalisation({ suivre: moi.disponible })
+  const push = usePush()
 
   // Fenêtre de localisation : ouverte d'office tant qu'aucune position n'est enregistrée
   const [fenetre, setFenetre] = useState(initial.intervenant?.lat == null)
@@ -176,7 +179,9 @@ export function TableauIntervenant({
         setFenetre(true)
         return
       }
-      if (dispo) demanderPermissionNotifications()
+      // Profite du clic pour activer les notifications sur ce téléphone
+      if (dispo && push.etat === "inactif") push.activer(true)
+      else if (dispo) demanderPermissionNotifications()
       await appeler({ p_disponible: dispo })
       toast(dispo ? "Vous êtes disponible" : "Vous êtes en pause", {
         description: dispo
@@ -331,6 +336,8 @@ export function TableauIntervenant({
         }
       />
 
+      <BandeauNotifications etat={push.etat} onActiver={() => push.activer()} />
+
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <CarteStat icon={Inbox} label="À traiter" valeur={aTraiter.length} accent="accent" detail="Propositions en attente" />
         <CarteStat icon={PlayCircle} label="En cours" valeur={enCours.length} accent="primary" detail="Acceptées ou en route" delai={80} />
@@ -422,10 +429,11 @@ export function TableauIntervenant({
         />
       </div>
 
-      {/* Ligne 2 : les outils de l'espace + les services, cartes de même hauteur */}
+      {/* Ligne 2 : les outils de l'espace, les services et les notifications, cartes de même hauteur */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {widget[moi.espace_slug]}
         <CarteServices services={donnees.services} onChanger={changerServices} />
+        <CarteNotifications etat={push.etat} onActiver={() => push.activer()} onTester={push.tester} />
       </div>
     </main>
   )
