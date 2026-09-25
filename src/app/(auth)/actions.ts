@@ -25,8 +25,10 @@ function traduireErreur({ message, name }: { message: string; name?: string }) {
     return "Un compte existe déjà avec cet e-mail. Essayez plutôt de vous connecter."
   if (m.includes("password should be") || m.includes("weak password"))
     return "Mot de passe trop faible : 8 caractères minimum."
-  if (m.includes("rate limit"))
+  if (m.includes("rate limit") || m.includes("security purposes"))
     return "Trop de tentatives. Réessayez dans quelques minutes."
+  if (m.includes("same") && m.includes("password"))
+    return "Choisissez un mot de passe différent de l'ancien."
   if (m.includes("not authorized"))
     return "Cette adresse e-mail ne peut pas recevoir l'e-mail de confirmation. (Réglage Supabase à faire : voir les instructions.)"
   if (m.includes("fetch failed") || m.includes("network"))
@@ -141,4 +143,48 @@ export async function deconnexion() {
   const supabase = await createClient()
   await supabase.auth.signOut()
   redirect("/")
+}
+
+/** « Mot de passe oublié » : envoie un e-mail avec un lien pour en choisir un nouveau. */
+export async function demanderNouveauMotDePasse(
+  _etat: EtatFormulaire,
+  formData: FormData
+): Promise<EtatFormulaire> {
+  const email = texte(formData, "email").toLowerCase()
+  if (!/^\S+@\S+\.\S+$/.test(email))
+    return { erreur: "L'adresse e-mail n'a pas l'air valide.", champs: { email } }
+
+  const origine = (await headers()).get("origin") ?? "http://localhost:3000"
+  const supabase = await createClient()
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origine}/auth/callback?suite=/nouveau-mot-de-passe`,
+  })
+  if (error) return { erreur: traduireErreur(error), champs: { email } }
+
+  // Même message que le compte existe ou non (on ne dévoile pas qui est inscrit)
+  return {
+    succes: `Si un compte existe avec ${email}, un e-mail vient de partir. Ouvrez-le et touchez le lien pour choisir un nouveau mot de passe (pensez à regarder dans les courriers indésirables).`,
+  }
+}
+
+/** Enregistre le nouveau mot de passe (après avoir ouvert le lien reçu par e-mail). */
+export async function changerMotDePasse(
+  _etat: EtatFormulaire,
+  formData: FormData
+): Promise<EtatFormulaire> {
+  const motDePasse = String(formData.get("mot_de_passe") ?? "")
+  if (motDePasse.length < 8)
+    return { erreur: "Le mot de passe doit contenir au moins 8 caractères." }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user)
+    return { erreur: "Le lien a expiré. Refaites « Mot de passe oublié » pour recevoir un nouvel e-mail." }
+
+  const { error } = await supabase.auth.updateUser({ password: motDePasse })
+  if (error) return { erreur: traduireErreur(error) }
+
+  redirect("/accueil")
 }

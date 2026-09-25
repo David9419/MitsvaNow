@@ -13,7 +13,7 @@ export default async function ConnexionPage(props: PageProps<"/connexion">) {
         espaceInitial={typeof espace === "string" ? espace : undefined}
         erreurInitiale={
           erreur === "lien"
-            ? "Ce lien de confirmation n'est plus valide. Connectez-vous ou recréez un compte."
+            ? "Ce lien n'est plus valide (déjà utilisé, expiré, ou ouvert sur un autre appareil). Refaites la demande depuis cet appareil."
             : undefined
         }
       />

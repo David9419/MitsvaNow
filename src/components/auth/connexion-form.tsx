@@ -49,7 +49,15 @@ export function ConnexionForm({
           required
           defaultValue={etat?.champs?.email}
         />
-        <ChampMotDePasse autoComplete="current-password" />
+        <div className="flex flex-col gap-2">
+          <ChampMotDePasse autoComplete="current-password" />
+          <Link
+            href="/mot-de-passe-oublie"
+            className="self-end text-sm font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Mot de passe oublié ?
+          </Link>
+        </div>
 
         <MessageErreur message={etat?.erreur ?? (etat ? undefined : erreurInitiale)} />
 
