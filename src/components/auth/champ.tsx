@@ -55,6 +55,10 @@ export function ChampMotDePasse({
           required
           minLength={8}
           placeholder="••••••••"
+          // Le téléphone ne doit rien changer (pas de majuscule ni de correction)
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           className="h-12 bg-card pr-11 pl-10 transition-shadow focus-visible:shadow-md"
         />
         <button

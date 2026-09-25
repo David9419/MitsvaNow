@@ -18,7 +18,7 @@ function traduireErreur({ message, name }: { message: string; name?: string }) {
     return "Impossible de joindre le serveur. Vérifiez votre connexion internet et le fichier .env.local."
   const m = message.toLowerCase()
   if (m.includes("invalid login credentials"))
-    return "E-mail ou mot de passe incorrect."
+    return "E-mail ou mot de passe incorrect. Sur téléphone, touchez l'œil pour voir le mot de passe : attention aux majuscules et au mot de passe rempli automatiquement."
   if (m.includes("email not confirmed"))
     return "Vous devez d'abord confirmer votre adresse e-mail : ouvrez le lien reçu par e-mail."
   if (m.includes("already registered") || m.includes("already been registered"))
@@ -45,7 +45,8 @@ export async function inscription(
     prenom: texte(formData, "prenom"),
     nom: texte(formData, "nom"),
     telephone: texte(formData, "telephone"),
-    email: texte(formData, "email"),
+    // Les e-mails ne tiennent pas compte des majuscules
+    email: texte(formData, "email").toLowerCase(),
     espace: texte(formData, "espace"),
     type_intervenant: texte(formData, "type_intervenant"),
   }
@@ -117,7 +118,7 @@ export async function connexion(
   _etat: EtatFormulaire,
   formData: FormData
 ): Promise<EtatFormulaire> {
-  const email = texte(formData, "email")
+  const email = texte(formData, "email").toLowerCase()
   const motDePasse = String(formData.get("mot_de_passe") ?? "")
 
   if (!email || !motDePasse)

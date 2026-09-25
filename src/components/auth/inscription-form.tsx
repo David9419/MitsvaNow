@@ -213,7 +213,7 @@ export function InscriptionForm({
             <Champ label="Prénom" id="prenom" icon={User} autoComplete="given-name" placeholder="David" required defaultValue={c?.prenom} />
             <Champ label="Nom" id="nom" icon={User} autoComplete="family-name" placeholder="Cohen" required defaultValue={c?.nom} />
           </div>
-          <Champ label="E-mail" id="email" icon={Mail} type="email" autoComplete="email" placeholder="vous@exemple.fr" required defaultValue={c?.email} />
+          <Champ label="E-mail" id="email" icon={Mail} type="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} placeholder="vous@exemple.fr" required defaultValue={c?.email} />
           <Champ label="Téléphone" id="telephone" icon={Phone} type="tel" autoComplete="tel" placeholder="06 12 34 56 78" required defaultValue={c?.telephone} />
           <ChampMotDePasse autoComplete="new-password" aide="8 caractères minimum." />
         </div>

@@ -42,6 +42,9 @@ export function ConnexionForm({
           icon={Mail}
           type="email"
           autoComplete="email"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
           placeholder="vous@exemple.fr"
           required
           defaultValue={etat?.champs?.email}
