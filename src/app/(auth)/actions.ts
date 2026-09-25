@@ -156,6 +156,14 @@ export async function demanderNouveauMotDePasse(
 
   const origine = (await headers()).get("origin") ?? "http://localhost:3000"
   const supabase = await createClient()
+  // Aucun compte avec cet e-mail : on le dit (Supabase, lui, n'enverrait rien sans prévenir)
+  const { data: existe } = await supabase.rpc("email_inscrit", { p_email: email })
+  if (existe === false)
+    return {
+      erreur: `Aucun compte n'existe avec ${email}. Vérifiez l'adresse, ou créez un compte.`,
+      champs: { email },
+    }
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origine}/auth/callback?suite=/nouveau-mot-de-passe`,
   })
@@ -171,9 +179,8 @@ export async function demanderNouveauMotDePasse(
     }
   }
 
-  // Même message que le compte existe ou non (on ne dévoile pas qui est inscrit)
   return {
-    succes: `Si un compte existe avec ${email}, un e-mail vient de partir. Ouvrez-le et touchez le lien pour choisir un nouveau mot de passe (pensez à regarder dans les courriers indésirables).`,
+    succes: `Un e-mail vient de partir à ${email}. Ouvrez-le et touchez le bouton pour choisir un nouveau mot de passe (pensez à regarder dans les courriers indésirables / spam).`,
   }
 }
 

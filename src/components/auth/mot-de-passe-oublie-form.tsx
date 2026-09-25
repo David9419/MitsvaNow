@@ -21,7 +21,7 @@ export function MotDePasseOublieForm() {
         <h1 className="text-2xl font-bold">Vérifiez vos e-mails</h1>
         <p className="mt-3 text-muted-foreground">{etat.succes}</p>
         <p className="mt-3 text-sm text-muted-foreground">
-          Ouvrez le lien sur <strong>ce même appareil</strong>, dans ce même navigateur.
+          Rien après 2 minutes ? Regardez dans les <strong>spams</strong>, puis réessayez.
         </p>
         <Button asChild variant="outline" className="mt-6">
           <Link href="/connexion">Retour à la connexion</Link>

@@ -383,6 +383,7 @@ export type Database = {
         Returns: string
       }
       est_admin: { Args: never; Returns: boolean }
+      email_inscrit: { Args: { p_email: string }; Returns: boolean }
       enregistrer_abonnement_push: {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string }
         Returns: undefined
