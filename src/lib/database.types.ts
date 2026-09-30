@@ -119,39 +119,69 @@ export type Database = {
       }
       demandes: {
         Row: {
+          acceptee_le: string | null
           adresse: string | null
+          annulee_par: string | null
+          attribuee_le: string | null
+          confirmee: boolean
           created_at: string
           demandeur_id: string
+          eta_minutes: number | null
           id: string
           intervenant_id: string | null
           message: string | null
+          motif_annulation: string | null
           position: unknown
+          programmee_pour: string | null
+          recherche_depuis: string
           service_id: string
           statut: Database["public"]["Enums"]["statut_demande"]
+          telephone: string | null
+          transport: string | null
           updated_at: string
         }
         Insert: {
+          acceptee_le?: string | null
           adresse?: string | null
+          annulee_par?: string | null
+          attribuee_le?: string | null
+          confirmee?: boolean
           created_at?: string
           demandeur_id: string
+          eta_minutes?: number | null
           id?: string
           intervenant_id?: string | null
           message?: string | null
+          motif_annulation?: string | null
           position: unknown
+          programmee_pour?: string | null
+          recherche_depuis?: string
           service_id: string
           statut?: Database["public"]["Enums"]["statut_demande"]
+          telephone?: string | null
+          transport?: string | null
           updated_at?: string
         }
         Update: {
+          acceptee_le?: string | null
           adresse?: string | null
+          annulee_par?: string | null
+          attribuee_le?: string | null
+          confirmee?: boolean
           created_at?: string
           demandeur_id?: string
+          eta_minutes?: number | null
           id?: string
           intervenant_id?: string | null
           message?: string | null
+          motif_annulation?: string | null
           position?: unknown
+          programmee_pour?: string | null
+          recherche_depuis?: string
           service_id?: string
           statut?: Database["public"]["Enums"]["statut_demande"]
+          telephone?: string | null
+          transport?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -291,28 +321,38 @@ export type Database = {
           espace_id: string | null
           est_admin: boolean
           id: string
+          langue: string
           nom: string
+          photo_url: string | null
           position: unknown
           prenom: string
           telephone: string | null
         }
         Insert: {
+          adresse?: string | null
           created_at?: string
           email?: string | null
           espace_id?: string | null
           est_admin?: boolean
           id: string
+          langue?: string
           nom?: string
+          photo_url?: string | null
+          position?: unknown
           prenom?: string
           telephone?: string | null
         }
         Update: {
+          adresse?: string | null
           created_at?: string
           email?: string | null
           espace_id?: string | null
           est_admin?: boolean
           id?: string
+          langue?: string
           nom?: string
+          photo_url?: string | null
+          position?: unknown
           prenom?: string
           telephone?: string | null
         }
@@ -333,6 +373,8 @@ export type Database = {
           espace_id: string
           id: string
           nom: string
+          nom_en: string | null
+          nom_he: string | null
           ordre: number
         }
         Insert: {
@@ -341,6 +383,8 @@ export type Database = {
           espace_id: string
           id?: string
           nom: string
+          nom_en?: string | null
+          nom_he?: string | null
           ordre?: number
         }
         Update: {
@@ -349,6 +393,8 @@ export type Database = {
           espace_id?: string
           id?: string
           nom?: string
+          nom_en?: string | null
+          nom_he?: string | null
           ordre?: number
         }
         Relationships: [
@@ -366,10 +412,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      annuler_demande: { Args: { p_demande: string }; Returns: undefined }
+      abonnements_de: { Args: { p_utilisateur: string }; Returns: Json }
+      annuler_demande: {
+        Args: { p_demande: string; p_motif?: string }
+        Returns: undefined
+      }
+      annuler_intervention: {
+        Args: { p_demande: string; p_motif: string }
+        Returns: undefined
+      }
+      attribuer_demande: { Args: { p_demande: string }; Returns: string }
       avancer_demande: {
         Args: { p_demande: string }
         Returns: Database["public"]["Enums"]["statut_demande"]
+      }
+      confirmer_intervenant: {
+        Args: { p_confirmer: boolean; p_demande: string }
+        Returns: undefined
       }
       creer_demande: {
         Args: {
@@ -377,12 +436,14 @@ export type Database = {
           p_lat: number
           p_lng: number
           p_message?: string
+          p_programmee_pour?: string
           p_service: string
           p_telephone: string
         }
         Returns: string
       }
-      est_admin: { Args: never; Returns: boolean }
+      definir_langue: { Args: { p_langue: string }; Returns: undefined }
+      definir_photo: { Args: { p_url: string }; Returns: undefined }
       email_inscrit: { Args: { p_email: string }; Returns: boolean }
       enregistrer_abonnement_push: {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string }
@@ -392,6 +453,13 @@ export type Database = {
         Args: { p_adresse?: string; p_lat: number; p_lng: number }
         Returns: undefined
       }
+      est_admin: { Args: never; Returns: boolean }
+      expirer_demandes: { Args: never; Returns: undefined }
+      infos_notification: {
+        Args: { p_demande: string; p_destinataire: string }
+        Returns: Json
+      }
+      langue_de: { Args: { p_utilisateur: string }; Returns: string }
       ma_position: { Args: never; Returns: Json }
       mettre_a_jour_intervenant: {
         Args: {
@@ -403,12 +471,32 @@ export type Database = {
         }
         Returns: undefined
       }
-      supprimer_abonnement_push: {
-        Args: { p_endpoint: string }
+      noms_service: {
+        Args: { s: Database["public"]["Tables"]["services"]["Row"] }
+        Returns: Json
+      }
+      notifier: {
+        Args: { p_demande: string; p_destinataire: string; p_evenement: string }
         Returns: undefined
       }
+      point_gps: { Args: { p_lat: number; p_lng: number }; Returns: unknown }
+      preparer_notification_demandeur: {
+        Args: { p_demande: string }
+        Returns: Json
+      }
+      preparer_notification_push: { Args: { p_demande: string }; Returns: Json }
       repondre_demande: {
-        Args: { p_accepter: boolean; p_demande: string }
+        Args: {
+          p_accepter: boolean
+          p_demande: string
+          p_eta_minutes?: number
+          p_transport?: string
+        }
+        Returns: undefined
+      }
+      secrets_push: { Args: never; Returns: Json }
+      supprimer_abonnement_push: {
+        Args: { p_endpoint: string }
         Returns: undefined
       }
       tableau_demandeur: { Args: never; Returns: Json }
@@ -421,6 +509,7 @@ export type Database = {
         | "en_cours"
         | "terminee"
         | "annulee"
+        | "expiree"
       statut_validation: "en_attente" | "valide" | "refuse"
       type_intervenant:
         | "bahour"
@@ -441,15 +530,117 @@ type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
-  T extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"]),
-> = (DefaultSchema["Tables"] & DefaultSchema["Views"])[T] extends {
-  Row: infer R
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
-  ? R
-  : never
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-export type Enums<T extends keyof DefaultSchema["Enums"]> =
-  DefaultSchema["Enums"][T]
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {
@@ -460,6 +651,7 @@ export const Constants = {
         "en_cours",
         "terminee",
         "annulee",
+        "expiree",
       ],
       statut_validation: ["en_attente", "valide", "refuse"],
       type_intervenant: [
