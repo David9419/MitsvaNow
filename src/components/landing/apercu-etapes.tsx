@@ -3,23 +3,20 @@
 import { useEffect, useState } from "react"
 import { Check, HandHeart, LocateFixed, MapPin, Phone, Search, User, Users } from "lucide-react"
 
+import { useT } from "@/components/i18n/langue-provider"
 import { ESPACES_SERVICES } from "@/lib/espaces"
 import { cn } from "@/lib/utils"
 
 const DUREE = 5500
 
-const ETAPES = [
-  { icon: Search, titre: "Dites ce dont vous avez besoin", texte: "Téfilines, mezouza, 'hallot, bar-mitsva… choisissez le service en deux clics." },
-  { icon: MapPin, titre: "Partagez votre position", texte: "Autorisez la localisation ou tapez simplement votre adresse." },
-  { icon: Users, titre: "On trouve le plus proche", texte: "La plateforme contacte l'intervenant disponible le plus près de vous." },
-  { icon: HandHeart, titre: "Il vient vous aider", texte: "L'intervenant accepte et se déplace. Vous suivez tout en direct." },
-]
+const ICONES_ETAPES = [Search, MapPin, Users, HandHeart]
 
 /** Écran 1 : choix du service */
 function Ecran1() {
+  const t = useT()
   return (
     <div className="flex flex-col gap-3 p-4">
-      <p className="text-[13px] font-bold">De quoi avez-vous besoin ?</p>
+      <p className="text-[13px] font-bold">{t.apercu.besoin}</p>
       <div className="grid grid-cols-2 gap-2">
         {ESPACES_SERVICES.map((e, i) => (
           <div
@@ -36,15 +33,23 @@ function Ecran1() {
               <span className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <e.icon className="size-3.5" />
               </span>
-              {e.nom}
+              {t.espaces[e.slug].nom}
             </div>
           </div>
         ))}
       </div>
       <div className="flex animate-in fade-in slide-in-from-bottom-2 flex-wrap gap-1.5 delay-1000 duration-500 fill-mode-both">
-        <span className="rounded-full bg-primary px-3 py-1 text-[10px] font-semibold text-primary-foreground">Mettre les téfilines</span>
-        <span className="rounded-full border px-3 py-1 text-[10px]">Mezouza</span>
-        <span className="rounded-full border px-3 py-1 text-[10px]">Boîte de tsédaka</span>
+        {t.apercu.puces.map((p, i) => (
+          <span
+            key={p}
+            className={cn(
+              "rounded-full px-3 py-1 text-[10px]",
+              i === 0 ? "bg-primary font-semibold text-primary-foreground" : "border"
+            )}
+          >
+            {p}
+          </span>
+        ))}
       </div>
     </div>
   )
@@ -52,6 +57,7 @@ function Ecran1() {
 
 /** Écran 2 : position sur une petite carte */
 function Ecran2() {
+  const t = useT()
   return (
     <div className="flex h-full flex-col">
       <div className="relative flex-1 overflow-hidden bg-[linear-gradient(to_right,color-mix(in_oklab,var(--primary)_10%,transparent)_1px,transparent_1px),linear-gradient(to_bottom,color-mix(in_oklab,var(--primary)_10%,transparent)_1px,transparent_1px)] bg-[size:22px_22px]">
@@ -69,8 +75,8 @@ function Ecran2() {
           <LocateFixed className="size-3.5" />
         </span>
         <div>
-          <p className="text-[11px] font-semibold">Position trouvée</p>
-          <p className="text-[10px] text-muted-foreground">12 rue de Rivoli, Paris</p>
+          <p className="text-[11px] font-semibold">{t.apercu.positionTrouvee}</p>
+          <p className="text-[10px] text-muted-foreground">{t.apercu.adresseExemple}</p>
         </div>
       </div>
     </div>
@@ -79,6 +85,7 @@ function Ecran2() {
 
 /** Écran 3 : recherche radar */
 function Ecran3() {
+  const t = useT()
   return (
     <div className="flex h-full flex-col items-center justify-center gap-5 p-4">
       <div className="relative size-40">
@@ -107,9 +114,9 @@ function Ecran3() {
         </span>
       </div>
       <div className="text-center">
-        <p className="text-[12px] font-bold">Recherche du plus proche…</p>
+        <p className="text-[12px] font-bold">{t.apercu.recherche}</p>
         <p className="mt-1 animate-in fade-in text-[11px] font-semibold text-success delay-[2200ms] fill-mode-both">
-          Yossef trouvé à 350 m !
+          {t.apercu.trouve}
         </p>
       </div>
     </div>
@@ -118,19 +125,20 @@ function Ecran3() {
 
 /** Écran 4 : l'intervenant arrive */
 function Ecran4() {
+  const t = useT()
   return (
     <div className="flex h-full flex-col justify-center gap-4 p-4">
       <div className="mx-auto flex size-14 animate-in zoom-in items-center justify-center rounded-full bg-success text-success-foreground shadow-lg shadow-success/30 duration-500">
         <Check className="size-7" />
       </div>
-      <p className="text-center text-[13px] font-bold">Demande acceptée !</p>
+      <p className="text-center text-[13px] font-bold">{t.apercu.acceptee}</p>
       <div className="flex animate-in fade-in slide-in-from-bottom-4 items-center gap-3 rounded-2xl border bg-card p-3 delay-500 duration-500 fill-mode-both">
         <span className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <User className="size-4" />
         </span>
         <div className="flex-1">
-          <p className="text-[11px] font-bold">Yossef · Bahour</p>
-          <p className="text-[10px] text-muted-foreground">arrive dans ~5 min</p>
+          <p className="text-[11px] font-bold">{t.apercu.qui}</p>
+          <p className="text-[10px] text-muted-foreground">{t.apercu.arrive}</p>
         </div>
         <span className="flex size-7 items-center justify-center rounded-full bg-success text-success-foreground">
           <Phone className="size-3" />
@@ -141,9 +149,9 @@ function Ecran4() {
           <div className="apercu-trajet h-full rounded-full bg-gradient-to-r from-primary to-success" />
         </div>
         <div className="mt-1.5 flex justify-between text-[9px] text-muted-foreground">
-          <span>Acceptée</span>
-          <span>En route</span>
-          <span>Arrivé</span>
+          {t.apercu.frise.map((x) => (
+            <span key={x}>{x}</span>
+          ))}
         </div>
       </div>
     </div>
@@ -154,13 +162,15 @@ const ECRANS = [Ecran1, Ecran2, Ecran3, Ecran4]
 
 /** « Comment ça marche » : les étapes défilent toutes seules sur un téléphone. */
 export function ApercuEtapes() {
+  const t = useT()
+  const ETAPES = t.apercu.etapes.map((e, i) => ({ ...e, icon: ICONES_ETAPES[i] }))
   const [etape, setEtape] = useState(0)
   const [pause, setPause] = useState(false)
 
   useEffect(() => {
     if (pause) return
-    const t = setTimeout(() => setEtape((e) => (e + 1) % ETAPES.length), DUREE)
-    return () => clearTimeout(t)
+    const minuteur = setTimeout(() => setEtape((e) => (e + 1) % ICONES_ETAPES.length), DUREE)
+    return () => clearTimeout(minuteur)
   }, [etape, pause])
 
   const Ecran = ECRANS[etape]
@@ -181,7 +191,7 @@ export function ApercuEtapes() {
                 type="button"
                 onClick={() => setEtape(i)}
                 className={cn(
-                  "group relative flex w-full items-start gap-4 overflow-hidden rounded-2xl border p-5 text-left transition-all duration-500",
+                  "group relative flex w-full items-start gap-4 overflow-hidden rounded-2xl border p-5 text-start transition-all duration-500",
                   actif ? "border-primary/40 bg-card shadow-xl shadow-primary/10" : "border-transparent opacity-60 hover:bg-card/60 hover:opacity-100"
                 )}
               >
@@ -194,7 +204,9 @@ export function ApercuEtapes() {
                   <e.icon className="size-6" />
                 </span>
                 <span>
-                  <span className="text-xs font-bold tracking-widest text-primary uppercase">Étape {i + 1}</span>
+                  <span className="text-xs font-bold tracking-widest text-primary uppercase">
+                    {t.apercu.etape} {i + 1}
+                  </span>
                   <span className="mt-1 block font-heading text-base font-bold">{e.titre}</span>
                   <span
                     className={cn(
@@ -206,7 +218,7 @@ export function ApercuEtapes() {
                   </span>
                 </span>
                 {/* Barre de progression de l'étape */}
-                <span className="absolute bottom-0 left-0 h-1 w-full bg-muted/60">
+                <span className="absolute start-0 bottom-0 h-1 w-full bg-muted/60">
                   {actif && (
                     <span
                       key={`${etape}-${pause}`}

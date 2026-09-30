@@ -118,6 +118,12 @@
   --sidebar-ring: #7D93FF;
 }
 
+/* Hébreu : même mise en page, mais avec une police qui a les lettres hébraïques */
+:root:lang(he) {
+  --font-figtree: var(--font-heebo);
+  --font-unbounded: var(--font-heebo);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -313,6 +319,9 @@
 }
 .is-visible .ligne-progression {
   transform: scaleX(1);
+}
+[dir="rtl"] .ligne-progression {
+  transform-origin: right;
 }
 
 /* Message d'erreur qui secoue */

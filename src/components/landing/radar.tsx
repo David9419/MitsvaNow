@@ -25,7 +25,11 @@ function positionner(angle: number, distance: number) {
   }
 }
 
-export function Radar() {
+export function Radar({
+  textes,
+}: {
+  textes: { plusProche: string; nouvelle: string; service: string; acceptee: string; arrivee: string }
+}) {
   const plusProche = intervenants.find((p) => p.nearest)!
   const cible = positionner(plusProche.angle, plusProche.distance)
 
@@ -88,7 +92,7 @@ export function Radar() {
                 <User className="size-5" />
               </div>
               <span className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 rounded-full bg-success px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap text-success-foreground shadow-md">
-                Le plus proche · 350 m
+                {textes.plusProche}
               </span>
             </div>
           ) : (
@@ -112,8 +116,8 @@ export function Radar() {
 
       {/* Petites bulles d'information */}
       <div className="absolute -top-2 -left-4 hidden animate-float rounded-2xl bg-card px-4 py-3 shadow-xl ring-1 ring-border sm:block">
-        <p className="text-xs text-muted-foreground">Nouvelle demande</p>
-        <p className="text-sm font-semibold">Mettre les téfilines</p>
+        <p className="text-xs text-muted-foreground">{textes.nouvelle}</p>
+        <p className="text-sm font-semibold">{textes.service}</p>
       </div>
       <div
         className="absolute -right-4 -bottom-2 hidden animate-float items-center gap-3 rounded-2xl bg-card px-4 py-3 shadow-xl ring-1 ring-border sm:flex"
@@ -123,8 +127,8 @@ export function Radar() {
           <Check className="size-4" />
         </div>
         <div>
-          <p className="text-sm font-semibold">Demande acceptée</p>
-          <p className="text-xs text-muted-foreground">Arrivée dans ~5 min</p>
+          <p className="text-sm font-semibold">{textes.acceptee}</p>
+          <p className="text-xs text-muted-foreground">{textes.arrivee}</p>
         </div>
       </div>
     </div>

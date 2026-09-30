@@ -2,6 +2,7 @@ import {
   BookOpen,
   Coins,
   DoorOpen,
+  Ear,
   Flame,
   GraduationCap,
   HandHeart,
@@ -10,29 +11,36 @@ import {
   ScrollText,
   ShieldCheck,
   Sparkles,
+  Users,
   Wheat,
+  type LucideIcon,
 } from "lucide-react"
 
-const services = [
-  { nom: "Téfilines", icon: ScrollText },
-  { nom: "Installation de mezouza", icon: DoorOpen },
-  { nom: "'Hallot pour Chabbat", icon: Wheat },
-  { nom: "Bougies de Chabbat", icon: Flame },
-  { nom: "Vérification de la cacheroute", icon: ShieldCheck },
-  { nom: "Préparation à la bar-mitsva", icon: GraduationCap },
-  { nom: "Cours de Torah", icon: BookOpen },
-  { nom: "Boîte de tsédaka", icon: Coins },
-  { nom: "Livraison de siddour", icon: Library },
-  { nom: "Bérakhot", icon: Sparkles },
-  { nom: "Mariage", icon: Heart },
-  { nom: "Visites aux personnes seules", icon: HandHeart },
+// Une icône par service du bandeau (même ordre que accueil.services dans les dictionnaires)
+const ICONES: LucideIcon[] = [
+  ScrollText,
+  DoorOpen,
+  Wheat,
+  Flame,
+  Users,
+  ShieldCheck,
+  GraduationCap,
+  BookOpen,
+  Coins,
+  Library,
+  Sparkles,
+  Heart,
+  Ear,
+  HandHeart,
 ]
 
 /** Bandeau des services qui défile à l'infini (deux copies identiques côte à côte). */
-export function BandeauServices() {
+export function BandeauServices({ services, label }: { services: string[]; label: string }) {
   return (
     <section
-      aria-label="Exemples de services"
+      aria-label={label}
+      // Le défilement va toujours dans le même sens, quelle que soit la langue
+      dir="ltr"
       className="group relative border-y bg-card/70 py-6 backdrop-blur"
     >
       <div
@@ -48,17 +56,20 @@ export function BandeauServices() {
             aria-hidden={copie === 1}
             className="flex shrink-0 animate-defile items-center gap-4 pr-4 group-hover:[animation-play-state:paused]"
           >
-            {services.map((s) => (
-              <li
-                key={s.nom}
-                className="flex items-center gap-3 rounded-full border bg-background px-5 py-2.5 whitespace-nowrap shadow-sm"
-              >
-                <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <s.icon className="size-4" />
-                </span>
-                <span className="font-medium">{s.nom}</span>
-              </li>
-            ))}
+            {services.map((nom, i) => {
+              const Icone = ICONES[i % ICONES.length]
+              return (
+                <li
+                  key={nom}
+                  className="flex items-center gap-3 rounded-full border bg-background px-5 py-2.5 whitespace-nowrap shadow-sm"
+                >
+                  <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <Icone className="size-4" />
+                  </span>
+                  <span className="font-medium">{nom}</span>
+                </li>
+              )
+            })}
           </ul>
         ))}
       </div>

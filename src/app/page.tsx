@@ -28,16 +28,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { ServicesEspace } from "@/components/landing/services-espace"
 import { ESPACES } from "@/lib/espaces"
+import { obtenirDico } from "@/lib/i18n/serveur"
 
-const statuts = [
-  { icon: Hourglass, nom: "En attente", texte: "On cherche l'intervenant" },
-  { icon: CheckCircle2, nom: "Acceptée", texte: "Un intervenant a dit oui" },
-  { icon: PlayCircle, nom: "En cours", texte: "Il est en route ou sur place" },
-  { icon: Clock, nom: "Terminée", texte: "Mission accomplie !" },
-]
+const ICONES_STATUTS = [Hourglass, CheckCircle2, PlayCircle, Clock]
 
-export default function Home() {
+export default async function Home() {
+  const t = await obtenirDico()
+  const a = t.accueil
+  const statuts = a.statuts.map((s, i) => ({ ...s, icon: ICONES_STATUTS[i] }))
   return (
     <main className="flex-1 overflow-x-clip">
       {/* ---------- Accueil ---------- */}
@@ -64,14 +64,14 @@ export default function Home() {
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />
                 <span className="relative inline-flex size-2 rounded-full bg-success" />
               </span>
-              Des intervenants près de chez vous
+              {a.badge}
             </Badge>
 
             <h1 className="text-4xl leading-tight font-bold tracking-tight md:text-6xl">
-              <TexteFlou texte="Une mitsva ?" delai={200} pas={120} />
+              <TexteFlou texte={a.titre1} delai={200} pas={120} />
               <br />
               <TexteFlou
-                texte="Quelqu'un arrive."
+                texte={a.titre2}
                 delai={450}
                 pas={140}
                 classeMot="bg-gradient-to-r from-primary via-primary/55 to-primary bg-[length:200%_auto] bg-clip-text text-transparent"
@@ -79,56 +79,52 @@ export default function Home() {
             </h1>
 
             <p className="animate-in fade-in slide-in-from-bottom-4 max-w-lg text-lg text-muted-foreground delay-200 duration-700 fill-mode-both">
-              Mettre les téfilines, installer une mezouza, préparer les
-              &apos;hallot, préparer une bar-mitsva… Faites une demande et{" "}
-              <strong className="text-foreground">
-                Mivtsa Now trouve l&apos;intervenant disponible le plus proche
-              </strong>{" "}
-              pour venir vous aider.
+              {a.introAvant}
+              <strong className="text-foreground">{a.introFort}</strong>
+              {a.introApres}
             </p>
 
             <div className="animate-in fade-in slide-in-from-bottom-4 flex flex-wrap gap-3 delay-300 duration-700 fill-mode-both">
               <Button asChild size="lg" className="group shadow-lg shadow-primary/25">
                 <Link href="/inscription?espace=demandeurs">
-                  Faire une demande
-                  <ArrowRight className="transition-transform group-hover:translate-x-1" />
+                  {a.faireDemande}
+                  <ArrowRight className="transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline">
-                <Link href="/inscription?role=intervenant">Devenir intervenant</Link>
+                <Link href="/inscription?role=intervenant">{a.devenirIntervenant}</Link>
               </Button>
             </div>
 
             <p className="animate-in fade-in text-sm text-muted-foreground delay-500 duration-700 fill-mode-both">
-              Déjà inscrit ?{" "}
+              {a.dejaInscrit}{" "}
               <Link href="/connexion" className="font-medium text-primary hover:underline">
-                Se connecter
+                {t.commun.seConnecter}
               </Link>
             </p>
           </div>
 
           <div className="animate-in fade-in zoom-in-90 px-4 delay-200 duration-1000 fill-mode-both">
-            <Radar />
+            <Radar textes={t.radar} />
           </div>
         </div>
       </section>
 
       {/* ---------- Bandeau des services qui défile ---------- */}
-      <BandeauServices />
+      <BandeauServices services={a.services} label={a.bandeau} />
 
       {/* ---------- Comment ça marche ---------- */}
       <section id="comment" className="scroll-mt-20 py-24">
         <div className="mx-auto max-w-6xl px-4">
           <Reveal className="mx-auto mb-14 max-w-2xl text-center">
             <Badge variant="secondary" className="mb-4">
-              Comment ça marche
+              {a.commentBadge}
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              <TexteFlou texte="4 étapes, quelques minutes" />
+              <TexteFlou texte={a.commentTitre} />
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Pas besoin de connaître quelqu&apos;un : la plateforme s&apos;occupe
-              de trouver la bonne personne, au bon endroit.
+              {a.commentTexte}
             </p>
           </Reveal>
           <Reveal>
@@ -142,19 +138,20 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4">
           <Reveal className="mx-auto mb-14 max-w-2xl text-center">
             <Badge variant="secondary" className="mb-4 bg-card">
-              Les 5 espaces
+              {a.espacesBadge}
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              <TexteFlou texte="Le bon intervenant pour chaque besoin" />
+              <TexteFlou texte={a.espacesTitre} />
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Un espace pour ceux qui ont un besoin, quatre espaces pour ceux
-              qui viennent aider. Choisissez le vôtre.
+              {a.espacesTexte}
             </p>
           </Reveal>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {ESPACES.map((e, i) => (
+            {ESPACES.map((e, i) => {
+              const te = t.espaces[e.slug]
+              return (
               <Reveal
                 key={e.slug}
                 delay={(i % 2) * 150}
@@ -168,51 +165,46 @@ export default function Home() {
                   }
                 >
                   {e.role === "demandeur" && (
-                    <Badge className="absolute top-5 right-5 z-10 bg-accent text-accent-foreground">
-                      Vous avez un besoin ?
+                    <Badge className="absolute end-5 top-5 z-10 bg-accent text-accent-foreground">
+                      {a.besoinBadge}
                     </Badge>
                   )}
                   <div
                     aria-hidden
-                    className="absolute -top-16 -right-16 size-40 rounded-full bg-primary/5 transition-transform duration-700 group-hover:scale-[3]"
+                    className="absolute -end-16 -top-16 size-40 rounded-full bg-primary/5 transition-transform duration-700 group-hover:scale-[3]"
                   />
                   <CardHeader className="relative">
                     <div className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/30">
                       <e.icon className="size-7" />
                     </div>
-                    <CardTitle className="font-heading text-xl">{e.nom}</CardTitle>
+                    <CardTitle className="font-heading text-xl">{te.nom}</CardTitle>
                     <CardDescription className="font-medium text-primary">
-                      {e.intervenants}
+                      {te.intervenants}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="relative flex flex-col gap-4">
-                    <p className="text-muted-foreground">{e.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {e.exemples.map((x) => (
-                        <Badge key={x} variant="secondary">
-                          {x}
-                        </Badge>
-                      ))}
-                    </div>
+                    <p className="text-muted-foreground">{te.description}</p>
+                    <ServicesEspace exemples={te.exemples} plus={te.plus} />
                   </CardContent>
                   <CardFooter className="relative mt-auto flex flex-wrap gap-3">
                     <Button asChild className="group/btn">
                       <Link href={`/inscription?espace=${e.slug}`}>
                         <UserPlus />
-                        {e.role === "demandeur" ? "Faire une demande" : "Créer un compte"}
-                        <ArrowRight className="transition-transform group-hover/btn:translate-x-1" />
+                        {e.role === "demandeur" ? a.faireDemande : a.creerCompte}
+                        <ArrowRight className="transition-transform group-hover/btn:translate-x-1 rtl:rotate-180 rtl:group-hover/btn:-translate-x-1" />
                       </Link>
                     </Button>
                     <Button asChild variant="outline">
                       <Link href={`/connexion?espace=${e.slug}`}>
                         <LogIn />
-                        Se connecter
+                        {t.commun.seConnecter}
                       </Link>
                     </Button>
                   </CardFooter>
                 </Card>
               </Reveal>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -222,16 +214,16 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4">
           <Reveal className="mx-auto mb-14 max-w-2xl text-center">
             <Badge variant="secondary" className="mb-4">
-              Suivi en direct
+              {a.suiviBadge}
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              <TexteFlou texte="Vous savez toujours où en est votre demande" />
+              <TexteFlou texte={a.suiviTitre} />
             </h2>
           </Reveal>
 
           <div className="relative grid gap-10 md:grid-cols-4">
             <Reveal className="absolute top-7 right-[12.5%] left-[12.5%] hidden md:block">
-              <div className="ligne-progression h-1 rounded-full bg-gradient-to-r from-primary via-accent to-success" />
+              <div className="ligne-progression h-1 rounded-full bg-gradient-to-r from-primary via-accent to-success rtl:bg-gradient-to-l" />
             </Reveal>
             {statuts.map((s, i) => (
               <Reveal key={s.nom} delay={300 + i * 250} className="relative text-center">
@@ -260,19 +252,18 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 md:grid-cols-[1fr_1.5fr]">
           <Reveal>
             <Badge variant="secondary" className="mb-4 bg-card">
-              Questions fréquentes
+              {a.faqBadge}
             </Badge>
             <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-              <TexteFlou texte="Vous vous posez des questions ?" />
+              <TexteFlou texte={a.faqTitre} />
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Voici les réponses aux questions qu&apos;on nous pose le plus
-              souvent.
+              {a.faqTexte}
             </p>
           </Reveal>
           <Reveal delay={150}>
             <Card className="px-6 py-2">
-              <Faq />
+              <Faq questions={a.faq} />
             </Card>
           </Reveal>
         </div>
@@ -294,12 +285,10 @@ export default function Home() {
             <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-6">
               <HandHeart className="size-12 animate-float" />
               <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
-                <TexteFlou texte="Vous voulez aider ?" />
+                <TexteFlou texte={a.rejoindreTitre} />
               </h2>
               <p className="text-lg opacity-90">
-                Bahour, femme de l&apos;équipe, sofer, rav, rabbanit ou
-                chaliah : inscrivez-vous comme intervenant et recevez les
-                demandes des personnes proches de vous.
+                {a.rejoindreTexte}
               </p>
               <Button
                 asChild
@@ -307,7 +296,7 @@ export default function Home() {
                 className="group bg-accent text-accent-foreground shadow-lg hover:bg-accent/90"
               >
                 <Link href="/inscription?role=intervenant">
-                  Devenir intervenant
+                  {a.devenirIntervenant}
                   <Send className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </Link>
               </Button>
