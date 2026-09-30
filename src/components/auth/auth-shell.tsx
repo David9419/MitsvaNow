@@ -3,15 +3,14 @@ import type { ReactNode } from "react"
 import { MapPin, ShieldCheck, Sparkles } from "lucide-react"
 
 import { ESPACES } from "@/lib/espaces"
+import { obtenirDico } from "@/lib/i18n/serveur"
 
-const points = [
-  { icon: MapPin, titre: "Au plus près de vous", texte: "L'intervenant disponible le plus proche est prévenu en quelques secondes." },
-  { icon: ShieldCheck, titre: "Des intervenants engagés", texte: "Bahourim, équipe féminine, rabbanim et chlou'him près de chez vous." },
-  { icon: Sparkles, titre: "Simple et gratuit", texte: "Ouvert à tous, quel que soit votre niveau." },
-]
+const ICONES_POINTS = [MapPin, ShieldCheck, Sparkles]
 
 /** Mise en page des pages de connexion / inscription : présentation à gauche, formulaire à droite. */
-export function AuthShell({ children }: { children: ReactNode }) {
+export async function AuthShell({ children }: { children: ReactNode }) {
+  const t = await obtenirDico()
+  const points = t.auth.points.map((p, i) => ({ ...p, icon: ICONES_POINTS[i] }))
   return (
     <main className="grid flex-1 lg:min-h-[calc(100svh-4rem)] lg:grid-cols-[1fr_1.1fr]">
       {/* ---------- Présentation (grand écran) ---------- */}
@@ -47,19 +46,19 @@ export function AuthShell({ children }: { children: ReactNode }) {
           {/* Phrase d'accroche */}
           <div className="max-w-md">
             <h2 className="animate-in fade-in slide-in-from-bottom-4 text-4xl leading-tight font-bold delay-150 duration-700 fill-mode-both xl:text-5xl">
-              Une mitsva ?<br />
-              <span className="text-accent">Quelqu&apos;un arrive.</span>
+              {t.auth.accroche1}
+              <br />
+              <span className="text-accent">{t.auth.accroche2}</span>
             </h2>
             <p className="animate-in fade-in mt-5 text-lg opacity-85 delay-300 duration-700 fill-mode-both">
-              Téfilines, mezouza, &apos;hallot, bar-mitsva… Mivtsa Now
-              vous met en relation avec l&apos;intervenant le plus proche.
+              {t.auth.presentation}
             </p>
 
             <ul className="mt-10 flex flex-col gap-5">
               {points.map((p, i) => (
                 <li
                   key={p.titre}
-                  className="animate-in fade-in slide-in-from-left-4 flex gap-4 duration-700 fill-mode-both"
+                  className="animate-in fade-in slide-in-from-left-4 flex gap-4 duration-700 fill-mode-both rtl:slide-in-from-right-4"
                   style={{ animationDelay: `${450 + i * 150}ms` }}
                 >
                   <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/15 ring-1 ring-primary-foreground/20 dark:bg-primary/15 dark:text-primary dark:ring-primary/30">
@@ -77,7 +76,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
           {/* Les 4 espaces */}
           <div className="animate-in fade-in delay-1000 duration-700 fill-mode-both">
             <p className="mb-3 text-xs font-semibold tracking-widest uppercase opacity-70">
-              5 espaces
+              {t.auth.cinqEspaces}
             </p>
             <div className="grid w-fit grid-cols-2 gap-2">
               {ESPACES.map((e) => (
@@ -86,7 +85,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
                   className="flex items-center gap-2 rounded-full bg-primary-foreground/10 px-3 py-1.5 text-sm ring-1 ring-primary-foreground/15 dark:bg-primary/10 dark:ring-primary/25"
                 >
                   <e.icon className="size-4" />
-                  {e.nom}
+                  {t.espaces[e.slug].nom}
                 </span>
               ))}
             </div>

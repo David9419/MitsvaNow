@@ -2,8 +2,11 @@ import type { Metadata } from "next"
 
 import { AuthShell } from "@/components/auth/auth-shell"
 import { InscriptionForm } from "@/components/auth/inscription-form"
+import { obtenirDico } from "@/lib/i18n/serveur"
 
-export const metadata: Metadata = { title: "Créer un compte — Mivtsa Now" }
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: (await obtenirDico()).meta.inscription }
+}
 
 export default async function InscriptionPage(props: PageProps<"/inscription">) {
   const { espace, role } = await props.searchParams

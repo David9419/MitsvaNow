@@ -6,6 +6,7 @@ import { Loader2, Mail } from "lucide-react"
 
 import { connexion } from "@/app/(auth)/actions"
 import { Champ, ChampMotDePasse, MessageErreur } from "@/components/auth/champ"
+import { useT } from "@/components/i18n/langue-provider"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { trouverEspace } from "@/lib/espaces"
@@ -19,6 +20,8 @@ export function ConnexionForm({
 }) {
   const [etat, action, enCours] = useActionState(connexion, undefined)
   const espace = trouverEspace(espaceInitial)
+  const t = useT()
+  const c = t.auth.connexion
 
   return (
     <div>
@@ -26,18 +29,18 @@ export function ConnexionForm({
         {espace && (
           <Badge variant="secondary" className="mb-4 gap-1.5 px-3 py-1">
             <espace.icon className="size-3.5" />
-            Espace {espace.nom}
+            {t.tableau.espace(t.espaces[espace.slug].nom)}
           </Badge>
         )}
-        <h1 className="text-3xl font-bold tracking-tight">Content de vous revoir</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{c.titre}</h1>
         <p className="mt-2 text-muted-foreground">
-          Entrez votre e-mail et votre mot de passe pour vous connecter.
+          {c.texte}
         </p>
       </div>
 
       <form action={action} className="flex flex-col gap-5">
         <Champ
-          label="E-mail"
+          label={t.auth.champs.email}
           id="email"
           icon={Mail}
           type="email"
@@ -45,7 +48,7 @@ export function ConnexionForm({
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck={false}
-          placeholder="vous@exemple.fr"
+          placeholder={t.auth.champs.emailPh}
           required
           defaultValue={etat?.champs?.email}
         />
@@ -55,7 +58,7 @@ export function ConnexionForm({
             href="/mot-de-passe-oublie"
             className="self-end text-sm font-medium text-primary underline-offset-4 hover:underline"
           >
-            Mot de passe oublié ?
+            {c.oublie}
           </Link>
         </div>
 
@@ -64,21 +67,21 @@ export function ConnexionForm({
         <Button type="submit" size="lg" disabled={enCours} className="h-12 text-base shadow-lg shadow-primary/25">
           {enCours ? (
             <>
-              <Loader2 className="animate-spin" /> Connexion…
+              <Loader2 className="animate-spin" /> {c.enCours}
             </>
           ) : (
-            "Se connecter"
+            c.bouton
           )}
         </Button>
 
         <div className="relative my-2 text-center text-sm text-muted-foreground">
           <span className="absolute inset-x-0 top-1/2 h-px bg-border" />
-          <span className="relative bg-background px-3">Pas encore de compte ?</span>
+          <span className="relative bg-background px-3">{c.pasDeCompte}</span>
         </div>
 
         <Button asChild variant="outline" size="lg" className="h-12 text-base">
           <Link href={espace ? `/inscription?espace=${espace.slug}` : "/inscription"}>
-            Créer un compte
+            {c.creer}
           </Link>
         </Button>
       </form>

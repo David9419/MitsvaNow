@@ -3,6 +3,7 @@
 import { useState, type ComponentProps } from "react"
 import { Eye, EyeOff, Lock, type LucideIcon } from "lucide-react"
 
+import { useT } from "@/components/i18n/langue-provider"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -18,12 +19,12 @@ export function Champ({
       <Label htmlFor={id}>{label}</Label>
       <div className="group relative">
         {Icon && (
-          <Icon className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+          <Icon className="pointer-events-none absolute start-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
         )}
         <Input
           id={id}
           name={id}
-          className={`h-12 bg-card transition-shadow focus-visible:shadow-md ${Icon ? "pl-10" : ""}`}
+          className={`h-12 bg-card transition-shadow focus-visible:shadow-md ${Icon ? "ps-10" : ""}`}
           {...props}
         />
       </div>
@@ -33,23 +34,27 @@ export function Champ({
 
 /** Champ mot de passe avec bouton « œil » pour l'afficher. */
 export function ChampMotDePasse({
-  label = "Mot de passe",
+  label,
   autoComplete,
   aide,
+  nom = "mot_de_passe",
 }: {
   label?: string
   autoComplete: string
   aide?: string
+  /** Nom du champ dans le formulaire */
+  nom?: string
 }) {
+  const t = useT()
   const [visible, setVisible] = useState(false)
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor="mot_de_passe">{label}</Label>
+      <Label htmlFor={nom}>{label ?? t.auth.champs.mdp}</Label>
       <div className="group relative">
-        <Lock className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
+        <Lock className="pointer-events-none absolute start-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
         <Input
-          id="mot_de_passe"
-          name="mot_de_passe"
+          id={nom}
+          name={nom}
           type={visible ? "text" : "password"}
           autoComplete={autoComplete}
           required
@@ -59,13 +64,13 @@ export function ChampMotDePasse({
           autoCapitalize="none"
           autoCorrect="off"
           spellCheck={false}
-          className="h-12 bg-card pr-11 pl-10 transition-shadow focus-visible:shadow-md"
+          className="h-12 bg-card ps-10 pe-11 transition-shadow focus-visible:shadow-md"
         />
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="absolute top-1/2 right-2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-          aria-label={visible ? "Cacher le mot de passe" : "Afficher le mot de passe"}
+          className="absolute end-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          aria-label={visible ? t.auth.champs.cacher : t.auth.champs.afficher}
         >
           {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
         </button>
