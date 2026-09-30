@@ -15,7 +15,7 @@ export function Logo({ className }: { className?: string }) {
         priority
         className="h-8 w-auto transition-transform duration-500 group-hover:-rotate-6 group-hover:scale-110"
       />
-      <span className="font-heading text-lg font-bold">
+      <span className="font-heading text-base font-bold whitespace-nowrap max-[374px]:hidden sm:text-lg">
         <span className="text-foreground">Mivtsa</span>{" "}
         <span className="text-primary">Now</span>
       </span>

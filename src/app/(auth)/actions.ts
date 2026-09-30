@@ -69,7 +69,6 @@ export async function inscription(
   if (!/^[+0-9 ().-]{8,20}$/.test(champs.telephone)) return { erreur: e.telInvalide, champs }
   if (!/^\S+@\S+\.\S+$/.test(champs.email)) return { erreur: e.emailInvalide, champs }
   if (motDePasse.length < 8) return { erreur: e.mdpCourt, champs }
-  if (!photo) return { erreur: e.photoRequise, champs }
 
   const espace = trouverEspace(champs.espace)
   if (!espace) return { erreur: e.choisirEspace, champs }
@@ -111,9 +110,9 @@ export async function inscription(
   // Supabase ne signale pas les e-mails déjà utilisés : il renvoie un compte sans identité.
   if (data.user && data.user.identities?.length === 0) return { erreur: e.existe, champs }
 
-  // Compte créé : on range la photo dans « photos/<id>/… » avec la session toute neuve
+  // Compte créé : on range la photo (si elle a été ajoutée) dans « photos/<id>/… » avec la session toute neuve
   if (data.session && data.user) {
-    try {
+    if (photo) try {
       const client = createSupabaseClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
         auth: { persistSession: false, autoRefreshToken: false },
         global: { headers: { Authorization: `Bearer ${data.session.access_token}` } },

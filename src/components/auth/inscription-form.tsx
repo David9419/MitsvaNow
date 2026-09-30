@@ -49,7 +49,7 @@ export function InscriptionForm({
   const espace = trouverEspace(espaceSlug)
   const intervenant = espace?.role === "intervenant"
 
-  // ---------- Photo du visage (obligatoire) ----------
+  // ---------- Photo du visage (facultative) ----------
   const [photo, setPhoto] = useState<string | null>(null)
   const [photoEnCours, setPhotoEnCours] = useState(false)
   const [erreurLocale, setErreurLocale] = useState<string | null>(null)
@@ -99,20 +99,15 @@ export function InscriptionForm({
       )
     })
 
-  // À l'envoi : photo obligatoire ; si la position n'est pas encore connue, on la demande d'abord
+  // À l'envoi : si la position n'est pas encore connue, on la demande d'abord
   const envoyer = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formulaire = e.currentTarget
-    if (!photo) {
-      setErreurLocale(t.auth.erreurs.photoRequise)
-      blocPhoto.current?.scrollIntoView({ behavior: "smooth", block: "center" })
-      return
-    }
     setErreurLocale(null)
     let l = lieu
     if (!l && etatLoc !== "refusee" && etatLoc !== "saisie") l = await localiser()
     const donnees = new FormData(formulaire)
-    donnees.set("photo", photo)
+    donnees.set("photo", photo ?? "")
     donnees.set("lat", l ? String(l.lat) : "")
     donnees.set("lng", l ? String(l.lng) : "")
     donnees.set("adresse", l?.adresse ?? "")

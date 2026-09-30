@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useId, useRef, useState, type PointerEvent } from "react"
+import Image from "next/image"
+import { useEffect, useRef, useState, type PointerEvent } from "react"
 
 import { useT } from "@/components/i18n/langue-provider"
 import { cn } from "@/lib/utils"
@@ -17,33 +18,6 @@ const PLACE: Record<Coin, string> = {
   "haut-droite": "right-4 top-20",
   "bas-gauche": "left-4 bottom-[max(1rem,env(safe-area-inset-bottom))]",
   "bas-droite": "right-4 bottom-[max(1rem,env(safe-area-inset-bottom))]",
-}
-
-/** Le logo Instagram (dégradé officiel). */
-function LogoInstagram({ className }: { className?: string }) {
-  const id = useId()
-  return (
-    <svg viewBox="0 0 48 48" className={className} aria-hidden>
-      <defs>
-        <radialGradient id={`${id}-a`} cx="0.3" cy="1.07" r="1.3">
-          <stop offset="0" stopColor="#FFDD55" />
-          <stop offset="0.1" stopColor="#FFDD55" />
-          <stop offset="0.5" stopColor="#FF543E" />
-          <stop offset="1" stopColor="#C837AB" />
-        </radialGradient>
-        <radialGradient id={`${id}-b`} cx="-0.17" cy="0.07" r="0.6">
-          <stop offset="0" stopColor="#3771C8" />
-          <stop offset="0.13" stopColor="#3771C8" />
-          <stop offset="1" stopColor="#6600FF" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <rect width="48" height="48" rx="12" fill={`url(#${id}-a)`} />
-      <rect width="48" height="48" rx="12" fill={`url(#${id}-b)`} />
-      <rect x="11" y="11" width="26" height="26" rx="8" fill="none" stroke="#fff" strokeWidth="3.2" />
-      <circle cx="24" cy="24" r="6.2" fill="none" stroke="#fff" strokeWidth="3.2" />
-      <circle cx="31.6" cy="16.4" r="1.9" fill="#fff" />
-    </svg>
-  )
 }
 
 /**
@@ -120,14 +94,21 @@ export function BoutonInstagram() {
       }}
       style={glisse ? { left: glisse.x - 26, top: glisse.y - 26 } : undefined}
       className={cn(
-        "group fixed z-40 flex size-13 touch-none items-center justify-center rounded-2xl bg-card/80 p-1 shadow-xl ring-1 ring-border backdrop-blur-md select-none print:hidden",
+        "fixed z-40 flex size-13 touch-none items-center justify-center select-none print:hidden",
         glisse
-          ? "scale-110 cursor-grabbing shadow-2xl"
+          ? "scale-110 cursor-grabbing"
           : cn(PLACE[coin], "animate-in fade-in zoom-in-75 cursor-pointer transition-transform duration-300 hover:scale-110 active:scale-95")
       )}
     >
-      <span aria-hidden className="absolute inset-0 -z-10 animate-ping rounded-2xl bg-[#FF543E]/20 [animation-duration:3s]" />
-      <LogoInstagram className="size-full drop-shadow-sm" />
+      {/* Logo Instagram (fond transparent) */}
+      <Image
+        src="/instagram.png"
+        alt=""
+        width={52}
+        height={52}
+        draggable={false}
+        className="pointer-events-none size-full drop-shadow-[0_4px_10px_rgb(0_0_0/0.25)]"
+      />
     </a>
   )
 }

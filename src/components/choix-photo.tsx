@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { Camera, ImageUp, Loader2, Pencil } from "lucide-react"
+import { Camera, ImageUp, Loader2, Pencil, Trash2 } from "lucide-react"
 
 import { Avatar } from "@/components/avatar"
 import { Button } from "@/components/ui/button"
@@ -9,18 +9,21 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 
 /**
- * Photo ronde avec un petit stylo : « Choisir dans mes photos » ou « Prendre une photo ».
+ * Photo ronde avec un petit stylo : « Changer la photo » (appareil photo),
+ * « Ouvrir mes photos » ou « Supprimer la photo ».
  * onFichier reçoit l'image choisie (à compresser puis envoyer).
  */
 export function ChoixPhoto({
   src,
   nom,
   onFichier,
+  onSupprimer,
   enCours = false,
   libelles,
   taille = "grande",
@@ -28,8 +31,9 @@ export function ChoixPhoto({
   src: string | null
   nom?: string | null
   onFichier: (f: File) => void
+  onSupprimer?: () => void
   enCours?: boolean
-  libelles: { changer: string; choisir: string; prendre: string }
+  libelles: { changer: string; choisir: string; prendre: string; supprimer: string }
   taille?: "grande" | "moyenne"
 }) {
   const galerie = useRef<HTMLInputElement>(null)
@@ -70,12 +74,20 @@ export function ChoixPhoto({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="min-w-52">
-          <DropdownMenuItem onClick={() => galerie.current?.click()} className="gap-3">
-            <ImageUp /> {libelles.choisir}
-          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => camera.current?.click()} className="gap-3">
             <Camera /> {libelles.prendre}
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => galerie.current?.click()} className="gap-3">
+            <ImageUp /> {libelles.choisir}
+          </DropdownMenuItem>
+          {src && onSupprimer && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive" onClick={onSupprimer} className="gap-3">
+                <Trash2 /> {libelles.supprimer}
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
       <input ref={galerie} type="file" accept="image/*" className="hidden" onChange={choisi} />

@@ -107,6 +107,24 @@ export function PageParametres({ utilisateurId, profil }: { utilisateurId: strin
     }
   }
 
+  const supprimerPhoto = async () => {
+    setPhotoEnCours(true)
+    try {
+      // Une adresse vide (null) retire la photo du profil
+      const { error } = await supabase.rpc("definir_photo", { p_url: null as unknown as string })
+      if (error) throw error
+      const ancienne = photo?.split("/storage/v1/object/public/photos/")[1]
+      if (ancienne?.startsWith(`${utilisateurId}/`)) await supabase.storage.from("photos").remove([ancienne])
+      setPhoto(null)
+      toast.success(p.photoSupprimee)
+      router.refresh()
+    } catch (e) {
+      toast.error(messageErreur(e, t))
+    } finally {
+      setPhotoEnCours(false)
+    }
+  }
+
   // ---------- Prénom, nom, téléphone ----------
   const [champs, setChamps] = useState({ prenom: profil.prenom, nom: profil.nom, telephone: profil.telephone })
   const [erreurProfil, setErreurProfil] = useState<string>()
@@ -158,8 +176,9 @@ export function PageParametres({ utilisateurId, profil }: { utilisateurId: strin
                 src={photo}
                 nom={champs.prenom}
                 onFichier={changerPhoto}
+                onSupprimer={supprimerPhoto}
                 enCours={photoEnCours}
-                libelles={{ changer: p.changerPhoto, choisir: p.choisir, prendre: p.prendre }}
+                libelles={{ changer: p.changerPhoto, choisir: p.choisir, prendre: p.prendre, supprimer: p.supprimer }}
               />
               <div className="min-w-0">
                 <p className="truncate font-heading text-xl font-bold">
