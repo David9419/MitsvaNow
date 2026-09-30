@@ -1,11 +1,17 @@
+"use client"
+
 import { GraduationCap, Sprout } from "lucide-react"
 
+import { useLangue, useT } from "@/components/i18n/langue-provider"
 import { CarteWidget } from "@/components/tableau/widgets/carte-widget"
-import { ilYa } from "@/lib/tableau/outils"
+import { ilYa } from "@/lib/i18n"
 import type { DemandeIntervenant } from "@/lib/tableau/types"
 
 /** Chaliah : les personnes accompagnées (« élèves ») et leur progression. */
 export function WidgetChaliah({ demandes }: { demandes: DemandeIntervenant[] }) {
+  const t = useT()
+  const w = t.widgets
+  const langue = useLangue()
   const eleves = new Map<string, { nom: string; seances: number; derniere: string }>()
   demandes
     .filter((d) => d.demandeur_id && (d.statut === "terminee" || d.statut === "en_cours" || d.statut === "acceptee"))
@@ -25,14 +31,14 @@ export function WidgetChaliah({ demandes }: { demandes: DemandeIntervenant[] }) 
     <>
       <CarteWidget
         icon={GraduationCap}
-        titre="Mes élèves"
-        sousTitre="Les personnes que vous accompagnez"
+        titre={w.elevesTitre}
+        sousTitre={w.elevesSous}
         delai={200}
         action={<span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">{liste.length}</span>}
       >
         {liste.length === 0 ? (
           <p className="flex flex-1 items-center justify-center rounded-xl bg-muted/60 p-4 text-center text-sm text-muted-foreground">
-            Les personnes que vous accompagnerez apparaîtront ici, avec leur progression.
+            {w.elevesVide}
           </p>
         ) : (
           <ul className="flex flex-col gap-3">
@@ -41,7 +47,7 @@ export function WidgetChaliah({ demandes }: { demandes: DemandeIntervenant[] }) 
               return (
                 <li
                   key={i}
-                  className="animate-in fade-in slide-in-from-right-2 flex items-center gap-3 fill-mode-both"
+                  className="animate-in fade-in slide-in-from-right-2 flex items-center gap-3 fill-mode-both rtl:slide-in-from-left-2"
                   style={{ animationDelay: `${i * 80}ms` }}
                 >
                   <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
@@ -50,7 +56,7 @@ export function WidgetChaliah({ demandes }: { demandes: DemandeIntervenant[] }) 
                   <div className="min-w-0 flex-1">
                     <div className="flex justify-between text-sm">
                       <span className="truncate font-semibold">{e.nom}</span>
-                      <span className="text-xs text-muted-foreground">{ilYa(e.derniere)}</span>
+                      <span className="text-xs text-muted-foreground">{ilYa(e.derniere, langue)}</span>
                     </div>
                     <div className="mt-1.5 flex items-center gap-2">
                       <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
@@ -60,7 +66,7 @@ export function WidgetChaliah({ demandes }: { demandes: DemandeIntervenant[] }) 
                         />
                       </div>
                       <span className="text-[11px] text-muted-foreground tabular-nums">
-                        {e.seances} séance{e.seances > 1 ? "s" : ""}
+                        {w.seances(e.seances)}
                       </span>
                     </div>
                   </div>
@@ -71,11 +77,12 @@ export function WidgetChaliah({ demandes }: { demandes: DemandeIntervenant[] }) 
         )}
       </CarteWidget>
 
-      <CarteWidget icon={Sprout} titre="L'esprit du chaliah" delai={300}>
-        <blockquote className="border-l-4 border-primary pl-4 text-sm leading-relaxed text-muted-foreground italic">
-          Éduquer sans imposer : accompagner chacun à son rythme, avec douceur,
-          vers la découverte de la Torah.
-        </blockquote>
+      <CarteWidget icon={Sprout} titre={w.espritTitre} delai={300}>
+        <div className="flex flex-1 items-center">
+          <blockquote className="border-s-4 border-primary ps-4 text-base leading-relaxed text-muted-foreground italic">
+            {w.esprit}
+          </blockquote>
+        </div>
       </CarteWidget>
     </>
   )

@@ -38,7 +38,7 @@ export async function chargerTableauDemandeur(supabase: Awaited<ReturnType<typeo
   } = await supabase.auth.getUser()
   const [{ data }, { data: services }, { data: position }, { data: profil }] = await Promise.all([
     supabase.rpc("tableau_demandeur"),
-    supabase.from("services").select("id, nom, ordre, espaces(slug)").eq("actif", true).order("ordre"),
+    supabase.from("services").select("id, nom, nom_he, nom_en, ordre, espaces(slug)").eq("actif", true).order("ordre"),
     supabase.rpc("ma_position"),
     supabase.from("profiles").select("telephone").eq("id", user?.id ?? "").maybeSingle(),
   ])
@@ -47,6 +47,7 @@ export async function chargerTableauDemandeur(supabase: Awaited<ReturnType<typeo
     services: (services ?? []).map<ServiceDisponible>((s) => ({
       id: s.id,
       nom: s.nom,
+      noms: { fr: s.nom, he: s.nom_he || s.nom, en: s.nom_en || s.nom },
       espace_slug: s.espaces?.slug ?? "",
     })),
     position: (position as unknown as PositionEnregistree) ?? null,

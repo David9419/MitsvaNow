@@ -1,9 +1,12 @@
 import type { Metadata } from "next"
 
 import { TableauDemandeur } from "@/components/tableau/tableau-demandeur"
+import { obtenirDico } from "@/lib/i18n/serveur"
 import { chargerSession, chargerTableauDemandeur } from "@/lib/tableau/charger"
 
-export const metadata: Metadata = { title: "Mes demandes — Mivtsa Now" }
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: (await obtenirDico()).meta.mesDemandes }
+}
 
 /** Les demandes personnelles (utile aux intervenants qui ont eux-mêmes un besoin). */
 export default async function MesDemandesPage() {

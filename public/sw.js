@@ -23,10 +23,11 @@ self.addEventListener("push", (event) => {
     requireInteraction: Boolean(m.demande),
   }
   // Les boutons s'affichent sur Chrome, Edge et Android
+  // (textes dans la langue de la personne, envoyés avec la notification)
   if (m.actions)
     options.actions = [
-      { action: "accepter", title: "✅ Accepter" },
-      { action: "refuser", title: "Pas disponible" },
+      { action: "accepter", title: (m.boutons && m.boutons.accepter) || "✅ Accepter" },
+      { action: "refuser", title: (m.boutons && m.boutons.refuser) || "Pas disponible" },
     ]
   event.waitUntil(self.registration.showNotification(m.titre || "Mivtsa Now", options))
 })

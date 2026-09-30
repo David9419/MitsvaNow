@@ -50,19 +50,16 @@ export async function installerServiceWorker() {
  */
 export async function notifierNouvelleDemande(d: {
   id: string
-  service: string
-  nom: string
-  adresse: string | null
-  distance: string
+  titre: string
+  corps: string
+  boutons: { accepter: string; refuser: string }
 }) {
   if (typeof Notification === "undefined" || Notification.permission !== "granted") return
-  const titre = `Nouvelle demande : ${d.service}`
-  const corps = `${d.nom}\n📍 ${d.adresse ?? "Adresse non précisée"} (à ${d.distance})`
   try {
     const reg = await navigator.serviceWorker?.getRegistration("/")
     if (reg) {
-      await reg.showNotification(titre, {
-        body: corps,
+      await reg.showNotification(d.titre, {
+        body: d.corps,
         icon: "/icon.png",
         badge: "/icon.png",
         tag: d.id,
@@ -70,8 +67,8 @@ export async function notifierNouvelleDemande(d: {
         data: { demande: d.id },
         // Les boutons s'affichent sur Chrome, Edge et Android
         actions: [
-          { action: "accepter", title: "✅ Accepter" },
-          { action: "refuser", title: "Pas disponible" },
+          { action: "accepter", title: d.boutons.accepter },
+          { action: "refuser", title: d.boutons.refuser },
         ],
       } as NotificationOptions)
       return
@@ -79,7 +76,7 @@ export async function notifierNouvelleDemande(d: {
   } catch {
     // on se rabat sur une notification simple
   }
-  notifierNavigateur(titre, corps)
+  notifierNavigateur(d.titre, d.corps)
 }
 
 export async function demanderPermissionNotifications() {

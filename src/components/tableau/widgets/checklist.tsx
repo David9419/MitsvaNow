@@ -3,22 +3,25 @@
 import { useEffect, useState } from "react"
 import { Check, RotateCcw } from "lucide-react"
 
+import { useT } from "@/components/i18n/langue-provider"
 import { cn } from "@/lib/utils"
 
 /** Petite liste à cocher, mémorisée dans le navigateur. */
 export function Checklist({ cle, elements }: { cle: string; elements: string[] }) {
-  const [coches, setCoches] = useState<string[]>([])
+  const t = useT()
+  const [coches, setCoches] = useState<number[]>([])
 
   useEffect(() => {
     try {
       const v = localStorage.getItem(cle)
+      // Les cases cochées sont retenues par leur numéro (la même liste, quelle que soit la langue)
       // eslint-disable-next-line react-hooks/set-state-in-effect -- lecture unique du stockage local
-      if (v) setCoches(JSON.parse(v))
+      if (v) setCoches((JSON.parse(v) as unknown[]).filter((x): x is number => typeof x === "number"))
     } catch {}
   }, [cle])
 
-  const basculer = (e: string) => {
-    const suivant = coches.includes(e) ? coches.filter((x) => x !== e) : [...coches, e]
+  const basculer = (i: number) => {
+    const suivant = coches.includes(i) ? coches.filter((x) => x !== i) : [...coches, i]
     setCoches(suivant)
     try {
       localStorage.setItem(cle, JSON.stringify(suivant))
@@ -29,9 +32,7 @@ export function Checklist({ cle, elements }: { cle: string; elements: string[] }
   return (
     <div>
       <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
-        <span>
-          {fait}/{elements.length} prêt{fait > 1 ? "s" : ""}
-        </span>
+        <span>{t.widgets.prets(fait, elements.length)}</span>
         {fait > 0 && (
           <button
             type="button"
@@ -43,7 +44,7 @@ export function Checklist({ cle, elements }: { cle: string; elements: string[] }
             }}
             className="flex items-center gap-1 transition-colors hover:text-foreground"
           >
-            <RotateCcw className="size-3" /> Tout décocher
+            <RotateCcw className="size-3" /> {t.widgets.toutDecocher}
           </button>
         )}
       </div>
@@ -54,15 +55,15 @@ export function Checklist({ cle, elements }: { cle: string; elements: string[] }
         />
       </div>
       <ul className="flex flex-col gap-1.5">
-        {elements.map((e) => {
-          const ok = coches.includes(e)
+        {elements.map((e, i) => {
+          const ok = coches.includes(i)
           return (
             <li key={e}>
               <button
                 type="button"
-                onClick={() => basculer(e)}
+                onClick={() => basculer(i)}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-lg px-2 py-2 text-left text-sm transition-all hover:bg-muted active:scale-[0.98]",
+                  "flex w-full items-center gap-3 rounded-lg px-2 py-2 text-start text-sm transition-all hover:bg-muted active:scale-[0.98]",
                   ok && "text-muted-foreground line-through"
                 )}
               >

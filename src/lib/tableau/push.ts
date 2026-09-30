@@ -37,6 +37,22 @@ function pushPossible() {
   return "serviceWorker" in navigator && "PushManager" in window && typeof Notification !== "undefined"
 }
 
+// Retient que la personne a coupé les notifications sur cet appareil
+const CLE_COUPEES = "mn-notifications-coupees"
+function coupees() {
+  try {
+    return localStorage.getItem(CLE_COUPEES) === "1"
+  } catch {
+    return false
+  }
+}
+function retenirCoupees(v: boolean) {
+  try {
+    if (v) localStorage.setItem(CLE_COUPEES, "1")
+    else localStorage.removeItem(CLE_COUPEES)
+  } catch {}
+}
+
 function cleEnOctets(base64: string) {
   const b64 = (base64 + "=".repeat((4 - (base64.length % 4)) % 4)).replace(/-/g, "+").replace(/_/g, "/")
   const brut = atob(b64)
@@ -69,7 +85,7 @@ async function abonner() {
 export async function verifierPush(supabase: Supabase): Promise<EtatPush> {
   if (!pushPossible()) return estAppareilApple() && !estInstallee() ? "ecran-accueil" : "non-supporte"
   if (Notification.permission === "denied") return "refuse"
-  if (Notification.permission !== "granted") return "inactif"
+  if (Notification.permission !== "granted" || coupees()) return "inactif"
   try {
     await enregistrer(supabase, await abonner())
     return "actif"
@@ -86,7 +102,19 @@ export async function activerPush(supabase: Supabase): Promise<EtatPush> {
   if (permission === "denied") return "refuse"
   if (permission !== "granted") return "inactif"
   await enregistrer(supabase, await abonner())
+  retenirCoupees(false)
   return "actif"
+}
+
+/** Désabonne cet appareil : plus aucune notification ici. */
+export async function desactiverPush(supabase: Supabase) {
+  retenirCoupees(true)
+  if (!pushPossible()) return
+  const reg = await navigator.serviceWorker.getRegistration("/")
+  const abonnement = await reg?.pushManager.getSubscription()
+  if (!abonnement) return
+  await supabase.rpc("supprimer_abonnement_push", { p_endpoint: abonnement.endpoint })
+  await abonnement.unsubscribe()
 }
 
 /** Envoie une notification de test à tous mes appareils (au bout de 5 s). */

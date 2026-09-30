@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Check, Keyboard, Loader2, LocateFixed, MapPin, ShieldCheck } from "lucide-react"
 
 import { RechercheAdresse } from "@/components/tableau/recherche-adresse"
+import { useLangue, useT } from "@/components/i18n/langue-provider"
 import { Button } from "@/components/ui/button"
 import type { Position } from "@/hooks/use-localisation"
 import { adresseDePosition } from "@/lib/tableau/adresses"
@@ -26,7 +27,7 @@ export function FenetreLocalisation({
   onFermer,
   activerGps,
   onValider,
-  titre = "Activez votre localisation",
+  titre,
   texte,
 }: {
   ouverte: boolean
@@ -36,8 +37,12 @@ export function FenetreLocalisation({
   titre?: string
   texte: string
 }) {
+  const t = useT()
+  const l = t.localisation
+  const langue = useLangue()
   const [etape, setEtape] = useState<Etape>({ nom: "intro" })
   if (!ouverte) return null
+  const titreAffiche = titre ?? l.titre
 
   const localiser = async () => {
     setEtape({ nom: "gps" })
@@ -46,7 +51,7 @@ export function FenetreLocalisation({
       setEtape({ nom: "adresse", refus: true })
       return
     }
-    const adresse = await adresseDePosition(p.lat, p.lng)
+    const adresse = await adresseDePosition(p.lat, p.lng, langue)
     setEtape({ nom: "trouve", lieu: { lat: p.lat, lng: p.lng, adresse }, precision: p.precision })
   }
 
@@ -67,10 +72,10 @@ export function FenetreLocalisation({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label={titre}
+        aria-label={titreAffiche}
         className="entree-flou relative w-full max-w-md overflow-hidden rounded-3xl border bg-popover p-7 text-popover-foreground shadow-2xl"
       >
-        <div aria-hidden className="absolute -top-16 -right-16 size-48 animate-blob rounded-full bg-primary/15 blur-3xl" />
+        <div aria-hidden className="absolute -end-16 -top-16 size-48 animate-blob rounded-full bg-primary/15 blur-3xl" />
 
         {/* Icône animée */}
         <div className="relative mx-auto mb-5 flex size-20 items-center justify-center">
@@ -104,17 +109,17 @@ export function FenetreLocalisation({
         <div key={etape.nom} className="entree-flou relative text-center">
           {etape.nom === "intro" && (
             <>
-              <h2 className="text-xl font-bold">{titre}</h2>
+              <h2 className="text-xl font-bold">{titreAffiche}</h2>
               <p className="mt-2 text-sm text-muted-foreground">{texte}</p>
               <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-success" /> Votre adresse n&apos;est jamais affichée publiquement.
+                <ShieldCheck className="size-3.5 text-success" /> {l.jamaisAffichee}
               </p>
               <div className="mt-6 flex flex-col gap-2">
                 <Button size="lg" onClick={localiser} className="h-12 text-base">
-                  <LocateFixed /> Me localiser
+                  <LocateFixed /> {l.meLocaliser}
                 </Button>
                 <Button variant="ghost" onClick={() => setEtape({ nom: "adresse" })}>
-                  <Keyboard /> Taper mon adresse
+                  <Keyboard /> {l.taperAdresse}
                 </Button>
               </div>
             </>
@@ -122,29 +127,29 @@ export function FenetreLocalisation({
 
           {etape.nom === "gps" && (
             <>
-              <h2 className="text-xl font-bold">Recherche de votre position…</h2>
+              <h2 className="text-xl font-bold">{l.recherche}</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Si votre navigateur vous le demande, cliquez sur <strong>« Autoriser »</strong>.
+                {l.autoriserAvant} <strong>{l.autoriser}</strong>.
               </p>
             </>
           )}
 
           {etape.nom === "trouve" && (
             <>
-              <h2 className="text-xl font-bold">Vous êtes localisé !</h2>
-              <div className="mt-4 flex items-start gap-3 rounded-2xl border border-success/40 bg-success/10 p-4 text-left">
+              <h2 className="text-xl font-bold">{l.localise}</h2>
+              <div className="mt-4 flex items-start gap-3 rounded-2xl border border-success/40 bg-success/10 p-4 text-start">
                 <MapPin className="mt-0.5 size-5 shrink-0 text-success" />
                 <div>
-                  <p className="font-semibold">{etape.lieu.adresse ?? "Position trouvée"}</p>
-                  <p className="text-xs text-muted-foreground">Précision : environ {Math.round(etape.precision)} m</p>
+                  <p className="font-semibold">{etape.lieu.adresse ?? l.positionTrouvee}</p>
+                  <p className="text-xs text-muted-foreground">{l.precision(Math.round(etape.precision))}</p>
                 </div>
               </div>
               <div className="mt-6 flex flex-col gap-2">
                 <Button size="lg" onClick={() => valider(etape.lieu)} className="h-12 text-base">
-                  <Check /> C&apos;est bien ici
+                  <Check /> {l.cestIci}
                 </Button>
                 <Button variant="ghost" onClick={() => setEtape({ nom: "adresse" })}>
-                  Ce n&apos;est pas la bonne adresse
+                  {l.pasBonne}
                 </Button>
               </div>
             </>
@@ -152,22 +157,20 @@ export function FenetreLocalisation({
 
           {etape.nom === "adresse" && (
             <>
-              <h2 className="text-xl font-bold">Votre adresse</h2>
+              <h2 className="text-xl font-bold">{l.votreAdresse}</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                {etape.refus
-                  ? "La localisation automatique n'est pas autorisée. Tapez votre adresse, ou autorisez la localisation dans les réglages du navigateur (icône à gauche de l'adresse du site)."
-                  : "Tapez votre adresse puis choisissez-la dans la liste."}
+                {etape.refus ? l.refus : l.taperPuisChoisir}
               </p>
-              <div className="mt-5 text-left">
+              <div className="mt-5 text-start">
                 <RechercheAdresse autoFocus onChoisir={(s) => valider({ lat: s.lat, lng: s.lng, adresse: s.libelle })} />
               </div>
               <Button variant="ghost" className="mt-3" onClick={localiser}>
-                <LocateFixed /> Réessayer la localisation automatique
+                <LocateFixed /> {l.reessayer}
               </Button>
             </>
           )}
 
-          {etape.nom === "enregistrement" && <h2 className="text-xl font-bold">Enregistrement…</h2>}
+          {etape.nom === "enregistrement" && <h2 className="text-xl font-bold">{l.enregistrement}</h2>}
         </div>
 
         {etape.nom !== "gps" && etape.nom !== "enregistrement" && (
@@ -176,7 +179,7 @@ export function FenetreLocalisation({
             onClick={onFermer}
             className="relative mt-4 block w-full text-center text-xs text-muted-foreground underline-offset-4 hover:underline"
           >
-            Plus tard
+            {t.commun.plusTard}
           </button>
         )}
       </div>

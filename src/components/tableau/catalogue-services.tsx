@@ -2,8 +2,10 @@
 
 import { ArrowRight } from "lucide-react"
 
+import { useLangue, useT } from "@/components/i18n/langue-provider"
 import type { ServiceDisponible } from "@/components/tableau/formulaire-demande"
 import { ESPACES_SERVICES } from "@/lib/espaces"
+import { nomService } from "@/lib/i18n"
 
 /** Les 4 espaces avec leurs services, visibles d'un coup d'œil. */
 export function CatalogueServices({
@@ -13,12 +15,14 @@ export function CatalogueServices({
   services: ServiceDisponible[]
   onChoisir: (espace: string, service: string) => void
 }) {
+  const t = useT()
+  const langue = useLangue()
   return (
     <section className="flex flex-col gap-4">
       <div>
-        <h2 className="font-heading text-lg font-bold">Les services</h2>
+        <h2 className="font-heading text-lg font-bold">{t.services.catalogueTitre}</h2>
         <p className="text-sm text-muted-foreground">
-          Cliquez sur un service : la demande se prépare toute seule.
+          {t.services.catalogueTexte}
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -33,8 +37,8 @@ export function CatalogueServices({
                 <e.icon className="size-5" />
               </span>
               <div>
-                <h3 className="font-heading text-sm font-bold">{e.nom}</h3>
-                <p className="text-xs text-muted-foreground">{e.intervenants}</p>
+                <h3 className="font-heading text-sm font-bold">{t.espaces[e.slug].nom}</h3>
+                <p className="text-xs text-muted-foreground">{t.espaces[e.slug].intervenants}</p>
               </div>
             </header>
             <ul className="flex flex-col gap-1.5">
@@ -45,10 +49,10 @@ export function CatalogueServices({
                     <button
                       type="button"
                       onClick={() => onChoisir(e.slug, s.id)}
-                      className="group flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-left text-sm transition-colors hover:bg-primary/10 hover:text-primary"
+                      className="group flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2 text-start text-sm transition-colors hover:bg-primary/10 hover:text-primary"
                     >
-                      {s.nom}
-                      <ArrowRight className="size-4 shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100" />
+                      {nomService(s.noms, s.nom, langue)}
+                      <ArrowRight className="size-4 shrink-0 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-100 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
                     </button>
                   </li>
                 ))}

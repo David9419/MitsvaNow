@@ -2,9 +2,12 @@ import type { Metadata } from "next"
 
 import { TableauDemandeur } from "@/components/tableau/tableau-demandeur"
 import { TableauIntervenant } from "@/components/tableau/tableau-intervenant"
+import { obtenirDico } from "@/lib/i18n/serveur"
 import { chargerSession, chargerTableauDemandeur, chargerTableauIntervenant } from "@/lib/tableau/charger"
 
-export const metadata: Metadata = { title: "Mon tableau de bord — Mivtsa Now" }
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: (await obtenirDico()).meta.tableau }
+}
 
 /** Le bon tableau de bord selon l'espace de la personne. */
 export default async function AccueilPage() {

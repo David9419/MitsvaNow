@@ -3,6 +3,7 @@
 import { MapPin, Pencil, Radar as RadarIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 
+import { useT } from "@/components/i18n/langue-provider"
 import { Button } from "@/components/ui/button"
 import { CarteWidget } from "@/components/tableau/widgets/carte-widget"
 import type { EtatLocalisation } from "@/hooks/use-localisation"
@@ -23,6 +24,8 @@ export function CarteLocalisation({
   onModifier: () => void
   onRayon: (km: number) => void
 }) {
+  const t = useT()
+  const l = t.localisation
   const [valeur, setValeur] = useState(rayon)
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- suit la valeur enregistrée
@@ -32,7 +35,7 @@ export function CarteLocalisation({
   const suivie = etat === "active"
 
   return (
-    <CarteWidget icon={MapPin} titre="Ma zone d'intervention" sousTitre="Où vous recevez des demandes" delai={100}>
+    <CarteWidget icon={MapPin} titre={l.zoneTitre} sousTitre={l.zoneSousTitre} delai={100}>
       <div className="flex items-start justify-between gap-3 rounded-xl border p-3">
         <div className="min-w-0">
           <p className={`flex items-center gap-2 text-xs font-semibold ${aUnePosition ? "text-success" : "text-destructive"}`}>
@@ -40,24 +43,24 @@ export function CarteLocalisation({
               {suivie && <span className="absolute inline-flex size-full animate-ping rounded-full bg-success opacity-75" />}
               <span className="relative inline-flex size-2.5 rounded-full bg-current" />
             </span>
-            {aUnePosition ? (suivie ? "Localisé en direct" : "Position enregistrée") : "Aucune position"}
+            {aUnePosition ? (suivie ? l.localiseDirect : l.positionEnregistree) : l.aucunePosition}
           </p>
           <p className="mt-1 line-clamp-2 text-sm font-medium">
-            {adresse ?? (aUnePosition ? "Adresse inconnue" : "Indiquez où vous êtes pour recevoir des demandes.")}
+            {adresse ?? (aUnePosition ? l.adresseInconnue : l.indiquez)}
           </p>
         </div>
         <Button size="sm" variant="outline" onClick={onModifier} className="shrink-0">
-          <Pencil /> {aUnePosition ? "Modifier" : "Me localiser"}
+          <Pencil /> {aUnePosition ? t.commun.modifier : l.meLocaliser}
         </Button>
       </div>
 
       <div className="mt-5">
         <div className="mb-2 flex items-center justify-between text-sm">
           <span className="flex items-center gap-2 font-medium">
-            <RadarIcon className="size-4 text-primary" /> Rayon d&apos;intervention
+            <RadarIcon className="size-4 text-primary" /> {l.rayon}
           </span>
           <span className="rounded-full bg-primary/10 px-2.5 py-0.5 font-semibold text-primary tabular-nums">
-            {valeur} km
+            {valeur} {t.commun.kilometres}
           </span>
         </div>
         <input
@@ -70,11 +73,11 @@ export function CarteLocalisation({
           onPointerUp={() => valeur !== rayon && onRayon(valeur)}
           onKeyUp={() => valeur !== rayon && onRayon(valeur)}
           className="w-full cursor-pointer accent-primary"
-          aria-label="Rayon d'intervention en kilomètres"
+          aria-label={l.rayonAria}
         />
         <div className="mt-1 flex justify-between text-[11px] text-muted-foreground">
-          <span>1 km</span>
-          <span>50 km</span>
+          <span>1 {t.commun.kilometres}</span>
+          <span>50 {t.commun.kilometres}</span>
         </div>
       </div>
 
@@ -99,9 +102,7 @@ export function CarteLocalisation({
             <MapPin className="size-3.5" />
           </span>
         </div>
-        <span className="absolute bottom-2 left-3 text-[11px] text-muted-foreground">
-          Zone de {valeur} km autour de vous
-        </span>
+        <span className="absolute start-3 bottom-2 text-[11px] text-muted-foreground">{l.zone(valeur)}</span>
       </div>
     </CarteWidget>
   )

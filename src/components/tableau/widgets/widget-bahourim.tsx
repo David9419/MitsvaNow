@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { Backpack, Minus, Plus, Target } from "lucide-react"
 
+import { useT } from "@/components/i18n/langue-provider"
 import { Checklist } from "@/components/tableau/widgets/checklist"
 import { CarteWidget } from "@/components/tableau/widgets/carte-widget"
 import { debutDeSemaine } from "@/lib/tableau/outils"
@@ -10,6 +11,8 @@ import type { DemandeIntervenant } from "@/lib/tableau/types"
 
 /** Bahourim : objectif de mitsvot de la semaine + sac de mivtsa. */
 export function WidgetBahourim({ demandes }: { demandes: DemandeIntervenant[] }) {
+  const t = useT()
+  const w = t.widgets
   const [objectif, setObjectif] = useState(7)
   useEffect(() => {
     const v = Number(localStorage.getItem("mn-objectif-semaine"))
@@ -32,10 +35,10 @@ export function WidgetBahourim({ demandes }: { demandes: DemandeIntervenant[] })
 
   return (
     <>
-      <CarteWidget icon={Target} titre="Objectif de la semaine" sousTitre="Mitsvot accomplies depuis lundi" delai={200}>
-        <div className="flex flex-1 items-center gap-6">
+      <CarteWidget icon={Target} titre={w.objectifTitre} sousTitre={w.objectifSous} delai={200}>
+        <div className="flex flex-1 items-center justify-center gap-6">
           <div className="relative size-32 shrink-0">
-            <svg viewBox="0 0 120 120" className="size-full -rotate-90">
+            <svg viewBox="0 0 120 120" className="size-full -rotate-90 rtl:scale-y-[-1]">
               <circle cx="60" cy="60" r={R} className="fill-none stroke-muted" strokeWidth="10" />
               <circle
                 cx="60"
@@ -50,22 +53,20 @@ export function WidgetBahourim({ demandes }: { demandes: DemandeIntervenant[] })
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="font-heading text-3xl font-bold">{faites}</span>
-              <span className="text-xs text-muted-foreground">sur {objectif}</span>
+              <span className="text-xs text-muted-foreground">{w.sur(objectif)}</span>
             </div>
           </div>
           <div className="flex flex-col gap-3">
             <p className="text-sm">
-              {pct >= 1
-                ? "Objectif atteint, bravo ! 🎉"
-                : `Encore ${objectif - faites} pour atteindre votre objectif.`}
+              {pct >= 1 ? w.atteint : w.encore(objectif - faites)}
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Objectif</span>
+              <span className="text-xs text-muted-foreground">{w.objectif}</span>
               <button
                 type="button"
                 onClick={() => changer(objectif - 1)}
                 className="flex size-7 items-center justify-center rounded-md border transition-all hover:bg-muted active:scale-90"
-                aria-label="Diminuer l'objectif"
+                aria-label={w.diminuer}
               >
                 <Minus className="size-3.5" />
               </button>
@@ -74,7 +75,7 @@ export function WidgetBahourim({ demandes }: { demandes: DemandeIntervenant[] })
                 type="button"
                 onClick={() => changer(objectif + 1)}
                 className="flex size-7 items-center justify-center rounded-md border transition-all hover:bg-muted active:scale-90"
-                aria-label="Augmenter l'objectif"
+                aria-label={w.augmenter}
               >
                 <Plus className="size-3.5" />
               </button>
@@ -83,11 +84,8 @@ export function WidgetBahourim({ demandes }: { demandes: DemandeIntervenant[] })
         </div>
       </CarteWidget>
 
-      <CarteWidget icon={Backpack} titre="Mon sac de mivtsa" sousTitre="Tout est prêt avant de partir ?" delai={300}>
-        <Checklist
-          cle="mn-sac-mivtsa"
-          elements={["Téfilines", "Mezouzot et clous", "Boîtes de tsédaka", "Siddourim et livres", "Kippa", "Téléphone chargé"]}
-        />
+      <CarteWidget icon={Backpack} titre={w.sacTitre} sousTitre={w.sacSous} delai={300}>
+        <Checklist cle="mn-sac-mivtsa-v2" elements={w.sac} />
       </CarteWidget>
     </>
   )

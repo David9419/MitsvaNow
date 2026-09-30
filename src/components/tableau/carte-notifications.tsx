@@ -3,37 +3,37 @@
 import { useState } from "react"
 import { BellOff, BellRing, CheckCircle2, Send, Share, SquarePlus } from "lucide-react"
 
+import { useT } from "@/components/i18n/langue-provider"
 import { Button } from "@/components/ui/button"
 import type { EtatPush } from "@/lib/tableau/push"
 import { cn } from "@/lib/utils"
 
 /** Les 3 étapes pour installer l'application sur iPhone / iPad. */
-function EtapesEcranAccueil() {
+export function EtapesEcranAccueil() {
+  const t = useT()
+  const n = t.notifications
   const etape = "flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary"
   return (
     <ol className="flex flex-col gap-2 text-sm">
       <li className="flex items-center gap-2">
         <span className={etape}>1</span>
         <span>
-          Dans Safari, touchez <Share className="inline size-4 text-primary" aria-label="Partager" /> (en bas de l&apos;écran).
+          {n.etape1Avant} <Share className="inline size-4 text-primary" aria-label={n.partager} /> {n.etape1Apres}
         </span>
       </li>
       <li className="flex items-center gap-2">
         <span className={etape}>2</span>
         <span>
-          Choisissez <SquarePlus className="inline size-4 text-primary" /> « Sur l&apos;écran d&apos;accueil », puis « Ajouter ».
+          {n.etape2Avant} <SquarePlus className="inline size-4 text-primary" /> {n.etape2Apres}
         </span>
       </li>
       <li className="flex items-center gap-2">
         <span className={etape}>3</span>
-        <span>Ouvrez Mivtsa Now depuis la nouvelle icône, puis touchez « Activer les notifications ».</span>
+        <span>{n.etape3}</span>
       </li>
     </ol>
   )
 }
-
-const TEXTE_REFUSE =
-  "Les notifications sont bloquées pour ce site. Sur iPhone : Réglages → Notifications → Mivtsa Now → Autoriser. Sur Android ou ordinateur : touchez le cadenas à gauche de l'adresse → Notifications → Autoriser, puis réessayez."
 
 /**
  * Bandeau « Notifications » affiché en haut de chaque espace :
@@ -51,6 +51,8 @@ export function BandeauNotifications({
   /** Ce qu'on reçoit dans cet espace */
   texte: string
 }) {
+  const t = useT()
+  const n = t.notifications
   const [etapes, setEtapes] = useState(false)
   if (etat === "chargement") return null
 
@@ -60,11 +62,10 @@ export function BandeauNotifications({
       <section className="flex animate-in fade-in flex-col gap-3 rounded-2xl border border-success/40 bg-success/5 px-5 py-3 duration-500 sm:flex-row sm:items-center">
         <CheckCircle2 className="hidden size-5 shrink-0 text-success sm:block" />
         <p className="flex-1 text-sm">
-          <span className="font-semibold">Notifications activées sur cet appareil.</span>{" "}
-          <span className="text-muted-foreground">{texte}</span>
+          <span className="font-semibold">{n.actives}</span> <span className="text-muted-foreground">{texte}</span>
         </p>
         <Button variant="outline" size="sm" onClick={onTester} className="shrink-0">
-          <Send /> Envoyer une notification de test
+          <Send className="rtl:-scale-x-100" /> {n.tester}
         </Button>
       </section>
     )
@@ -76,15 +77,9 @@ export function BandeauNotifications({
           {etat === "refuse" ? <BellOff className="size-6" /> : <BellRing className="size-6 animate-pulse" />}
         </span>
         <div className="flex-1">
-          <h2 className="font-heading font-bold">
-            {etat === "refuse" ? "Les notifications sont bloquées" : "Activez les notifications"}
-          </h2>
+          <h2 className="font-heading font-bold">{etat === "refuse" ? n.bloqueesTitre : n.activerTitre}</h2>
           <p className="text-sm text-muted-foreground">
-            {etat === "refuse"
-              ? TEXTE_REFUSE
-              : etat === "non-supporte"
-                ? "Ce navigateur ne sait pas recevoir de notifications. Essayez avec Chrome, Safari ou Edge à jour."
-                : `${texte} Vous les recevez sur votre téléphone, même quand le site est ouvert, fermé ou l'écran verrouillé.`}
+            {etat === "refuse" ? n.refuse : etat === "non-supporte" ? n.nonSupporte : `${texte} ${n.recevoir}`}
           </p>
         </div>
         {etat !== "non-supporte" && (
@@ -93,16 +88,13 @@ export function BandeauNotifications({
             size="lg"
             className={cn("shrink-0", etapes && "hidden")}
           >
-            <BellRing /> {etat === "refuse" ? "Réessayer" : "Activer les notifications"}
+            <BellRing /> {etat === "refuse" ? n.reessayer : n.activer}
           </Button>
         )}
       </div>
       {etat === "ecran-accueil" && etapes && (
         <div className="animate-in fade-in rounded-xl border bg-card p-4 duration-300">
-          <p className="mb-3 text-sm font-semibold">
-            Sur iPhone, Apple n&apos;envoie les notifications qu&apos;aux applications installées sur l&apos;écran d&apos;accueil.
-            C&apos;est rapide :
-          </p>
+          <p className="mb-3 text-sm font-semibold">{n.iphone}</p>
           <EtapesEcranAccueil />
         </div>
       )}

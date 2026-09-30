@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Loader2, MapPin, Search } from "lucide-react"
 
+import { useLangue, useT } from "@/components/i18n/langue-provider"
 import { Input } from "@/components/ui/input"
 import { chercherAdresses, type Suggestion } from "@/lib/tableau/adresses"
 
@@ -14,6 +15,8 @@ export function RechercheAdresse({
   onChoisir: (s: Suggestion) => void
   autoFocus?: boolean
 }) {
+  const t = useT()
+  const langue = useLangue()
   const [texte, setTexte] = useState("")
   const [choisie, setChoisie] = useState<string | null>(null)
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
@@ -33,7 +36,7 @@ export function RechercheAdresse({
       ctrl.current = new AbortController()
       setCherche(true)
       try {
-        const r = await chercherAdresses(texte, ctrl.current.signal)
+        const r = await chercherAdresses(texte, langue, ctrl.current.signal)
         setSuggestions(r)
         setAucune(r.length === 0)
       } catch {
@@ -43,11 +46,11 @@ export function RechercheAdresse({
       }
     }, 450)
     return () => clearTimeout(t)
-  }, [texte, choisie])
+  }, [texte, choisie, langue])
 
   return (
     <div className="relative">
-      <Search className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-muted-foreground" />
+      <Search className="pointer-events-none absolute start-3.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         value={texte}
         autoFocus={autoFocus}
@@ -55,12 +58,12 @@ export function RechercheAdresse({
           setTexte(e.target.value)
           setChoisie(null)
         }}
-        placeholder="Tapez votre adresse (ex. 12 rue de Rivoli, Paris)"
-        className="h-12 bg-card pl-10"
+        placeholder={t.localisation.placeholder}
+        className="h-12 bg-card ps-10"
       />
-      {cherche && <Loader2 className="absolute top-1/2 right-3.5 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
+      {cherche && <Loader2 className="absolute end-3.5 top-1/2 size-4 -translate-y-1/2 animate-spin text-muted-foreground" />}
       {aucune && !cherche && (
-        <p className="mt-2 text-xs text-muted-foreground">Aucune adresse trouvée. Essayez avec la ville.</p>
+        <p className="mt-2 text-xs text-muted-foreground">{t.localisation.aucune}</p>
       )}
       {suggestions.length > 0 && (
         <ul className="absolute z-30 mt-2 w-full animate-in fade-in slide-in-from-top-1 overflow-hidden rounded-xl border bg-popover shadow-xl">
@@ -74,7 +77,7 @@ export function RechercheAdresse({
                   setSuggestions([])
                   onChoisir(s)
                 }}
-                className="flex w-full items-start gap-2 px-4 py-3 text-left text-sm transition-colors hover:bg-muted"
+                className="flex w-full items-start gap-2 px-4 py-3 text-start text-sm transition-colors hover:bg-muted"
               >
                 <MapPin className="mt-0.5 size-4 shrink-0 text-primary" />
                 {s.libelle}
