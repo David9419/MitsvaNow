@@ -76,6 +76,9 @@ L'équipe ne sait pas coder. Claude doit :
 - Row Level Security activée sur **toutes** les tables.
 - Avant chaque envoi : `npx eslint src`, `npm run build`, `npx tsc --noEmit` doivent passer.
 - Petits commits, message clair en français.
+- **Mise en ligne automatique (demandé par l'équipe)** : chaque modification terminée et vérifiée
+  (lint + build) est envoyée sur la branche de la session **et aussi sur `main`**, pour que
+  Vercel mette le site à jour tout de suite. Pas besoin de redemander l'accord à chaque fois.
 
 ## Ce qui est construit
 
