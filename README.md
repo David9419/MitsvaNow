@@ -31,8 +31,9 @@ Pour arrêter le site : appuyer sur `Ctrl + C` dans le terminal.
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 4. Cliquer sur **Deploy**.
 5. Dans Supabase → **Authentication → URL Configuration** :
-   - **Site URL** : l'adresse Vercel (ex. `https://mitsva-now.vercel.app`)
-   - **Redirect URLs** : ajouter `https://mitsva-now.vercel.app/**`
+   - **Site URL** : l'adresse du site (`https://mivtsa-now.com`)
+   - **Redirect URLs** : ajouter `https://mivtsa-now.com/**`, `https://www.mivtsa-now.com/**`
+     et `https://mitsva-now.vercel.app/**`
 
 Ensuite, chaque envoi sur la branche `main` met le site en ligne à jour automatiquement.
 

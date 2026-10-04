@@ -6,7 +6,8 @@ le plus proche**, trouvé par géolocalisation. L'intervenant reçoit une notifi
 accepte (en disant comment il vient et quand il arrive), le demandeur confirme, et
 l'intervenant se rend sur place.
 
-- Site en ligne : **https://mitsva-now.vercel.app**
+- Site en ligne : **https://mivtsa-now.com** (domaine acheté chez Amen.fr ; ancienne adresse
+  https://mitsva-now.vercel.app toujours active)
 - Code : GitHub `David9419/MitsvaNow` (branche `main` = site en ligne)
 
 ## Qui nous sommes
@@ -43,8 +44,13 @@ L'équipe ne sait pas coder. Claude doit :
 - **E-mails** (mot de passe oublié) : Gmail via le réglage SMTP de Supabase
   (`smtp.gmail.com`, port 465, `david.avielpro@gmail.com` + mot de passe d'application Google).
   Modèle « Reset Password » : `supabase/templates/mot-de-passe-oublie.html` (en français).
-- **Supabase Auth → URL Configuration** : Site URL `https://mitsva-now.vercel.app`,
-  Redirect URL `https://mitsva-now.vercel.app/**`. « Confirm email » est désactivé.
+- **Supabase Auth → URL Configuration** : Site URL `https://mivtsa-now.com`,
+  Redirect URLs `https://mivtsa-now.com/**`, `https://www.mivtsa-now.com/**`,
+  `https://mitsva-now.vercel.app/**`. « Confirm email » est désactivé.
+- **Domaine** `mivtsa-now.com` (Amen.fr → Configuration DNS → Modifier la zone DNS) :
+  `A @ 216.198.79.1` et `CNAME www c52472c46c76650e.vercel-dns-017.com.` ; sur Vercel,
+  `mivtsa-now.com` redirige (308) vers `www.mivtsa-now.com`. Ne pas toucher aux lignes e-mail d'Amen
+  (MX, TXT, SRV, autoconfig, mail, smtp, webmail, key-amfr…).
 - **Instagram** : https://www.instagram.com/mivtsanow (bouton flottant, `src/components/bouton-instagram.tsx`).
 
 ## Environnement de Claude
