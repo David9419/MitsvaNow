@@ -7,6 +7,7 @@ import {
   BellRing,
   CalendarClock,
   CheckCircle2,
+  HandHeart,
   Hourglass,
   Inbox,
   PlayCircle,
@@ -404,9 +405,6 @@ export function TableauIntervenant({
 
       <BarreTableau icon={espace.icon} espace={t.tableau.espace(nomEspace)}>
         {interrupteur}
-        <Button asChild size="sm" variant="outline" className="hidden md:inline-flex">
-          <Link href="/accueil/demandes">{t.tableau.faireDemandePourMoi}</Link>
-        </Button>
       </BarreTableau>
 
       <EnTeteTableau
@@ -423,6 +421,17 @@ export function TableauIntervenant({
               <ResumeNote moyenne={donnees.avis?.moyenne ?? null} nombre={donnees.avis?.nombre ?? 0} variante="bandeau" />
             </PastilleEnTete>
           </>
+        }
+        droite={
+          <Button
+            asChild
+            size="lg"
+            className="w-full bg-background text-foreground shadow-lg hover:bg-background/90 md:w-auto"
+          >
+            <Link href="/accueil/demandes">
+              <HandHeart /> {t.tableau.faireDemandePourMoi}
+            </Link>
+          </Button>
         }
       />
 
@@ -464,7 +473,7 @@ export function TableauIntervenant({
                 <span
                   className={cn(
                     "rounded-full px-2 text-xs tabular-nums",
-                    o.id === "a-traiter" && o.n > 0 ? "animate-pulse bg-accent text-accent-foreground" : "bg-background"
+                    o.id === "a-traiter" && o.n > 0 ? "animate-pulse bg-primary text-primary-foreground" : "bg-background"
                   )}
                 >
                   {o.n}
