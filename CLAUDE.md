@@ -58,6 +58,10 @@ L'équipe ne sait pas coder. Claude doit :
   on vérifie la base avec les outils MCP Supabase. Pour tester un parcours complet,
   on simule les utilisateurs en SQL dans un bloc `do $$ … raise exception 'RESULTAT' … $$`
   (tout est annulé à la fin).
+- Outils MCP Supabase : un SQL contenant `drop`, `revoke` ou `delete from` reste bloqué
+  (il attend une confirmation invisible ici). Écrire les migrations sans ces mots :
+  `create or replace`, colonne `active` plutôt que supprimer, fonctions internes dans
+  le schéma `prive` plutôt que `revoke`.
 - Ne jamais lancer `pkill -f` avec un motif présent dans la commande (ça tue le shell).
 - Vérifier un écran : `next build` + `next start`, captures Playwright
   (`executablePath: /opt/pw-browsers/chromium`), cookie `langue` pour changer de langue.
@@ -107,11 +111,17 @@ services affichés par « Voir plus » sur l'accueil).
    position (GPS ou adresse) ; pas de validation des intervenants.
 2. **Demande** : service, **maintenant ou programmée** (jour + heure, 15 min à 3 mois),
    adresse, téléphone obligatoire, message facultatif.
-3. **Attribution** : intervenant disponible le plus proche de l'espace, dans son rayon,
-   qui propose le service et ne l'a pas refusée.
+3. **Diffusion** (`attribuer_demande`) : la demande est envoyée **en même temps à tous**
+   les intervenants disponibles de l'espace dont le rayon atteint le demandeur, qui
+   proposent le service et ne l'ont pas refusée (table `demande_propositions`, colonne
+   `active`). **Le premier qui accepte la prend** : elle disparaît chez les autres (un
+   2e « Accepter » reçoit « Un autre intervenant a déjà accepté cette demande. »). Si
+   l'intervenant annule, ou si le demandeur « cherche quelqu'un d'autre », la demande
+   **repart chez tous** (sauf lui). Un intervenant qui se met disponible ou change de
+   position reçoit les demandes en attente autour de lui.
 4. **Délais automatiques** (`expirer_demandes`, pg_cron chaque minute) :
-   5 min pour répondre (2 h si programmée), sinon au suivant ; personne après 15 min
-   (ou à l'heure prévue) → statut `expiree`, le demandeur est prévenu ;
+   personne n'a accepté 15 min après `recherche_depuis` (ou à l'heure prévue pour une
+   programmée) → statut `expiree`, le demandeur est prévenu ;
    confirmation du demandeur d'office au bout de 10 min.
 5. **Acceptation** : l'intervenant choisit son transport (à pied, trottinette, vélo,
    voiture, transports) et son délai d'arrivée. Le demandeur voit photo, téléphone,
@@ -127,13 +137,20 @@ services affichés par « Voir plus » sur l'accueil).
    appareil photo), prénom, nom, téléphone, e-mail non modifiable, changement de mot de
    passe (ancien + nouveau + confirmation), mot de passe oublié, notifications
    (activer / couper), mode sombre, langue.
+   Thème : interrupteur jour/nuit animé (`src/components/mode-toggle.tsx`, ouverture en
+   cercle via `src/lib/theme-anime.ts`) ; langue : pastille drapeau + code avec voile
+   « Bienvenue » animé (`src/components/selecteur-langue.tsx`).
 9. **Langues** : français, hébreu (droite à gauche, police Heebo), anglais ; bouton dans
    l'en-tête ; cookie `langue` + `profiles.langue` (les notifications partent dans la
    langue de chaque personne).
 
 ### Base de données (Supabase)
 - `espaces`, `services` (`nom`, `nom_he`, `nom_en`), `profiles` (+ `photo_url`, `langue`),
-  `intervenants`, `intervenant_services`, `demande_refus`, `avis`, `abonnements_push`.
+  `intervenants`, `intervenant_services`, `demande_refus`, `demande_propositions`
+  (à qui la demande est envoyée ; `active = false` au lieu de supprimer), `avis`,
+  `abonnements_push`.
+- Schéma `prive` (non exposé au site) : `peut_recevoir`, `proposer_a_intervenant`,
+  `evenement_proposition` (notification « nouvelle » quand une proposition devient active).
 - `demandes` : statut (`en_attente` → `acceptee` → `en_cours` → `terminee`, ou `annulee` /
   `expiree`), `programmee_pour`, `transport`, `eta_minutes`, `acceptee_le`, `confirmee`,
   `annulee_par`, `motif_annulation`, `recherche_depuis`, `attribuee_le`.
@@ -148,7 +165,8 @@ services affichés par « Voir plus » sur l'accueil).
   → Edge Function **`notifier-demande`** (`supabase/functions/notifier-demande/`, sans
   vérification JWT, protégée par `x-secret`) qui écrit le texte dans la langue du destinataire.
 - Événements : intervenant ← `nouvelle`, `confirmee`, `refusee`, `annulee`, `avis` ;
-  demandeur ← `acceptee`, `en_cours`, `terminee`, `annulee`, `expiree`.
+  demandeur ← `acceptee`, `en_cours`, `terminee`, `annulee`, `expiree`, `relance`
+  (l'intervenant a annulé, la demande repart chez tous).
 - Clés dans le Vault : `push_vapid_public`, `push_vapid_prive`, `push_secret_declencheur`.
 - iPhone : seulement si le site est installé sur l'écran d'accueil.
 - Diagnostic : `abonnements_push`, `net._http_response`, logs de l'Edge Function.
