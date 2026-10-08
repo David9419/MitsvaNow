@@ -15,6 +15,7 @@ import {
   Play,
   Ruler,
   Timer,
+  Users,
   X,
 } from "lucide-react"
 
@@ -29,9 +30,8 @@ import { lienItineraire } from "@/lib/tableau/outils"
 import type { DemandeIntervenant } from "@/lib/tableau/types"
 import { cn } from "@/lib/utils"
 
-/** Temps laissé pour répondre (doit correspondre à expirer_demandes dans la base). */
-const DELAI_REPONSE_MIN = 5
-const DELAI_REPONSE_PROGRAMMEE_MIN = 120
+/** Une demande « maintenant » expire 15 min après le début de la recherche (voir expirer_demandes). */
+const DUREE_RECHERCHE_MIN = 15
 
 export function CarteDemandeIntervenant({
   demande: d,
@@ -67,12 +67,12 @@ export function CarteDemandeIntervenant({
   const nom = `${d.demandeur_prenom} ${d.demandeur_nom ?? ""}`.trim()
   const service = nomService(d.service_noms, d.service, langue)
 
-  // Compte à rebours pour répondre
-  const limite =
-    nouvelle && d.attribuee_le
-      ? new Date(d.attribuee_le).getTime() +
-        (d.programmee_pour ? DELAI_REPONSE_PROGRAMMEE_MIN : DELAI_REPONSE_MIN) * 60000
-      : null
+  // Temps qu'il reste avant que la demande s'arrête (affiché s'il reste moins d'une heure)
+  const limite = !nouvelle
+    ? null
+    : d.programmee_pour
+      ? new Date(d.programmee_pour).getTime()
+      : new Date(d.recherche_depuis).getTime() + DUREE_RECHERCHE_MIN * 60000
   const minutesRestantes = limite ? Math.ceil((limite - maintenant) / 60000) : null
   const IconeTransport = d.transport ? ICONES_TRANSPORT[d.transport] : null
 
@@ -80,12 +80,12 @@ export function CarteDemandeIntervenant({
     <article
       className={cn(
         "group relative animate-in fade-in slide-in-from-bottom-3 overflow-hidden rounded-2xl border bg-card p-5 transition-all duration-500 fill-mode-both hover:shadow-lg",
-        nouvelle && "border-accent/60 shadow-md shadow-accent/10 ring-2 ring-accent/30"
+        nouvelle && "border-primary/40 shadow-lg shadow-primary/10 ring-1 ring-primary/20"
       )}
       style={{ animationDelay: `${index * 70}ms` }}
     >
       {nouvelle && (
-        <span className="absolute start-0 top-0 h-1 w-full animate-pulse bg-gradient-to-r from-accent via-primary to-accent" />
+        <span className="absolute start-0 top-0 h-1 w-full bg-gradient-to-r from-primary/0 via-primary to-primary/0" />
       )}
 
       {/* Qui + service + statut */}
@@ -146,19 +146,26 @@ export function CarteDemandeIntervenant({
 
       {/* Où en est la demande */}
       {nouvelle && (
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="mt-3 flex flex-col gap-2 text-xs">
+          {d.nb_proposes > 1 && (
+            <p className="flex items-center gap-2 font-medium text-primary">
+              <Users className="size-3.5 shrink-0" /> {c.proposeeA(d.nb_proposes)}
+            </p>
+          )}
+          <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-muted-foreground">{c.telApres}</span>
-          {minutesRestantes != null && (
-            <span className="flex items-center gap-1 rounded-full bg-accent/20 px-2.5 py-1 font-semibold text-accent-foreground dark:text-accent">
+          {minutesRestantes != null && minutesRestantes <= 60 && (
+            <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 font-semibold text-primary">
               <Timer className="size-3.5" />
               {minutesRestantes > 0 ? c.repondreDans(minutesRestantes) : c.repondreBientot}
             </span>
           )}
+          </div>
         </div>
       )}
       {d.statut === "acceptee" && !d.confirmee && (
-        <p className="mt-3 flex items-center gap-2 rounded-xl border border-accent/40 bg-accent/10 p-3 text-sm font-medium">
-          <Hourglass className="size-4 shrink-0 animate-pulse text-accent-foreground dark:text-accent" />
+        <p className="mt-3 flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/5 p-3 text-sm font-medium">
+          <Hourglass className="size-4 shrink-0 animate-pulse text-primary" />
           {c.attenteConfirmation(d.demandeur_prenom)}
         </p>
       )}

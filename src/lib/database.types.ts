@@ -84,6 +84,42 @@ export type Database = {
           },
         ]
       }
+      demande_propositions: {
+        Row: {
+          active: boolean
+          created_at: string
+          demande_id: string
+          intervenant_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          demande_id: string
+          intervenant_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          demande_id?: string
+          intervenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demande_propositions_demande_id_fkey"
+            columns: ["demande_id"]
+            isOneToOne: false
+            referencedRelation: "demandes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "demande_propositions_intervenant_id_fkey"
+            columns: ["intervenant_id"]
+            isOneToOne: false
+            referencedRelation: "intervenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       demande_refus: {
         Row: {
           created_at: string

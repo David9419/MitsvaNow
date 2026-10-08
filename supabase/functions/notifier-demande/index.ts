@@ -11,7 +11,7 @@
 //
 // Événements :
 //   pour l'intervenant : nouvelle, confirmee, refusee, annulee, avis
-//   pour le demandeur  : acceptee, en_cours, terminee, annulee, expiree
+//   pour le demandeur  : acceptee, en_cours, terminee, annulee, expiree, relance
 import { createClient } from "npm:@supabase/supabase-js@2"
 import webpush from "npm:web-push@3.6.7"
 
@@ -125,6 +125,10 @@ function texte(evenement: string, i: Infos): { titre: string; corps: string } | 
         corps: `Personne n'a pu répondre à votre demande (${service}) à temps. Vous pouvez la refaire quand vous voulez.`,
       }),
       annulee: () => ({ titre: "Demande annulée ❌", corps: `${service}${motif ? `\nMotif : ${motif}` : ""}` }),
+      relance: () => ({
+        titre: "L'intervenant a annulé sa venue 🔄",
+        corps: `${service}${motif ? `\nMotif : ${motif}` : ""}\nNous renvoyons votre demande à tous les intervenants proches.`,
+      }),
       refusee: () => ({
         titre: "Demande annulée ❌",
         corps: `${i.demandeur} a préféré un autre intervenant pour : ${service}.`,
@@ -154,6 +158,10 @@ function texte(evenement: string, i: Infos): { titre: string; corps: string } | 
         corps: `אף אחד לא הספיק לענות לבקשה שלך (${service}). אפשר לשלוח אותה שוב מתי שתרצה.`,
       }),
       annulee: () => ({ titre: "הבקשה בוטלה ❌", corps: `${service}${motif ? `\nסיבה: ${motif}` : ""}` }),
+      relance: () => ({
+        titre: "המתנדב ביטל את ההגעה 🔄",
+        corps: `${service}${motif ? `\nסיבה: ${motif}` : ""}\nאנחנו שולחים את הבקשה שוב לכל המתנדבים הקרובים.`,
+      }),
       refusee: () => ({ titre: "הבקשה בוטלה ❌", corps: `${i.demandeur} בחר/ה מתנדב אחר עבור: ${service}.` }),
       confirmee: () => ({
         titre: "אושר, אפשר לצאת לדרך ✅",
@@ -177,6 +185,10 @@ function texte(evenement: string, i: Infos): { titre: string; corps: string } | 
         corps: `Nobody could answer your request (${service}) in time. You can send it again whenever you like.`,
       }),
       annulee: () => ({ titre: "Request cancelled ❌", corps: `${service}${motif ? `\nReason: ${motif}` : ""}` }),
+      relance: () => ({
+        titre: "The volunteer cancelled 🔄",
+        corps: `${service}${motif ? `\nReason: ${motif}` : ""}\nWe're sending your request again to all nearby volunteers.`,
+      }),
       refusee: () => ({ titre: "Request cancelled ❌", corps: `${i.demandeur} chose another volunteer for: ${service}.` }),
       confirmee: () => ({
         titre: "Confirmed, you can go ✅",

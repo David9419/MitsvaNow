@@ -120,6 +120,16 @@ export function TableauDemandeur({
             description: d.motif_annulation ? `${t.tableau.motif} : ${d.motif_annulation}` : service,
             duration: 12000,
           })
+        } else if (d.statut === "en_attente" && d.annulee_par === "intervenant") {
+          // L'intervenant a annulé : la demande repart chez tous les intervenants proches
+          texte = td.toasts.relance
+          toast(texte, {
+            description: d.motif_annulation
+              ? `${t.tableau.motif} : ${d.motif_annulation} — ${td.toasts.relanceTexte}`
+              : td.toasts.relanceTexte,
+            icon: <BellRing className="size-4" />,
+            duration: 12000,
+          })
         } else if (d.statut === "expiree") {
           texte = td.toasts.expiree
           toast.error(texte, { description: service, duration: 12000 })

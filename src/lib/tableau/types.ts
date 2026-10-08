@@ -24,7 +24,11 @@ export type DemandeIntervenant = {
   lat: number | null
   lng: number | null
   programmee_pour: string | null
+  /** Début de la recherche (la demande expire 15 min après, ou à l'heure prévue) */
+  recherche_depuis: string
   attribuee_le: string | null
+  /** À combien d'intervenants la demande est proposée en ce moment */
+  nb_proposes: number
   transport: Transport | null
   eta_minutes: number | null
   confirmee: boolean
@@ -91,8 +95,11 @@ export type DemandeDemandeur = {
   adresse: string | null
   message: string | null
   programmee_pour: string | null
+  recherche_depuis: string
   annulee_par: "demandeur" | "intervenant" | "systeme" | null
   motif_annulation: string | null
+  /** À combien d'intervenants proches la demande est envoyée en ce moment */
+  nb_proposes: number
   intervenant_trouve: boolean
   intervenant_prenom: string | null
   intervenant_nom: string | null

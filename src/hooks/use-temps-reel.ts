@@ -21,7 +21,7 @@ export function useTempsReel(
 
   useEffect(() => {
     const supabase = createClient()
-    const canal = supabase
+    let canal = supabase
       .channel(`demandes-${colonne}-${utilisateurId}`)
       .on(
         "postgres_changes",
@@ -33,7 +33,19 @@ export function useTempsReel(
         },
         () => rappel.current()
       )
-      .subscribe()
+    // Intervenant : on écoute aussi les demandes qui lui sont proposées (ou retirées)
+    if (colonne === "intervenant_id")
+      canal = canal.on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "demande_propositions",
+          filter: `intervenant_id=eq.${utilisateurId}`,
+        },
+        () => rappel.current()
+      )
+    canal.subscribe()
 
     const minuteur = setInterval(() => rappel.current(), 30000)
     const auRetour = () => {

@@ -42,6 +42,8 @@ export const en: Dico = {
 
   theme: {
     changer: "Change theme",
+    versSombre: "Switch to dark mode",
+    versClair: "Switch to light mode",
     clair: "Light",
     sombre: "Dark",
     systeme: "System",
@@ -185,7 +187,7 @@ export const en: Dico = {
       },
       {
         q: "How is the nearest volunteer chosen?",
-        r: "When you make a request, the platform looks at the available volunteers of the chosen space and contacts the one closest to you. If they can't come, the request automatically moves to the next one.",
+        r: "When you make a request, it's sent at the same time to every available volunteer near you. The first one to accept comes to help. If they have to cancel, the request automatically goes back to all the others.",
       },
       {
         q: "Can I schedule a request for later?",
@@ -511,6 +513,7 @@ export const en: Dico = {
       annuler: "Cancel",
       repondreDans: (m: number) => `Reply within ${m} min`,
       repondreBientot: "Reply quickly",
+      proposeeA: (n: number) => `Sent to ${n} volunteers: the first to accept gets it`,
       attenteConfirmation: (p: string) => `Waiting for ${p} to confirm…`,
       confirmee: "Confirmed by the requester: you can go",
       arriveeDans: (m: number) => `Announced arrival: ~${m} min`,
@@ -540,7 +543,7 @@ export const en: Dico = {
       acceptee: "Request accepted!",
       accepteeTexte: "The person will confirm. Their phone number is now shown.",
       refusee: "Request declined",
-      refuseeTexte: "It has been offered to the next volunteer.",
+      refuseeTexte: "It won't be offered to you again.",
       terminee: "Mission done, well done! 🎉",
       merci: "Thank you for this mitzvah.",
       bonneRoute: "Safe trip!",
@@ -686,6 +689,8 @@ export const en: Dico = {
       enRoute: (p: string) => `${p} is on the way to you.`,
       terminee: "Request done. Thank you for using Mivtsa Now!",
       annuleeParIntervenant: (p: string) => `${p} cancelled their visit`,
+      relance: "The volunteer cancelled their visit",
+      relanceTexte: "We've sent your request again to all nearby volunteers.",
       expiree: "Nobody could answer in time",
     },
   },
@@ -722,6 +727,11 @@ export const en: Dico = {
     demandee: (t: string) => `Requested ${t}`,
     annuler: "Cancel",
     trouve: "A volunteer nearby has been found",
+    envoyeeA: (n: number) =>
+      n > 1 ? `Request sent to ${n} volunteers near you` : "Request sent to a volunteer near you",
+    premier: "The first one to accept comes to help you. You'll be notified right away.",
+    relanceTitre: "The volunteer cancelled their visit",
+    relanceTexte: "We've sent your request again to all nearby volunteers.",
     recherche: "Finding the nearest volunteer…",
     doitAccepter: "They need to accept. You'll be notified as soon as they do.",
     personne: "Nobody is available near you for now. We keep searching automatically.",
@@ -785,6 +795,7 @@ export const en: Dico = {
     "Vous avez déjà 3 demandes en cours.": "You already have 3 requests in progress.",
     "Vous avez déjà 10 demandes programmées.": "You already have 10 scheduled requests.",
     "Cette demande ne vous est plus proposée.": "This request is no longer offered to you.",
+    "Un autre intervenant a déjà accepté cette demande.": "Another volunteer has already accepted this request.",
     "Moyen de transport inconnu.": "Unknown means of transport.",
     "Délai d'arrivée invalide.": "Invalid arrival time.",
     "Cette demande ne peut plus être confirmée.": "This request can no longer be confirmed.",

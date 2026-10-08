@@ -129,6 +129,21 @@ export function SuiviDemande({
       {/* Détail selon le statut */}
       <div className="mt-6">
         {d.statut === "en_attente" ? (
+          <div className="flex flex-col gap-3">
+          {d.annulee_par === "intervenant" && (
+            <div className="flex items-start gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-4 text-sm">
+              <RotateCcw className="mt-0.5 size-4 shrink-0 text-primary" />
+              <div>
+                <p className="font-semibold">{s.relanceTitre}</p>
+                <p className="text-muted-foreground">{s.relanceTexte}</p>
+                {d.motif_annulation && (
+                  <p className="mt-1 text-muted-foreground italic">
+                    {t.tableau.motif} : {d.motif_annulation}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
           <div className="flex items-center gap-4 rounded-2xl bg-primary/5 p-4">
             <div className="relative size-14 shrink-0">
               {[0, 1, 2].map((i) => (
@@ -143,17 +158,18 @@ export function SuiviDemande({
               </span>
             </div>
             <div>
-              <p className="font-semibold">{d.intervenant_trouve ? s.trouve : s.recherche}</p>
+              <p className="font-semibold">{d.nb_proposes > 0 ? s.envoyeeA(d.nb_proposes) : s.recherche}</p>
               <p className="text-sm text-muted-foreground">
-                {d.intervenant_trouve ? s.doitAccepter : d.programmee_pour ? s.programmeeAttente : s.personne}
+                {d.nb_proposes > 0 ? s.premier : d.programmee_pour ? s.programmeeAttente : s.personne}
               </p>
             </div>
+          </div>
           </div>
         ) : (
           <div
             className={cn(
               "rounded-2xl border p-4",
-              d.statut === "acceptee" && !d.confirmee ? "border-accent/50 bg-accent/10" : "border-success/40 bg-success/10"
+              d.statut === "acceptee" && !d.confirmee ? "border-primary/30 bg-primary/5" : "border-success/40 bg-success/10"
             )}
           >
             {/* L'intervenant */}

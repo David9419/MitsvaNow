@@ -43,6 +43,8 @@ export const fr = {
 
   theme: {
     changer: "Changer de thème",
+    versSombre: "Passer en mode sombre",
+    versClair: "Passer en mode clair",
     clair: "Clair",
     sombre: "Sombre",
     systeme: "Système",
@@ -194,7 +196,7 @@ export const fr = {
       },
       {
         q: "Comment l'intervenant le plus proche est-il choisi ?",
-        r: "Quand vous faites une demande, la plateforme regarde les intervenants disponibles de l'espace choisi et contacte celui qui est le plus près de vous. S'il ne peut pas, la demande passe automatiquement au suivant.",
+        r: "Quand vous faites une demande, elle est envoyée en même temps à tous les intervenants disponibles près de chez vous. Le premier qui accepte vient vous aider. S'il doit annuler, la demande repart automatiquement chez tous les autres.",
       },
       {
         q: "Puis-je programmer une demande pour plus tard ?",
@@ -526,6 +528,7 @@ export const fr = {
       annuler: "Annuler",
       repondreDans: (m: number) => `Répondez dans ${m} min`,
       repondreBientot: "Répondez vite",
+      proposeeA: (n: number) => `Envoyée à ${n} intervenants : le premier qui accepte la prend`,
       attenteConfirmation: (p: string) => `En attente de la confirmation de ${p}…`,
       confirmee: "Confirmé par le demandeur : vous pouvez y aller",
       arriveeDans: (m: number) => `Arrivée annoncée : ~${m} min`,
@@ -555,7 +558,7 @@ export const fr = {
       acceptee: "Demande acceptée !",
       accepteeTexte: "La personne va confirmer. Son téléphone est maintenant affiché.",
       refusee: "Demande refusée",
-      refuseeTexte: "Elle a été proposée à l'intervenant suivant.",
+      refuseeTexte: "Elle ne vous sera plus proposée.",
       terminee: "Mission terminée, bravo ! 🎉",
       merci: "Merci pour cette mitsva.",
       bonneRoute: "Bonne route !",
@@ -708,6 +711,8 @@ export const fr = {
       enRoute: (p: string) => `${p} est en route vers vous.`,
       terminee: "Demande terminée. Merci d'avoir fait appel à Mivtsa Now !",
       annuleeParIntervenant: (p: string) => `${p} a annulé sa venue`,
+      relance: "L'intervenant a annulé sa venue",
+      relanceTexte: "Nous avons renvoyé votre demande à tous les intervenants proches.",
       expiree: "Personne n'a pu répondre à temps",
     },
   },
@@ -744,6 +749,11 @@ export const fr = {
     demandee: (t: string) => `Demandée ${t}`,
     annuler: "Annuler",
     trouve: "Un intervenant proche a été trouvé",
+    envoyeeA: (n: number) =>
+      n > 1 ? `Demande envoyée à ${n} intervenants près de chez vous` : "Demande envoyée à un intervenant près de chez vous",
+    premier: "Le premier qui accepte vient vous aider. Vous serez prévenu tout de suite.",
+    relanceTitre: "L'intervenant a annulé sa venue",
+    relanceTexte: "Nous avons renvoyé votre demande à tous les intervenants proches.",
     recherche: "Recherche de l'intervenant le plus proche…",
     doitAccepter: "Il doit accepter. Vous serez prévenu dès que c'est fait.",
     personne: "Personne n'est disponible pour l'instant près de vous. Nous continuons à chercher automatiquement.",
@@ -808,6 +818,7 @@ export const fr = {
     "Vous avez déjà 3 demandes en cours.": "Vous avez déjà 3 demandes en cours.",
     "Vous avez déjà 10 demandes programmées.": "Vous avez déjà 10 demandes programmées.",
     "Cette demande ne vous est plus proposée.": "Cette demande ne vous est plus proposée.",
+    "Un autre intervenant a déjà accepté cette demande.": "Un autre intervenant a déjà accepté cette demande.",
     "Moyen de transport inconnu.": "Moyen de transport inconnu.",
     "Délai d'arrivée invalide.": "Délai d'arrivée invalide.",
     "Cette demande ne peut plus être confirmée.": "Cette demande ne peut plus être confirmée.",
