@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Figtree, Heebo, Unbounded } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 
 import { BoutonInstagram } from "@/components/bouton-instagram";
 import { LangueProvider } from "@/components/i18n/langue-provider";
@@ -59,6 +60,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <Toaster position="top-center" richColors closeButton dir={direction(langue)} />
           </LangueProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
