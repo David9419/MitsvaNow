@@ -408,15 +408,7 @@ html.theme-anime::view-transition-new(root) {
   mix-blend-mode: normal;
 }
 
-/* Changement de langue : le drapeau tourne doucement dans son anneau */
-@keyframes anneau-langue {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.animate-anneau-langue {
-  animation: anneau-langue 1.1s linear infinite;
-}
+/* Changement de langue : « Bienvenue » apparaît en douceur */
 @keyframes mot-langue {
   from {
     opacity: 0;

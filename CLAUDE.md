@@ -137,9 +137,10 @@ services affichés par « Voir plus » sur l'accueil).
    appareil photo), prénom, nom, téléphone, e-mail non modifiable, changement de mot de
    passe (ancien + nouveau + confirmation), mot de passe oublié, notifications
    (activer / couper), mode sombre, langue.
-   Thème : interrupteur jour/nuit animé (`src/components/mode-toggle.tsx`, ouverture en
-   cercle via `src/lib/theme-anime.ts`) ; langue : pastille drapeau + code avec voile
-   « Bienvenue » animé (`src/components/selecteur-langue.tsx`).
+   Thème : bouton soleil / lune (`src/components/mode-toggle.tsx`) ; au clic le nouveau
+   thème s'ouvre en cercle depuis le bouton (`src/lib/theme-anime.ts`, aussi utilisé par
+   l'interrupteur des Paramètres). Langue : pastille drapeau + code ; au changement, un
+   voile flou avec le drapeau et « Bienvenue » en un seul temps (`src/components/selecteur-langue.tsx`).
 9. **Langues** : français, hébreu (droite à gauche, police Heebo), anglais ; bouton dans
    l'en-tête ; cookie `langue` + `profiles.langue` (les notifications partent dans la
    langue de chaque personne).

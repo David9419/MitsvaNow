@@ -27,7 +27,7 @@ import { changerMotDePasseCompte } from "@/app/(auth)/actions"
 import { Champ, ChampMotDePasse, MessageErreur } from "@/components/auth/champ"
 import { ChoixPhoto } from "@/components/choix-photo"
 import { useT } from "@/components/i18n/langue-provider"
-import { InterrupteurTheme } from "@/components/mode-toggle"
+import { changerThemeAnime } from "@/lib/theme-anime"
 import { ChoixLangue } from "@/components/selecteur-langue"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { EtapesEcranAccueil } from "@/components/tableau/carte-notifications"
@@ -75,7 +75,8 @@ export function PageParametres({ utilisateurId, profil }: { utilisateurId: strin
   const router = useRouter()
   const supabase = useRef(createClient()).current
   const push = usePush()
-  const { resolvedTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
+  const interrupteurTheme = useRef<HTMLButtonElement>(null)
   const [monte, setMonte] = useState(false)
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- le thème n'est connu qu'une fois la page affichée
@@ -304,7 +305,12 @@ export function PageParametres({ utilisateurId, profil }: { utilisateurId: strin
           <CarteWidget icon={Palette} titre={p.apparence} sousTitre={p.apparenceSous} delai={325}>
             <div className="flex flex-col gap-4">
               <Reglage icon={sombre ? Moon : Sun} titre={p.modeSombre} texte={p.modeSombreTexte}>
-                <InterrupteurTheme />
+                <Switch
+                  ref={interrupteurTheme}
+                  checked={sombre}
+                  onCheckedChange={(v) => changerThemeAnime(v ? "dark" : "light", setTheme, interrupteurTheme.current)}
+                  aria-label={p.modeSombre}
+                />
               </Reglage>
               <div className="rounded-xl border p-4">
                 <div className="mb-3 flex items-center gap-4">

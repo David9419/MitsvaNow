@@ -54,34 +54,15 @@ function useChangementLangue() {
         role="status"
         aria-live="polite"
         className={cn(
-          "fixed inset-0 z-[100] flex flex-col items-center justify-center gap-5 bg-background/75 backdrop-blur-xl duration-500",
+          "fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/75 backdrop-blur-xl duration-500",
           sortie ? "animate-out fade-out fill-mode-forwards" : "animate-in fade-in"
         )}
       >
-        <span className="relative flex size-28 items-center justify-center">
-          <span
-            aria-hidden
-            className="absolute inset-0 animate-anneau-langue rounded-full bg-[conic-gradient(from_0deg,var(--primary),transparent_70%)] opacity-80"
-          />
-          <span className="absolute inset-1.5 rounded-full bg-background" />
-          <span className="relative animate-in zoom-in-50 text-6xl leading-none duration-500">{l.drapeau}</span>
-        </span>
-        <p
-          lang={l.code}
-          dir={direction(l.code)}
-          className="animate-mot-langue font-heading text-3xl font-bold tracking-tight [animation-delay:150ms]"
-        >
-          {l.bienvenue}
-        </p>
-        <p
-          lang={l.code}
-          className={cn(
-            "animate-mot-langue text-sm font-semibold text-muted-foreground uppercase [animation-delay:300ms]",
-            l.code !== "he" && "tracking-[0.3em]"
-          )}
-        >
-          {l.nom}
-        </p>
+        {/* Un seul temps : le drapeau et « Bienvenue » arrivent ensemble */}
+        <div lang={l.code} dir={direction(l.code)} className="flex animate-mot-langue flex-col items-center gap-4">
+          <span className="text-6xl leading-none">{l.drapeau}</span>
+          <p className="font-heading text-3xl font-bold tracking-tight">{l.bienvenue}</p>
+        </div>
       </div>,
       document.body
     )
