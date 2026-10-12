@@ -399,6 +399,7 @@ export type Database = {
           adresse: string | null
           communaute: string | null
           created_at: string
+          dernier_passage: string | null
           email: string | null
           espace_id: string | null
           est_admin: boolean
@@ -419,6 +420,7 @@ export type Database = {
           adresse?: string | null
           communaute?: string | null
           created_at?: string
+          dernier_passage?: string | null
           email?: string | null
           espace_id?: string | null
           est_admin?: boolean
@@ -439,6 +441,7 @@ export type Database = {
           adresse?: string | null
           communaute?: string | null
           created_at?: string
+          dernier_passage?: string | null
           email?: string | null
           espace_id?: string | null
           est_admin?: boolean
@@ -524,6 +527,7 @@ export type Database = {
         Args: { p_decision: string; p_motif?: string; p_utilisateur: string }
         Returns: undefined
       }
+      admin_statistiques: { Args: never; Returns: Json }
       annuler_demande: {
         Args: { p_demande: string; p_motif?: string }
         Returns: undefined
@@ -608,6 +612,7 @@ export type Database = {
         Returns: undefined
       }
       secrets_push: { Args: never; Returns: Json }
+      signaler_presence: { Args: never; Returns: undefined }
       supprimer_abonnement_push: {
         Args: { p_endpoint: string }
         Returns: undefined
