@@ -152,13 +152,20 @@ services affichés par « Voir plus » sur l'accueil).
 - `profiles.verification` (`en_attente` → `valide`, ou `refuse` / `suspendu`) : colonne
   **non modifiable** par l'utilisateur (seuls `prenom`, `nom`, `telephone` sont ouverts en
   écriture). On ne lit **jamais** le statut dans les données envoyées à l'inscription.
-- Comptes inscrits avant le 12/10/2026 : validés automatiquement (`verifie_par` vide),
-  signalés « à revoir » dans la page Administration.
+- Tous les comptes inscrits avant le 13/10/2026 ont été validés en bloc (demande de l'équipe,
+  écrit dans `journal_verifications`).
 - Administrateurs : `profiles.est_admin = true` (se règle uniquement en SQL, par nous).
   Page **`/accueil/admin`** (`src/components/admin/page-admin.tsx`) : onglets À vérifier /
   Validés / Refusés-suspendus, appeler, valider, refuser ou suspendre (motif obligatoire).
   Fonctions `admin_comptes`, `admin_decider` (vérifient `est_admin` côté base) ; chaque
   décision est écrite dans `journal_verifications`.
+- Onglet **Tableau de bord** de l'administration (`src/components/admin/tableau-de-bord-admin.tsx`,
+  fonction `admin_statistiques`) : en ligne, inscrits, demandes, mitsvot réalisées, note,
+  disponibles, inscrits par rôle (clic → liste filtrée), histogrammes sur 30 jours, qui est en
+  ligne, dernières inscriptions / demandes, services les plus demandés, meilleurs intervenants.
+  Mis à jour toutes les 30 s. « En ligne » = `profiles.dernier_passage` (< 3 min), mis à jour
+  chaque minute par `signaler_presence()` depuis `src/app/accueil/layout.tsx`
+  (`SignalPresence`). Les visiteurs non connectés : Vercel Analytics.
 - Côté base, `prive.exiger_compte_valide()` bloque au début de `creer_demande`,
   `repondre_demande`, `confirmer_intervenant`, `avancer_demande`, `annuler_intervention`,
   `mettre_a_jour_intervenant` ; `prive.peut_recevoir` ne propose les demandes qu'aux
@@ -175,7 +182,8 @@ services affichés par « Voir plus » sur l'accueil).
 
 ### Base de données (Supabase)
 - `espaces`, `services` (`nom`, `nom_he`, `nom_en`), `profiles` (+ `photo_url`, `langue`,
-  `verification`, `communaute`, `referent`, `verifie_le`, `verifie_par`, `motif_verification`),
+  `verification`, `communaute`, `referent`, `verifie_le`, `verifie_par`, `motif_verification`,
+  `dernier_passage`),
   `journal_verifications`,
   `intervenants`, `intervenant_services`, `demande_refus`, `demande_propositions`
   (à qui la demande est envoyée ; `active = false` au lieu de supprimer), `avis`,
@@ -190,7 +198,7 @@ services affichés par « Voir plus » sur l'accueil).
   `expirer_demandes`, `mettre_a_jour_intervenant`, `tableau_intervenant`,
   `tableau_demandeur`, `enregistrer_ma_position`, `ma_position`, `definir_photo`,
   `definir_langue`, `enregistrer_abonnement_push`, `compte_valide`, `mon_statut_compte`,
-  `admin_comptes`, `admin_decider`.
+  `admin_comptes`, `admin_decider`, `admin_statistiques`, `signaler_presence`.
 
 ### Notifications
 - Un seul déclencheur `evenements_demande` (+ `evenement_avis`) → `notifier()` → pg_net
@@ -220,8 +228,8 @@ services affichés par « Voir plus » sur l'accueil).
 - Ton : chaleureux, simple, « vous », textes courts.
 
 ### Idées pour la suite (non faites)
-- Espace administrateur : la vérification des comptes est faite ; reste toutes les
-  demandes et les statistiques.
+- Administration : vérification des comptes et tableau de bord faits ; reste la liste
+  complète de toutes les demandes.
 - Nom de domaine à nous et service d'e-mails dédié.
 
 @AGENTS.md

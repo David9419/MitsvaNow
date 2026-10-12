@@ -1,11 +1,12 @@
 "use client"
 
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import {
   Ban,
   Check,
   Clock,
+  LayoutDashboard,
   Loader2,
   Mail,
   Phone,
@@ -18,6 +19,12 @@ import {
   X,
 } from "lucide-react"
 
+import {
+  ROLES_ADMIN,
+  TableauDeBordAdmin,
+  type RoleAdmin,
+  type StatistiquesAdmin,
+} from "@/components/admin/tableau-de-bord-admin"
 import { Avatar } from "@/components/avatar"
 import { useLangue, useT } from "@/components/i18n/langue-provider"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
@@ -26,6 +33,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { trouverEspace } from "@/lib/espaces"
 import { ilYa } from "@/lib/i18n"
+import { useMaintenant } from "@/hooks/use-maintenant"
 import { createClient } from "@/lib/supabase/client"
 import { messageErreur } from "@/lib/tableau/outils"
 import { cn } from "@/lib/utils"
@@ -47,6 +55,8 @@ export type CompteAdmin = {
   verifie_le: string | null
   motif_verification: string | null
   est_admin: boolean
+  dernier_passage: string | null
+  disponible: boolean | null
   valide_automatiquement: boolean
   verifie_par_nom: string | null
   espace_slug: string | null
@@ -61,12 +71,29 @@ const DANS_ONGLET: Record<Onglet, Verification[]> = {
 }
 
 /** Page Administration : vérifier les comptes avant de leur donner accès au site. */
-export function PageAdmin({ utilisateurId, initial }: { utilisateurId: string; initial: CompteAdmin[] }) {
+type Vue = "tableau" | "comptes"
+type FiltreRole = "tous" | "en_ligne" | RoleAdmin
+/** En ligne = passé sur le site dans les 3 dernières minutes */
+const EN_LIGNE_MS = 3 * 60 * 1000
+
+export function PageAdmin({
+  utilisateurId,
+  initial,
+  statistiques,
+}: {
+  utilisateurId: string
+  initial: CompteAdmin[]
+  statistiques: StatistiquesAdmin | null
+}) {
   const t = useT()
   const a = t.admin
   const langue = useLangue()
   const supabase = useRef(createClient()).current
   const [comptes, setComptes] = useState(initial)
+  const [stats, setStats] = useState(statistiques)
+  const [vue, setVue] = useState<Vue>("tableau")
+  const [filtreRole, setFiltreRole] = useState<FiltreRole>("tous")
+  const maintenant = useMaintenant(30000)
   const [onglet, setOnglet] = useState<Onglet>("attente")
   const [recherche, setRecherche] = useState("")
   const [enCours, setEnCours] = useState<string | null>(null)
@@ -74,9 +101,28 @@ export function PageAdmin({ utilisateurId, initial }: { utilisateurId: string; i
   const [motif, setMotif] = useState("")
 
   const recharger = useCallback(async () => {
-    const { data } = await supabase.rpc("admin_comptes")
+    const [{ data }, { data: s }] = await Promise.all([
+      supabase.rpc("admin_comptes"),
+      supabase.rpc("admin_statistiques"),
+    ])
     if (data) setComptes(data as unknown as CompteAdmin[])
+    if (s) setStats(s as unknown as StatistiquesAdmin)
   }, [supabase])
+
+  // Mise à jour toute seule toutes les 30 secondes (nouvelles inscriptions, personnes en ligne…)
+  useEffect(() => {
+    const minuteur = setInterval(recharger, 30000)
+    return () => clearInterval(minuteur)
+  }, [recharger])
+
+  /** Depuis le tableau de bord : ouvrir la liste des comptes filtrée */
+  const voirRole = (role: RoleAdmin | "en_ligne") => {
+    setFiltreRole(role)
+    setOnglet("valides")
+    setRecherche("")
+    setVue("comptes")
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 
   const decider = async (c: CompteAdmin, decision: Verification, raison?: string) => {
     setEnCours(c.id)
@@ -122,6 +168,13 @@ export function PageAdmin({ utilisateurId, initial }: { utilisateurId: string; i
     const q = recherche.trim().toLowerCase()
     return comptes
       .filter((c) => DANS_ONGLET[onglet].includes(c.verification))
+      .filter((c) =>
+        filtreRole === "tous"
+          ? true
+          : filtreRole === "en_ligne"
+            ? c.dernier_passage != null && maintenant - new Date(c.dernier_passage).getTime() < EN_LIGNE_MS
+            : (c.type_intervenant ?? "demandeur") === filtreRole
+      )
       .filter(
         (c) =>
           !q ||
@@ -131,7 +184,7 @@ export function PageAdmin({ utilisateurId, initial }: { utilisateurId: string; i
       )
       // Dans « Validés », les comptes validés automatiquement (à revoir) d'abord
       .sort((x, y) => Number(y.valide_automatiquement) - Number(x.valide_automatiquement))
-  }, [comptes, onglet, recherche])
+  }, [comptes, onglet, recherche, filtreRole, maintenant])
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-6">
@@ -175,17 +228,45 @@ export function PageAdmin({ utilisateurId, initial }: { utilisateurId: string; i
             <p className="mt-1 opacity-85">{a.sousTitre}</p>
           </div>
         </div>
-        <div className="mt-5 rounded-2xl bg-current/10 p-4 text-sm ring-1 ring-current/15">
-          <p className="font-semibold">{a.conseilsTitre}</p>
-          <ul className="mt-2 flex flex-col gap-1.5 opacity-90">
-            {a.conseils.map((c) => (
-              <li key={c} className="flex items-start gap-2">
-                <Check className="mt-0.5 size-4 shrink-0" /> {c}
-              </li>
-            ))}
-          </ul>
+        <div className="mt-5 inline-flex gap-1 rounded-xl bg-current/10 p-1 ring-1 ring-current/15">
+          {(
+            [
+              { id: "tableau", icon: LayoutDashboard },
+              { id: "comptes", icon: Users },
+            ] as const
+          ).map((v) => (
+            <button
+              key={v.id}
+              type="button"
+              onClick={() => setVue(v.id)}
+              className={cn(
+                "flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all",
+                vue === v.id ? "bg-background text-foreground shadow-md" : "hover:bg-current/10"
+              )}
+            >
+              <v.icon className="size-4" /> {a.vues[v.id]}
+              {v.id === "comptes" && nombres.attente > 0 && (
+                <span className="rounded-full bg-primary px-2 text-xs text-primary-foreground tabular-nums">{nombres.attente}</span>
+              )}
+            </button>
+          ))}
         </div>
       </section>
+
+      {vue === "tableau" && stats && <TableauDeBordAdmin stats={stats} onVoirRole={voirRole} />}
+
+      {vue === "comptes" && (
+      <>
+      <div className="rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm">
+        <p className="font-semibold">{a.conseilsTitre}</p>
+        <ul className="mt-2 flex flex-col gap-1.5 text-muted-foreground">
+          {a.conseils.map((c) => (
+            <li key={c} className="flex items-start gap-2">
+              <Check className="mt-0.5 size-4 shrink-0 text-primary" /> {c}
+            </li>
+          ))}
+        </ul>
+      </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="flex flex-1 gap-1 rounded-xl bg-muted p-1">
@@ -229,6 +310,24 @@ export function PageAdmin({ utilisateurId, initial }: { utilisateurId: string; i
         </div>
       </div>
 
+      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+        {(["tous", "en_ligne", ...ROLES_ADMIN] as FiltreRole[]).map((f) => (
+          <button
+            key={f}
+            type="button"
+            onClick={() => setFiltreRole(f)}
+            aria-pressed={filtreRole === f}
+            className={cn(
+              "flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-all active:scale-95",
+              filtreRole === f ? "border-primary bg-primary text-primary-foreground shadow-md" : "bg-card hover:border-primary/40"
+            )}
+          >
+            {f === "en_ligne" && <span className="size-2 rounded-full bg-success" />}
+            {f === "tous" ? a.filtres.tous : f === "en_ligne" ? a.filtres.enLigne : a.roles[f]}
+          </button>
+        ))}
+      </div>
+
       <div key={onglet} className="flex flex-col gap-3">
         {liste.length === 0 ? (
           <div className="flex animate-in fade-in flex-col items-center gap-3 rounded-2xl border border-dashed bg-card/50 px-6 py-10 text-center">
@@ -253,7 +352,12 @@ export function PageAdmin({ utilisateurId, initial }: { utilisateurId: string; i
                 )}
               >
                 <div className="flex flex-wrap items-start gap-4">
-                  <Avatar src={c.photo_url} nom={nom} className="size-14 text-xl" />
+                  <span className="relative">
+                    <Avatar src={c.photo_url} nom={nom} className="size-14 text-xl" />
+                    {c.dernier_passage != null && maintenant - new Date(c.dernier_passage).getTime() < EN_LIGNE_MS && (
+                      <span title={a.enLigne} className="absolute -end-0.5 -bottom-0.5 size-4 rounded-full bg-success ring-2 ring-card" />
+                    )}
+                  </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <h2 className="text-lg leading-tight font-bold">{nom || "—"}</h2>
@@ -361,6 +465,8 @@ export function PageAdmin({ utilisateurId, initial }: { utilisateurId: string; i
           })
         )}
       </div>
+      </>
+      )}
     </main>
   )
 }

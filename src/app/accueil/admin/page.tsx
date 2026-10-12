@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 
 import { PageAdmin, type CompteAdmin } from "@/components/admin/page-admin"
+import type { StatistiquesAdmin } from "@/components/admin/tableau-de-bord-admin"
 import { obtenirDico } from "@/lib/i18n/serveur"
 import { chargerSession } from "@/lib/tableau/charger"
 
@@ -14,8 +15,17 @@ export default async function AdminPage() {
   const { supabase, user, estAdmin } = await chargerSession()
   if (!estAdmin) notFound()
 
-  const { data, error } = await supabase.rpc("admin_comptes")
+  const [{ data, error }, { data: stats }] = await Promise.all([
+    supabase.rpc("admin_comptes"),
+    supabase.rpc("admin_statistiques"),
+  ])
   if (error) notFound()
 
-  return <PageAdmin utilisateurId={user.id} initial={(data as unknown as CompteAdmin[]) ?? []} />
+  return (
+    <PageAdmin
+      utilisateurId={user.id}
+      initial={(data as unknown as CompteAdmin[]) ?? []}
+      statistiques={(stats as unknown as StatistiquesAdmin | null) ?? null}
+    />
+  )
 }
