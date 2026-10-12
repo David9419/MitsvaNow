@@ -58,8 +58,8 @@ L'équipe ne sait pas coder. Claude doit :
   on vérifie la base avec les outils MCP Supabase. Pour tester un parcours complet,
   on simule les utilisateurs en SQL dans un bloc `do $$ … raise exception 'RESULTAT' … $$`
   (tout est annulé à la fin).
-- Outils MCP Supabase : un SQL contenant `drop`, `revoke` ou `delete from` reste bloqué
-  (il attend une confirmation invisible ici). Écrire les migrations sans ces mots :
+- Outils MCP Supabase : un SQL contenant `drop`, `revoke` ou `delete from` peut rester bloqué
+  (il attend une confirmation ; un `revoke` seul est pourtant passé le 12/10/2026). Écrire les migrations sans ces mots :
   `create or replace`, colonne `active` plutôt que supprimer, fonctions internes dans
   le schéma `prive` plutôt que `revoke`.
 - Ne jamais lancer `pkill -f` avec un motif présent dans la commande (ça tue le shell).
