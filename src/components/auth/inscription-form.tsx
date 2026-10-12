@@ -13,7 +13,10 @@ import {
   MailCheck,
   MapPin,
   Phone,
+  ShieldCheck,
   User,
+  UserCheck,
+  Users,
 } from "lucide-react"
 
 import { inscription } from "@/app/(auth)/actions"
@@ -258,10 +261,30 @@ export function InscriptionForm({
           <ChampMotDePasse autoComplete="new-password" aide={t.auth.champs.mdpAide} />
         </div>
 
+        {/* La vérification du compte */}
+        <div role="group" className="flex flex-col gap-4">
+          <p className="text-sm font-semibold">
+            {n + 2}. {ti.verification}
+          </p>
+          <p className="flex items-start gap-3 rounded-xl border border-primary/25 bg-primary/5 p-3.5 text-sm text-muted-foreground">
+            <ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary" />
+            {ti.verificationTexte}
+          </p>
+          <Champ label={ti.communaute} id="communaute" icon={Users} placeholder={ti.communautePh} required minLength={2} maxLength={200} defaultValue={c?.communaute} />
+          <div className="flex flex-col gap-1.5">
+            <Champ label={ti.referent} id="referent" icon={UserCheck} placeholder={ti.referentPh} required={intervenant} maxLength={200} defaultValue={c?.referent} />
+            <p className="text-xs text-muted-foreground">{intervenant ? ti.referentObligatoire : ti.referentFacultatif}</p>
+          </div>
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl border bg-card p-3.5 text-sm">
+            <input type="checkbox" name="accord" required className="mt-0.5 size-4 shrink-0 accent-primary" />
+            <span>{ti.accord}</span>
+          </label>
+        </div>
+
         {/* La photo du visage */}
         <div ref={blocPhoto} role="group" className="flex scroll-mt-24 flex-col gap-3">
           <p className="text-sm font-semibold">
-            {n + 2}. {ti.photo}
+            {n + 3}. {ti.photo}
           </p>
           <div
             className={cn(
@@ -309,7 +332,7 @@ export function InscriptionForm({
         {/* La localisation */}
         <div role="group" className="flex flex-col gap-3">
           <p className="text-sm font-semibold">
-            {n + 3}. {ti.position}
+            {n + 4}. {ti.position}
           </p>
           {lieu ? (
             <div className="flex animate-in fade-in items-center justify-between gap-3 rounded-xl border border-success/40 bg-success/10 p-3 text-sm">

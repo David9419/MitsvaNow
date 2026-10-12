@@ -13,7 +13,7 @@ export default async function ParametresPage() {
   const { supabase, user } = await chargerSession()
   const { data: profil } = await supabase
     .from("profiles")
-    .select("prenom, nom, telephone, email, photo_url")
+    .select("prenom, nom, telephone, email, photo_url, verification")
     .eq("id", user.id)
     .maybeSingle()
 
@@ -26,6 +26,7 @@ export default async function ParametresPage() {
         telephone: profil?.telephone ?? "",
         email: profil?.email ?? user.email ?? "",
         photo: profil?.photo_url ?? null,
+        nomVerrouille: profil?.verification === "valide",
       }}
     />
   )

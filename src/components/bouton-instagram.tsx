@@ -6,7 +6,7 @@ import { useEffect, useRef, useState, type PointerEvent } from "react"
 import { useT } from "@/components/i18n/langue-provider"
 import { cn } from "@/lib/utils"
 
-const LIEN = "https://www.instagram.com/mivtsanow?stkn=MXA4cXNzcmMzMDNuOQ%3D%3D&utm_source=qr"
+export const LIEN_INSTAGRAM = "https://www.instagram.com/mivtsanow?stkn=MXA4cXNzcmMzMDNuOQ%3D%3D&utm_source=qr"
 const CLE = "mn-instagram-coin"
 
 type Coin = "haut-gauche" | "haut-droite" | "bas-gauche" | "bas-droite"
@@ -72,7 +72,7 @@ export function BoutonInstagram() {
 
   return (
     <a
-      href={LIEN}
+      href={LIEN_INSTAGRAM}
       target="_blank"
       rel="noreferrer"
       aria-label={t.instagram.label}

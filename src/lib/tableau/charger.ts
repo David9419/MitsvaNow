@@ -6,7 +6,15 @@ import type { ServiceDisponible } from "@/components/tableau/formulaire-demande"
 import { createClient } from "@/lib/supabase/server"
 import type { DemandeDemandeur, DonneesIntervenant, PositionEnregistree } from "@/lib/tableau/types"
 
-/** Utilisateur connecté + prénom + fiche intervenant (s'il en a une). */
+/** Statut de vérification du compte (renvoyé par mon_statut_compte). */
+export type StatutCompte = {
+  verification: "en_attente" | "valide" | "refuse" | "suspendu"
+  motif: string | null
+  telephone: string | null
+  est_admin: boolean
+}
+
+/** Utilisateur connecté + prénom + fiche intervenant (s'il en a une) + statut du compte. */
 export async function chargerSession() {
   const supabase = await createClient()
   const {
@@ -14,16 +22,27 @@ export async function chargerSession() {
   } = await supabase.auth.getUser()
   if (!user) redirect("/connexion")
 
-  const [{ data: profil }, { data: intervenant }] = await Promise.all([
+  const [{ data: profil }, { data: intervenant }, { data: statut }] = await Promise.all([
     supabase.from("profiles").select("prenom").eq("id", user.id).maybeSingle(),
     supabase.from("intervenants").select("id").eq("id", user.id).maybeSingle(),
+    supabase.rpc("mon_statut_compte"),
   ])
+  // Sans réponse claire de la base, on considère le compte comme non vérifié
+  const compte = (statut as unknown as StatutCompte | null) ?? {
+    verification: "en_attente",
+    motif: null,
+    telephone: null,
+    est_admin: false,
+  }
   const prenom = (profil?.prenom || "").trim()
   return {
     supabase,
     user,
     prenom: prenom.charAt(0).toUpperCase() + prenom.slice(1),
     estIntervenant: Boolean(intervenant),
+    compte,
+    compteValide: compte.verification === "valide",
+    estAdmin: compte.est_admin === true && compte.verification === "valide",
   }
 }
 

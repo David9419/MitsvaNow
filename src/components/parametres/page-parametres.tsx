@@ -18,6 +18,7 @@ import {
   Save,
   Send,
   Settings,
+  ShieldCheck,
   Sun,
   User,
   type LucideIcon,
@@ -41,7 +42,15 @@ import { createClient } from "@/lib/supabase/client"
 import { compresserPhoto } from "@/lib/photo"
 import { messageErreur } from "@/lib/tableau/outils"
 
-type Profil = { prenom: string; nom: string; telephone: string; email: string; photo: string | null }
+type Profil = {
+  prenom: string
+  nom: string
+  telephone: string
+  email: string
+  photo: string | null
+  /** Nom vérifié par un administrateur : il ne se change plus ici */
+  nomVerrouille: boolean
+}
 
 /** Une ligne « réglage » : icône, titre, petit texte, et l'interrupteur à droite. */
 function Reglage({
@@ -200,6 +209,8 @@ export function PageParametres({ utilisateurId, profil }: { utilisateurId: strin
                   value={champs.prenom}
                   onChange={(e) => setChamps((c) => ({ ...c, prenom: e.target.value }))}
                   required
+                  readOnly={profil.nomVerrouille}
+                  disabled={profil.nomVerrouille}
                 />
                 <Champ
                   label={t.auth.champs.nom}
@@ -209,8 +220,15 @@ export function PageParametres({ utilisateurId, profil }: { utilisateurId: strin
                   value={champs.nom}
                   onChange={(e) => setChamps((c) => ({ ...c, nom: e.target.value }))}
                   required
+                  readOnly={profil.nomVerrouille}
+                  disabled={profil.nomVerrouille}
                 />
               </div>
+              {profil.nomVerrouille && (
+                <p className="-mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <ShieldCheck className="size-3.5 shrink-0 text-primary" /> {p.nomVerrouille}
+                </p>
+              )}
               <Champ
                 label={t.auth.champs.tel}
                 id="telephone"

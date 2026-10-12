@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 
+import { CompteEnVerification } from "@/components/tableau/compte-en-verification"
 import { TableauDemandeur } from "@/components/tableau/tableau-demandeur"
 import { obtenirDico } from "@/lib/i18n/serveur"
 import { chargerSession, chargerTableauDemandeur } from "@/lib/tableau/charger"
@@ -10,7 +11,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Les demandes personnelles (utile aux intervenants qui ont eux-mêmes un besoin). */
 export default async function MesDemandesPage() {
-  const { supabase, user, prenom, estIntervenant } = await chargerSession()
+  const { supabase, user, prenom, estIntervenant, compte, compteValide, estAdmin } = await chargerSession()
+  if (!compteValide) return <CompteEnVerification prenom={prenom} compte={compte} />
   const { demandes, services, position, telephone } = await chargerTableauDemandeur(supabase)
   return (
     <TableauDemandeur
@@ -21,6 +23,7 @@ export default async function MesDemandesPage() {
       positionInitiale={position}
       telephone={telephone}
       estIntervenant={estIntervenant}
+      estAdmin={estAdmin}
     />
   )
 }

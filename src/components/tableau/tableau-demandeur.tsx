@@ -41,6 +41,7 @@ export function TableauDemandeur({
   positionInitiale,
   telephone,
   estIntervenant = false,
+  estAdmin = false,
 }: {
   utilisateurId: string
   prenom: string
@@ -50,6 +51,8 @@ export function TableauDemandeur({
   /** Numéro du compte, proposé par défaut dans le formulaire */
   telephone: string
   estIntervenant?: boolean
+  /** Compte administrateur : affiche le bouton « Administration » */
+  estAdmin?: boolean
 }) {
   const t = useT()
   const td = t.demandeur
@@ -261,7 +264,7 @@ export function TableauDemandeur({
         onValider={annuler}
       />
 
-      <BarreTableau icon={espace.icon} espace={titreEspace}>
+      <BarreTableau icon={espace.icon} espace={titreEspace} admin={estAdmin}>
         {estIntervenant && (
           <Button asChild size="sm" variant="outline">
             <Link href="/accueil">{t.tableau.monTableau}</Link>

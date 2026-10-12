@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import type { ReactNode } from "react"
-import { ArrowLeft, Settings, type LucideIcon } from "lucide-react"
+import { ArrowLeft, Settings, ShieldCheck, type LucideIcon } from "lucide-react"
 
 import { useT } from "@/components/i18n/langue-provider"
 import { Button } from "@/components/ui/button"
@@ -15,6 +15,7 @@ export function BarreTableau({
   retour = "/",
   libelleRetour,
   parametres = true,
+  admin = false,
 }: {
   icon: LucideIcon
   espace: string
@@ -24,6 +25,8 @@ export function BarreTableau({
   libelleRetour?: string
   /** Afficher le bouton ⚙️ Paramètres */
   parametres?: boolean
+  /** Afficher le bouton « Administration » (comptes administrateurs seulement) */
+  admin?: boolean
 }) {
   const t = useT()
   return (
@@ -43,6 +46,13 @@ export function BarreTableau({
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {children}
+        {admin && (
+          <Button asChild size="sm" variant="outline" className="rounded-full">
+            <Link href="/accueil/admin">
+              <ShieldCheck className="text-primary" /> {t.admin.lien}
+            </Link>
+          </Button>
+        )}
         {parametres && (
           <Button asChild size="icon" variant="outline" className="group rounded-full" title={t.commun.parametres}>
             <Link href="/accueil/parametres" aria-label={t.commun.parametres}>

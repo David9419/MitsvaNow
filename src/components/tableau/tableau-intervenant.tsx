@@ -68,10 +68,13 @@ export function TableauIntervenant({
   utilisateurId,
   prenom,
   initial,
+  estAdmin = false,
 }: {
   utilisateurId: string
   prenom: string
   initial: DonneesIntervenant
+  /** Compte administrateur : affiche le bouton « Administration » */
+  estAdmin?: boolean
 }) {
   const t = useT()
   const ti = t.intervenant
@@ -403,7 +406,7 @@ export function TableauIntervenant({
         onValider={annulerIntervention}
       />
 
-      <BarreTableau icon={espace.icon} espace={t.tableau.espace(nomEspace)}>
+      <BarreTableau icon={espace.icon} espace={t.tableau.espace(nomEspace)} admin={estAdmin}>
         {interrupteur}
       </BarreTableau>
 

@@ -106,9 +106,12 @@ Structure des espaces : `src/lib/espaces.ts` ; textes : `t.espaces[slug]` (dont 
 services affichés par « Voir plus » sur l'accueil).
 
 ### Règles du jeu
-1. **Inscription** : espace imposé quand on vient du bouton d'un espace ; **photo du visage
-   obligatoire** (réduite dans le navigateur, rangée dans Storage `photos/<id>/…`) ;
-   position (GPS ou adresse) ; pas de validation des intervenants.
+1. **Inscription** : espace imposé quand on vient du bouton d'un espace ; photo du visage
+   (facultative, réduite dans le navigateur, rangée dans Storage `photos/<id>/…`) ;
+   position (GPS ou adresse) ; **communauté** (obligatoire), **référent** = une personne
+   qui connaît le candidat (obligatoire pour les intervenants) et accord pour être contacté.
+   **Chaque nouveau compte est « en attente » jusqu'à sa validation par un administrateur**
+   (voir « Sécurité » plus bas).
 2. **Demande** : service, **maintenant ou programmée** (jour + heure, 15 min à 3 mois),
    adresse, téléphone obligatoire, message facultatif.
 3. **Diffusion** (`attribuer_demande`) : la demande est envoyée **en même temps à tous**
@@ -145,8 +148,35 @@ services affichés par « Voir plus » sur l'accueil).
    l'en-tête ; cookie `langue` + `profiles.langue` (les notifications partent dans la
    langue de chaque personne).
 
+### Sécurité — vérification des comptes
+- `profiles.verification` (`en_attente` → `valide`, ou `refuse` / `suspendu`) : colonne
+  **non modifiable** par l'utilisateur (seuls `prenom`, `nom`, `telephone` sont ouverts en
+  écriture). On ne lit **jamais** le statut dans les données envoyées à l'inscription.
+- Comptes inscrits avant le 12/10/2026 : validés automatiquement (`verifie_par` vide),
+  signalés « à revoir » dans la page Administration.
+- Administrateurs : `profiles.est_admin = true` (se règle uniquement en SQL, par nous).
+  Page **`/accueil/admin`** (`src/components/admin/page-admin.tsx`) : onglets À vérifier /
+  Validés / Refusés-suspendus, appeler, valider, refuser ou suspendre (motif obligatoire).
+  Fonctions `admin_comptes`, `admin_decider` (vérifient `est_admin` côté base) ; chaque
+  décision est écrite dans `journal_verifications`.
+- Côté base, `prive.exiger_compte_valide()` bloque au début de `creer_demande`,
+  `repondre_demande`, `confirmer_intervenant`, `avancer_demande`, `annuler_intervention`,
+  `mettre_a_jour_intervenant` ; `prive.peut_recevoir` ne propose les demandes qu'aux
+  comptes validés. **Toute nouvelle action privée doit commencer par
+  `perform prive.exiger_compte_valide();`**.
+- Portes directes fermées : impossible de s'insérer soi-même dans `intervenants` ou
+  `demandes` (politiques `with check (false)`), fiche intervenant modifiable seulement si
+  validé, nom (prénom/nom) verrouillé une fois validé (déclencheur `prive.proteger_profil`).
+- Suspendre / refuser : l'intervenant passe en pause, ses interventions en cours repartent
+  chez les autres, ses propres demandes ouvertes sont arrêtées.
+- Site : `chargerSession()` renvoie `compte`, `compteValide`, `estAdmin` ; un compte non
+  validé ne voit que `CompteEnVerification` (`src/components/tableau/compte-en-verification.tsx`).
+- « Mot de passe oublié » ne dit plus si une adresse est inscrite (`email_inscrit` neutralisée).
+
 ### Base de données (Supabase)
-- `espaces`, `services` (`nom`, `nom_he`, `nom_en`), `profiles` (+ `photo_url`, `langue`),
+- `espaces`, `services` (`nom`, `nom_he`, `nom_en`), `profiles` (+ `photo_url`, `langue`,
+  `verification`, `communaute`, `referent`, `verifie_le`, `verifie_par`, `motif_verification`),
+  `journal_verifications`,
   `intervenants`, `intervenant_services`, `demande_refus`, `demande_propositions`
   (à qui la demande est envoyée ; `active = false` au lieu de supprimer), `avis`,
   `abonnements_push`.
@@ -159,7 +189,8 @@ services affichés par « Voir plus » sur l'accueil).
   `confirmer_intervenant`, `avancer_demande`, `annuler_demande`, `annuler_intervention`,
   `expirer_demandes`, `mettre_a_jour_intervenant`, `tableau_intervenant`,
   `tableau_demandeur`, `enregistrer_ma_position`, `ma_position`, `definir_photo`,
-  `definir_langue`, `enregistrer_abonnement_push`, `email_inscrit`.
+  `definir_langue`, `enregistrer_abonnement_push`, `compte_valide`, `mon_statut_compte`,
+  `admin_comptes`, `admin_decider`.
 
 ### Notifications
 - Un seul déclencheur `evenements_demande` (+ `evenement_avis`) → `notifier()` → pg_net
@@ -176,7 +207,7 @@ services affichés par « Voir plus » sur l'accueil).
 - `src/app/page.tsx` — accueil ; `src/components/landing/` — ses morceaux.
 - `src/app/(auth)/` — inscription, connexion, mots de passe (`actions.ts` = actions serveur).
 - `src/app/accueil/` — tableau de bord ; `demandes/` (demandes perso d'un intervenant) ;
-  `parametres/`.
+  `parametres/` ; `admin/` (administrateurs).
 - `src/components/tableau/` — tableaux de bord (cartes, fenêtres d'acceptation et
   d'annulation, avis, messages) ; `src/components/parametres/`.
 - `src/lib/i18n/` — langues ; `src/lib/tableau/` — outils ; `src/hooks/`.
@@ -189,7 +220,8 @@ services affichés par « Voir plus » sur l'accueil).
 - Ton : chaleureux, simple, « vous », textes courts.
 
 ### Idées pour la suite (non faites)
-- Espace administrateur (toutes les demandes, intervenants, statistiques).
+- Espace administrateur : la vérification des comptes est faite ; reste toutes les
+  demandes et les statistiques.
 - Nom de domaine à nous et service d'e-mails dédié.
 
 @AGENTS.md

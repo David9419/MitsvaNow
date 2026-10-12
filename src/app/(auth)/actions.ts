@@ -61,7 +61,10 @@ export async function inscription(
     email: texte(formData, "email").toLowerCase(),
     espace: texte(formData, "espace"),
     type_intervenant: texte(formData, "type_intervenant"),
+    communaute: texte(formData, "communaute").slice(0, 200),
+    referent: texte(formData, "referent").slice(0, 200),
   }
+  const accord = formData.get("accord") === "on"
   const motDePasse = String(formData.get("mot_de_passe") ?? "")
   const photo = lirePhoto(formData)
 
@@ -76,6 +79,12 @@ export async function inscription(
   const intervenant = espace.role === "intervenant"
   if (intervenant && !espace.types.some((x) => x === champs.type_intervenant))
     return { erreur: e.precisezRole, champs }
+
+  // Vérification du compte : communauté obligatoire, référent obligatoire pour les intervenants
+  // (le compte reste « en attente » jusqu'à la validation par un administrateur, côté base)
+  if (champs.communaute.length < 2) return { erreur: e.communaute, champs }
+  if (intervenant && champs.referent.length < 4) return { erreur: e.referent, champs }
+  if (!accord) return { erreur: e.accord, champs }
 
   // Position donnée pendant l'inscription (facultative)
   const lat = Number(formData.get("lat"))
@@ -99,6 +108,8 @@ export async function inscription(
         telephone: champs.telephone,
         espace: espace.slug,
         langue,
+        communaute: champs.communaute,
+        ...(champs.referent ? { referent: champs.referent } : {}),
         ...(intervenant ? { type_intervenant: champs.type_intervenant } : {}),
         ...(positionValide ? { lat, lng, adresse: adresse || null } : {}),
       },
@@ -178,10 +189,8 @@ export async function demanderNouveauMotDePasse(
 
   const origine = (await headers()).get("origin") ?? "http://localhost:3000"
   const supabase = await createClient()
-  // Aucun compte avec cet e-mail : on le dit (Supabase, lui, n'enverrait rien sans prévenir)
-  const { data: existe } = await supabase.rpc("email_inscrit", { p_email: email })
-  if (existe === false) return { erreur: e.aucunCompte(email), champs: { email } }
-
+  // On ne dit jamais si une adresse est inscrite ou non : sinon n'importe qui
+  // pourrait savoir qui fait partie de la communauté.
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origine}/auth/callback?suite=/nouveau-mot-de-passe`,
   })
