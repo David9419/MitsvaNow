@@ -349,48 +349,111 @@ export type Database = {
           },
         ]
       }
+      journal_verifications: {
+        Row: {
+          admin_id: string | null
+          ancien: Database["public"]["Enums"]["statut_validation"] | null
+          created_at: string
+          id: number
+          motif: string | null
+          nouveau: Database["public"]["Enums"]["statut_validation"]
+          utilisateur_id: string
+        }
+        Insert: {
+          admin_id?: string | null
+          ancien?: Database["public"]["Enums"]["statut_validation"] | null
+          created_at?: string
+          id?: never
+          motif?: string | null
+          nouveau: Database["public"]["Enums"]["statut_validation"]
+          utilisateur_id: string
+        }
+        Update: {
+          admin_id?: string | null
+          ancien?: Database["public"]["Enums"]["statut_validation"] | null
+          created_at?: string
+          id?: never
+          motif?: string | null
+          nouveau?: Database["public"]["Enums"]["statut_validation"]
+          utilisateur_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journal_verifications_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journal_verifications_utilisateur_id_fkey"
+            columns: ["utilisateur_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           adresse: string | null
+          communaute: string | null
           created_at: string
           email: string | null
           espace_id: string | null
           est_admin: boolean
           id: string
           langue: string
+          motif_verification: string | null
           nom: string
           photo_url: string | null
           position: unknown
           prenom: string
+          referent: string | null
           telephone: string | null
+          verification: Database["public"]["Enums"]["statut_validation"]
+          verifie_le: string | null
+          verifie_par: string | null
         }
         Insert: {
           adresse?: string | null
+          communaute?: string | null
           created_at?: string
           email?: string | null
           espace_id?: string | null
           est_admin?: boolean
           id: string
           langue?: string
+          motif_verification?: string | null
           nom?: string
           photo_url?: string | null
           position?: unknown
           prenom?: string
+          referent?: string | null
           telephone?: string | null
+          verification?: Database["public"]["Enums"]["statut_validation"]
+          verifie_le?: string | null
+          verifie_par?: string | null
         }
         Update: {
           adresse?: string | null
+          communaute?: string | null
           created_at?: string
           email?: string | null
           espace_id?: string | null
           est_admin?: boolean
           id?: string
           langue?: string
+          motif_verification?: string | null
           nom?: string
           photo_url?: string | null
           position?: unknown
           prenom?: string
+          referent?: string | null
           telephone?: string | null
+          verification?: Database["public"]["Enums"]["statut_validation"]
+          verifie_le?: string | null
+          verifie_par?: string | null
         }
         Relationships: [
           {
@@ -398,6 +461,13 @@ export type Database = {
             columns: ["espace_id"]
             isOneToOne: false
             referencedRelation: "espaces"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_verifie_par_fkey"
+            columns: ["verifie_par"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -449,6 +519,11 @@ export type Database = {
     }
     Functions: {
       abonnements_de: { Args: { p_utilisateur: string }; Returns: Json }
+      admin_comptes: { Args: never; Returns: Json }
+      admin_decider: {
+        Args: { p_decision: string; p_motif?: string; p_utilisateur: string }
+        Returns: undefined
+      }
       annuler_demande: {
         Args: { p_demande: string; p_motif?: string }
         Returns: undefined
@@ -462,6 +537,7 @@ export type Database = {
         Args: { p_demande: string }
         Returns: Database["public"]["Enums"]["statut_demande"]
       }
+      compte_valide: { Args: never; Returns: boolean }
       confirmer_intervenant: {
         Args: { p_confirmer: boolean; p_demande: string }
         Returns: undefined
@@ -507,6 +583,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      mon_statut_compte: { Args: never; Returns: Json }
       noms_service: {
         Args: { s: Database["public"]["Tables"]["services"]["Row"] }
         Returns: Json
@@ -546,7 +623,7 @@ export type Database = {
         | "terminee"
         | "annulee"
         | "expiree"
-      statut_validation: "en_attente" | "valide" | "refuse"
+      statut_validation: "en_attente" | "valide" | "refuse" | "suspendu"
       type_intervenant:
         | "bahour"
         | "femme"
@@ -689,7 +766,7 @@ export const Constants = {
         "annulee",
         "expiree",
       ],
-      statut_validation: ["en_attente", "valide", "refuse"],
+      statut_validation: ["en_attente", "valide", "refuse", "suspendu"],
       type_intervenant: [
         "bahour",
         "femme",
