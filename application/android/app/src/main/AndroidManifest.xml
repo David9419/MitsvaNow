@@ -20,6 +20,11 @@
             </intent-filter>
         </activity>
 
+        <!-- Notifications Firebase : petite icône, couleur et canal « demandes » par défaut -->
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_notification" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/couleur_notification" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="demandes" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

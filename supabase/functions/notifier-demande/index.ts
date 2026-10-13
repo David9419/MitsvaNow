@@ -13,10 +13,17 @@
 //   pour l'intervenant : nouvelle, confirmee, refusee, annulee, avis
 //   pour le demandeur  : acceptee, en_cours, terminee, annulee, expiree, relance
 //   pour les administrateurs : signalement (ouvre la page Administration)
+//
+// Chaque notification part à la fois :
+//   - aux navigateurs (web push, table abonnements_push) ;
+//   - aux téléphones qui ont l'application Android (Firebase, table appareils_natifs),
+//     si le secret FIREBASE_SERVICE_ACCOUNT est réglé dans Supabase.
 import { createClient } from "npm:@supabase/supabase-js@2"
 import webpush from "npm:web-push@3.6.7"
+import { importPKCS8, SignJWT } from "npm:jose@5.9.6"
 
 type Abonnement = { endpoint: string; p256dh: string; auth: string }
+type Jeton = { jeton: string; plateforme: "android" | "ios" }
 type Langue = "fr" | "he" | "en"
 type Infos = {
   demande: string
@@ -33,6 +40,7 @@ type Infos = {
   note: number | null
   langue: Langue
   abonnements: Abonnement[]
+  jetons?: Jeton[]
 }
 
 const CORS = {
@@ -246,6 +254,111 @@ async function envoyer(abonnements: Abonnement[], message: Record<string, unknow
   return envoyes
 }
 
+// ---------- Application Android : Firebase Cloud Messaging ----------
+type CompteFirebase = { project_id: string; client_email: string; private_key: string }
+let compteFirebase: CompteFirebase | null | undefined
+let acces: { jeton: string; expire: number } | null = null
+
+function lireCompteFirebase() {
+  if (compteFirebase === undefined) {
+    try {
+      const brut = Deno.env.get("FIREBASE_SERVICE_ACCOUNT")
+      compteFirebase = brut ? (JSON.parse(brut) as CompteFirebase) : null
+    } catch {
+      console.error("FIREBASE_SERVICE_ACCOUNT illisible")
+      compteFirebase = null
+    }
+  }
+  return compteFirebase
+}
+
+/** Jeton d'accès Google (valable 1 h), obtenu avec la clé du compte de service. */
+async function accesFirebase(c: CompteFirebase) {
+  if (acces && acces.expire > Date.now() + 60_000) return acces.jeton
+  const cle = await importPKCS8(c.private_key, "RS256")
+  const maintenant = Math.floor(Date.now() / 1000)
+  const assertion = await new SignJWT({ scope: "https://www.googleapis.com/auth/firebase.messaging" })
+    .setProtectedHeader({ alg: "RS256", typ: "JWT" })
+    .setIssuer(c.client_email)
+    .setAudience("https://oauth2.googleapis.com/token")
+    .setIssuedAt(maintenant)
+    .setExpirationTime(maintenant + 3600)
+    .sign(cle)
+  const r = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion }),
+  })
+  const d = await r.json()
+  if (!r.ok || !d.access_token) throw new Error(`Accès Firebase refusé : ${JSON.stringify(d)}`)
+  acces = { jeton: d.access_token, expire: Date.now() + (d.expires_in ?? 3600) * 1000 }
+  return acces.jeton
+}
+
+/** Envoie le message aux téléphones Android ; met de côté les jetons qui n'existent plus. */
+async function envoyerNatif(jetons: Jeton[], message: Record<string, unknown>) {
+  // iPhone : branché plus tard (Apple Push Notification service), une fois le compte Apple prêt
+  const android = jetons.filter((j) => j.plateforme === "android")
+  const c = lireCompteFirebase()
+  if (!android.length || !c) return 0
+  let envoyes = 0
+  try {
+    const jetonAcces = await accesFirebase(c)
+    const donnees: Record<string, string> = {}
+    if (message.demande) donnees.demande = String(message.demande)
+    if (message.url) donnees.url = String(message.url)
+    await Promise.all(
+      android.map(async (j) => {
+        const r = await fetch(`https://fcm.googleapis.com/v1/projects/${c.project_id}/messages:send`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${jetonAcces}`, "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: {
+              token: j.jeton,
+              notification: { title: String(message.titre ?? "Mivtsa Now"), body: String(message.corps ?? "") },
+              data: donnees,
+              android: {
+                priority: "high",
+                ttl: "3600s",
+                notification: {
+                  channel_id: "demandes",
+                  sound: "default",
+                  tag: String(message.demande ?? message.url ?? "mivtsa-now"),
+                },
+              },
+            },
+          }),
+        })
+        if (r.ok) {
+          envoyes++
+          console.log("Envoyée", "android")
+          return
+        }
+        const erreur = await r.text()
+        if (r.status === 404 || erreur.includes("UNREGISTERED") || erreur.includes("registration token is not a valid")) {
+          await admin.from("appareils_natifs").update({ actif: false, maj_le: new Date().toISOString() }).eq("jeton", j.jeton)
+        } else {
+          console.error("Envoi Android raté", r.status, erreur)
+        }
+      })
+    )
+  } catch (e) {
+    console.error("Firebase", (e as Error).message)
+  }
+  return envoyes
+}
+
+/** Envoie partout : navigateurs + téléphones avec l'application. */
+async function envoyerPartout(abonnements: Abonnement[], jetons: Jeton[], message: Record<string, unknown>) {
+  const [web, natif] = await Promise.all([envoyer(abonnements, message), envoyerNatif(jetons, message)])
+  return web + natif
+}
+
+async function jetonsDe(id: string) {
+  const { data } = await admin.rpc("jetons_de", { p_utilisateur: id })
+  return (data ?? []) as Jeton[]
+}
+
 async function langueDe(id: string): Promise<Langue> {
   const { data } = await admin.rpc("langue_de", { p_utilisateur: id })
   return (["fr", "he", "en"].includes(data as string) ? data : "fr") as Langue
@@ -266,7 +379,11 @@ Deno.serve(async (req) => {
       // Vérification technique : notification de test pour une personne précise
       if (corps.verifier) {
         const { data: abos } = await admin.rpc("abonnements_de", { p_utilisateur: corps.verifier })
-        const envoyes = await envoyer((abos ?? []) as Abonnement[], TEST[await langueDe(corps.verifier)])
+        const envoyes = await envoyerPartout(
+          (abos ?? []) as Abonnement[],
+          await jetonsDe(corps.verifier),
+          TEST[await langueDe(corps.verifier)]
+        )
         return reponse({ envoyes })
       }
       if (!corps.demande || !corps.evenement || !corps.destinataire) return reponse({ erreur: "Requête incomplète" }, 400)
@@ -275,12 +392,13 @@ Deno.serve(async (req) => {
         p_destinataire: corps.destinataire,
       })
       const infos = data as Infos | null
-      if (!infos || !infos.abonnements.length) return reponse({ envoyes: 0 })
+      const jetons = infos?.jetons ?? []
+      if (!infos || (!infos.abonnements.length && !jetons.length)) return reponse({ envoyes: 0 })
       const t = texte(corps.evenement, infos)
       if (!t) return reponse({ envoyes: 0 })
       const nouvelle = corps.evenement === "nouvelle"
       const signalement = corps.evenement === "signalement"
-      const envoyes = await envoyer(infos.abonnements, {
+      const envoyes = await envoyerPartout(infos.abonnements, jetons, {
         ...t,
         // Un signalement ouvre la page Administration (pas la demande)
         demande: signalement ? undefined : infos.demande,
@@ -300,8 +418,9 @@ Deno.serve(async (req) => {
 
     const { data: abonnements } = await admin.rpc("abonnements_de", { p_utilisateur: u.user.id })
     const liste = (abonnements ?? []) as Abonnement[]
-    if (!liste.length) return reponse({ envoyes: 0 })
-    const envoyes = await envoyer(liste, TEST[await langueDe(u.user.id)])
+    const jetons = await jetonsDe(u.user.id)
+    if (!liste.length && !jetons.length) return reponse({ envoyes: 0 })
+    const envoyes = await envoyerPartout(liste, jetons, TEST[await langueDe(u.user.id)])
     return reponse({ envoyes })
   } catch (e) {
     console.error(e)

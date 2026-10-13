@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "826928986591",
+    "project_id": "mivtsa-now",
+    "storage_bucket": "mivtsa-now.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826928986591:android:dc48b490300ad5a81c2c6a",
+        "android_client_info": {
+          "package_name": "com.mivtsanow.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkjkbfNrlbu-WsGdFQEzhqUrSPv3AKLl4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -52,6 +52,41 @@ export type Database = {
           },
         ]
       }
+      appareils_natifs: {
+        Row: {
+          actif: boolean
+          created_at: string
+          jeton: string
+          maj_le: string
+          plateforme: string
+          utilisateur_id: string
+        }
+        Insert: {
+          actif?: boolean
+          created_at?: string
+          jeton: string
+          maj_le?: string
+          plateforme: string
+          utilisateur_id: string
+        }
+        Update: {
+          actif?: boolean
+          created_at?: string
+          jeton?: string
+          maj_le?: string
+          plateforme?: string
+          utilisateur_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appareils_natifs_utilisateur_id_fkey"
+            columns: ["utilisateur_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       avis: {
         Row: {
           commentaire: string | null
@@ -571,6 +606,10 @@ export type Database = {
       definir_langue: { Args: { p_langue: string }; Returns: undefined }
       definir_photo: { Args: { p_url: string }; Returns: undefined }
       email_inscrit: { Args: { p_email: string }; Returns: boolean }
+      enregistrer_appareil_natif: {
+        Args: { p_jeton: string; p_plateforme: string }
+        Returns: undefined
+      }
       enregistrer_abonnement_push: {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string }
         Returns: undefined
@@ -581,6 +620,7 @@ export type Database = {
       }
       est_admin: { Args: never; Returns: boolean }
       expirer_demandes: { Args: never; Returns: undefined }
+      jetons_de: { Args: { p_utilisateur: string }; Returns: Json }
       infos_notification: {
         Args: { p_demande: string; p_destinataire: string }
         Returns: Json
@@ -613,6 +653,7 @@ export type Database = {
         Returns: Json
       }
       preparer_notification_push: { Args: { p_demande: string }; Returns: Json }
+      retirer_appareil_natif: { Args: { p_jeton: string }; Returns: undefined }
       repondre_demande: {
         Args: {
           p_accepter: boolean

@@ -36,7 +36,14 @@ L'équipe ne sait pas coder. Claude doit :
   GitHub Actions (`.github/workflows/application-android.yml`, artefact
   « mivtsa-now-android-test »). L'iPhone se fabriquera avec un Mac en ligne (GitHub Actions macOS
   ou Codemagic) une fois le compte Apple Developer prêt.
-- Reste à faire : notifications natives (Firebase pour Android, APNs pour iPhone), signature,
+- **Notifications Android (Firebase)** : projet Firebase `mivtsa-now`, fichier
+  `application/android/app/google-services.json` (pas secret), module `@capacitor/push-notifications`,
+  canal « demandes », petite icône `res/drawable/ic_notification.xml`. Le site détecte l'application
+  (`pushNatif()` dans `src/lib/tableau/push.ts`) et enregistre le jeton du téléphone
+  (`enregistrer_appareil_natif`, table `appareils_natifs`) ; toucher une notification ouvre la bonne
+  page (`src/components/notifications-application.tsx`). L'Edge Function envoie par Firebase HTTP v1 si
+  le secret Supabase **`FIREBASE_SERVICE_ACCOUNT`** (fichier JSON du compte de service) est réglé.
+- Reste à faire : notifications iPhone (APNs), signature,
   TestFlight / test fermé Google (12 testeurs, 14 jours), fiches des stores.
 
 ## Stack technique
@@ -251,6 +258,9 @@ services affichés par « Voir plus » sur l'accueil).
   demandeur ← `acceptee`, `en_cours`, `terminee`, `annulee`, `expiree`, `relance`
   (l'intervenant a annulé, la demande repart chez tous) ; administrateurs ← `signalement`.
 - Clés dans le Vault : `push_vapid_public`, `push_vapid_prive`, `push_secret_declencheur`.
+- Application Android : jetons Firebase dans `appareils_natifs` (`actif = false` si le jeton n'existe
+  plus), lus par `jetons_de` (réservée à la fonction d'envoi) et `infos_notification.jetons` ;
+  secret Edge Function `FIREBASE_SERVICE_ACCOUNT`.
 - iPhone : seulement si le site est installé sur l'écran d'accueil.
 - Diagnostic : `abonnements_push`, `net._http_response`, logs de l'Edge Function.
 

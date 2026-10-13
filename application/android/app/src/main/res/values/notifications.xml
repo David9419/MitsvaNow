@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Couleur des notifications (bleu Mivtsa Now) -->
+    <color name="couleur_notification">#2346D8</color>
+</resources>

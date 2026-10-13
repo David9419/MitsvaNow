@@ -33,6 +33,74 @@ function estInstallee() {
   )
 }
 
+// ---------- Application iPhone / Android (Capacitor) ----------
+// Dans l'application, le site parle au téléphone par window.Capacitor
+// (le module PushNotifications est installé dans le dossier application/).
+type Ecouteur = { remove: () => Promise<void> }
+type PermissionNatif = { receive: "prompt" | "prompt-with-rationale" | "granted" | "denied" }
+export type ActionNotificationNatif = {
+  actionId: string
+  notification: { data?: { demande?: string; url?: string } }
+}
+type PushNatif = {
+  checkPermissions(): Promise<PermissionNatif>
+  requestPermissions(): Promise<PermissionNatif>
+  register(): Promise<void>
+  unregister(): Promise<void>
+  createChannel(c: { id: string; name: string; importance: number; visibility?: number; vibration?: boolean }): Promise<void>
+  addListener(e: "registration", f: (t: { value: string }) => void): Promise<Ecouteur>
+  addListener(e: "registrationError", f: (err: { error: string }) => void): Promise<Ecouteur>
+  addListener(e: "pushNotificationActionPerformed", f: (a: ActionNotificationNatif) => void): Promise<Ecouteur>
+}
+type CapacitorGlobal = {
+  isNativePlatform?: () => boolean
+  getPlatform?: () => string
+  Plugins?: { PushNotifications?: PushNatif }
+}
+
+/** Le module de notifications du téléphone, si on est dans l'application Android. */
+export function pushNatif(): PushNatif | null {
+  if (typeof window === "undefined") return null
+  const cap = (window as Window & { Capacitor?: CapacitorGlobal }).Capacitor
+  if (!cap?.isNativePlatform?.()) return null
+  // iPhone : sera branché avec le compte Apple (notifications Apple)
+  if (cap.getPlatform?.() !== "android") return null
+  return cap.Plugins?.PushNotifications ?? null
+}
+
+const CLE_JETON = "mn-jeton-natif"
+
+/** Demande au téléphone son « adresse de notification » Firebase et l'enregistre. */
+async function enregistrerNatif(supabase: Supabase, natif: PushNatif) {
+  await natif.createChannel({ id: "demandes", name: "Mivtsa Now", importance: 5, visibility: 1, vibration: true })
+  const jeton = await new Promise<string>((resolve, reject) => {
+    const ecouteurs: Promise<Ecouteur>[] = []
+    const fin = () => ecouteurs.forEach((e) => e.then((x) => x.remove()))
+    const delai = setTimeout(() => {
+      fin()
+      reject(new Error("Firebase"))
+    }, 20_000)
+    ecouteurs.push(
+      natif.addListener("registration", (t) => {
+        clearTimeout(delai)
+        fin()
+        resolve(t.value)
+      }),
+      natif.addListener("registrationError", (e) => {
+        clearTimeout(delai)
+        fin()
+        reject(new Error(e.error))
+      })
+    )
+    natif.register().catch(reject)
+  })
+  const { error } = await supabase.rpc("enregistrer_appareil_natif", { p_jeton: jeton, p_plateforme: "android" })
+  if (error) throw error
+  try {
+    localStorage.setItem(CLE_JETON, jeton)
+  } catch {}
+}
+
 function pushPossible() {
   return "serviceWorker" in navigator && "PushManager" in window && typeof Notification !== "undefined"
 }
@@ -83,6 +151,18 @@ async function abonner() {
 
 /** Regarde l'état actuel, et remet l'abonnement à jour s'il existe déjà. */
 export async function verifierPush(supabase: Supabase): Promise<EtatPush> {
+  const natif = pushNatif()
+  if (natif) {
+    const { receive } = await natif.checkPermissions()
+    if (receive === "denied") return "refuse"
+    if (receive !== "granted" || coupees()) return "inactif"
+    try {
+      await enregistrerNatif(supabase, natif)
+      return "actif"
+    } catch {
+      return "inactif"
+    }
+  }
   if (!pushPossible()) return estAppareilApple() && !estInstallee() ? "ecran-accueil" : "non-supporte"
   if (Notification.permission === "denied") return "refuse"
   if (Notification.permission !== "granted" || coupees()) return "inactif"
@@ -96,6 +176,15 @@ export async function verifierPush(supabase: Supabase): Promise<EtatPush> {
 
 /** Demande l'autorisation puis abonne cet appareil. À appeler après un clic. */
 export async function activerPush(supabase: Supabase): Promise<EtatPush> {
+  const natif = pushNatif()
+  if (natif) {
+    const { receive } = await natif.requestPermissions()
+    if (receive === "denied") return "refuse"
+    if (receive !== "granted") return "inactif"
+    await enregistrerNatif(supabase, natif)
+    retenirCoupees(false)
+    return "actif"
+  }
   if (!pushPossible()) return estAppareilApple() && !estInstallee() ? "ecran-accueil" : "non-supporte"
   // Doit être le premier « await » après le clic (exigence de Safari)
   const permission = await Notification.requestPermission()
@@ -109,6 +198,16 @@ export async function activerPush(supabase: Supabase): Promise<EtatPush> {
 /** Désabonne cet appareil : plus aucune notification ici. */
 export async function desactiverPush(supabase: Supabase) {
   retenirCoupees(true)
+  const natif = pushNatif()
+  if (natif) {
+    let jeton: string | null = null
+    try {
+      jeton = localStorage.getItem(CLE_JETON)
+    } catch {}
+    if (jeton) await supabase.rpc("retirer_appareil_natif", { p_jeton: jeton })
+    await natif.unregister()
+    return
+  }
   if (!pushPossible()) return
   const reg = await navigator.serviceWorker.getRegistration("/")
   const abonnement = await reg?.pushManager.getSubscription()
