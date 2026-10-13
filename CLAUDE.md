@@ -52,6 +52,10 @@ L'équipe ne sait pas coder. Claude doit :
   `mivtsa-now.com` redirige (308) vers `www.mivtsa-now.com`. Ne pas toucher aux lignes e-mail d'Amen
   (MX, TXT, SRV, autoconfig, mail, smtp, webmail, key-amfr…).
 - **Instagram** : https://www.instagram.com/mivtsanow (bouton flottant, `src/components/bouton-instagram.tsx`).
+- **Pages légales** (obligatoires App Store / Google Play) : `/confidentialite` et `/conditions`
+  (`src/components/page-legale.tsx`, textes dans `t.legal` des 3 dictionnaires, `{email}` remplacé
+  par `EMAIL_CONTACT` de `src/lib/contact.ts`). Liens dans le pied de page, sous le bouton
+  « Créer mon compte » et en bas des Paramètres. Changer la date `legal.maj` à chaque modification.
 
 ## Environnement de Claude
 - L'accès réseau vers `vercel.app` et `supabase.co` est bloqué depuis le terminal :

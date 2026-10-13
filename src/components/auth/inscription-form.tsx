@@ -364,6 +364,18 @@ export function InscriptionForm({
           )}
         </Button>
 
+        <p className="-mt-3 text-center text-xs text-muted-foreground">
+          {t.legal.acceptation.avant}{" "}
+          <Link href="/conditions" target="_blank" className="font-medium text-primary hover:underline">
+            {t.legal.acceptation.conditions}
+          </Link>{" "}
+          {t.legal.acceptation.et}{" "}
+          <Link href="/confidentialite" target="_blank" className="font-medium text-primary hover:underline">
+            {t.legal.acceptation.confidentialite}
+          </Link>
+          {t.legal.acceptation.apres}
+        </p>
+
         <p className="text-center text-sm text-muted-foreground">
           {ti.dejaInscrit}{" "}
           <Link

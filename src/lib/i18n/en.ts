@@ -15,6 +15,8 @@ export const en: Dico = {
     admin: "Administration — Mivtsa Now",
     verification: "Account verification — Mivtsa Now",
     compteSupprime: "Account deleted — Mivtsa Now",
+    confidentialite: "Privacy policy — Mivtsa Now",
+    conditions: "Terms of use — Mivtsa Now",
   },
 
   commun: {
@@ -971,6 +973,212 @@ export const en: Dico = {
       nbFois: (n: number) => `${n} report(s) in total`,
       service: "Request",
       dejaSuspendu: "Account already suspended",
+    },
+  },
+
+  /** Pages « Confidentialité » et « Conditions d'utilisation » ({email} = adresse de contact). */
+  legal: {
+    maj: "Last updated: 13 October 2026",
+    retour: "Back to home",
+    liens: {
+      confidentialite: "Privacy",
+      conditions: "Terms of use",
+      contact: "Contact",
+    },
+    acceptation: {
+      avant: "By creating an account, you accept the",
+      conditions: "terms of use",
+      et: "and the",
+      confidentialite: "privacy policy",
+      apres: ".",
+    },
+    confidentialite: {
+      titre: "Privacy policy",
+      intro: "Mivtsa Now connects people who need a mitzvah or a service with volunteers who live nearby. This page explains simply what information we collect, why, who can see it and what your rights are.",
+      sections: [
+        {
+          titre: "1. Who is responsible for your data",
+          texte: [
+            "The Mivtsa Now service (mivtsa-now.com and apps) is run by the Mivtsa Now team. For any question about your data, write to us at {email}.",
+          ],
+          points: [],
+        },
+        {
+          titre: "2. The information we collect",
+          texte: [],
+          points: [
+            "Your account: first name, last name, email address, phone number, chosen space and role, language. Your password is stored encrypted: nobody can read it, not even us.",
+            "Your face photo, if you add one (optional).",
+            "Your location: the address or GPS position you give, to find the nearest volunteers. For an available volunteer, the location is updated while they use the app.",
+            "Your requests: service, date, address, phone, message, progress (accepted, on the way, done…), the volunteer's means of transport and arrival time.",
+            "Reviews and ratings left after a visit.",
+            "Reports and blocks.",
+            "Technical information: the device registered for notifications, the time of your last visit (to know who is online) and anonymous visit statistics.",
+          ],
+        },
+        {
+          titre: "3. Why we use it",
+          texte: [
+            "We only use your information to:",
+          ],
+          points: [
+            "connect requesters and volunteers;",
+            "check every account before activating it, for the safety of the community;",
+            "send you notifications about your requests;",
+            "handle reports and protect users;",
+            "improve the service with anonymous statistics.",
+          ],
+        },
+        {
+          titre: "4. Who can see your information",
+          texte: [],
+          points: [
+            "Volunteers who are offered your request see your first name, last name, photo, the address, the distance and your message. Your phone number is only visible once the request is accepted.",
+            "Once a request is accepted, the requester sees the volunteer's first name, last name, photo, phone, rating and reviews.",
+            "Mivtsa Now administrators, to check accounts and handle reports.",
+            "Our technical providers, only to run the service: Supabase (database and accounts, servers in Ireland, in the European Union), Vercel (website hosting and anonymous visit statistics), Apple, Google and Mozilla notification services, OpenStreetMap (to turn a position into an address), Google Maps or Apple Maps when you tap \"Go there\", and Gmail for password emails.",
+            "We never sell your data and we never show ads.",
+          ],
+        },
+        {
+          titre: "5. How long we keep it",
+          texte: [
+            "Your information is kept as long as your account exists. If you delete your account (Settings → Delete my account), your profile, photo, location, requests and registered devices are erased immediately. Technical backup copies may remain for a few days before being erased automatically. Reports you made remain, but without your name.",
+          ],
+          points: [],
+        },
+        {
+          titre: "6. Your rights",
+          texte: [
+            "At any time you can:",
+          ],
+          points: [
+            "see and correct your information in Settings;",
+            "delete your account and all your data from Settings;",
+            "ask for a copy of your data, object to or restrict processing, by writing to {email} (answer within one month);",
+            "file a complaint with your data protection authority (in France, the CNIL: www.cnil.fr).",
+          ],
+        },
+        {
+          titre: "7. Security",
+          texte: [
+            "Connections to the site are encrypted (HTTPS), passwords are encrypted, access to data is limited by strict rules, and every account is checked by our team before it is activated.",
+          ],
+          points: [],
+        },
+        {
+          titre: "8. Location and notifications",
+          texte: [
+            "Location and notifications are only used with your consent. You can turn them off at any time in Mivtsa Now Settings or in your phone's settings.",
+          ],
+          points: [],
+        },
+        {
+          titre: "9. Children",
+          texte: [
+            "If you are under 15, you need a parent's permission to use Mivtsa Now.",
+          ],
+          points: [],
+        },
+        {
+          titre: "10. Changes",
+          texte: [
+            "If this policy changes, we will update this page and the date at the top. For any important change, we will let you know in the app.",
+          ],
+          points: [],
+        },
+      ],
+    },
+    conditions: {
+      titre: "Terms of use",
+      intro: "These terms explain the rules of Mivtsa Now. By creating an account, you accept them.",
+      sections: [
+        {
+          titre: "1. The service",
+          texte: [
+            "Mivtsa Now is a free service that connects people who need a mitzvah or a service (tefillin, mezuzah, challah, classes, visits…) with nearby volunteers: bachurim, chassidim, the women's team, soferim, rabbis, rebbetzins and shluchim.",
+          ],
+          points: [],
+        },
+        {
+          titre: "2. Your account",
+          texte: [],
+          points: [
+            "You give accurate, up-to-date information and you only have one account.",
+            "Every account is checked by our team before it is activated. We may refuse or suspend an account, in particular for false information or behaviour that breaks these rules.",
+            "You keep your password secret. You are responsible for what is done with your account.",
+          ],
+        },
+        {
+          titre: "3. The role of Mivtsa Now",
+          texte: [
+            "Mivtsa Now is only an intermediary. Volunteers are volunteers, not employees of Mivtsa Now. We do not guarantee that a volunteer will be available for every request. No payment may be asked for a visit.",
+          ],
+          points: [],
+        },
+        {
+          titre: "4. Rules of conduct",
+          texte: [
+            "By using Mivtsa Now, you agree to:",
+          ],
+          points: [
+            "be respectful, polite and kind to everyone;",
+            "be on time, and warn or cancel in the app if you cannot come;",
+            "never harass, threaten, insult or discriminate against anyone;",
+            "not create a fake profile or pretend to be someone else;",
+            "not use phone numbers or addresses for anything other than the visit;",
+            "not use Mivtsa Now for commercial or advertising purposes.",
+          ],
+        },
+        {
+          titre: "5. Your safety",
+          texte: [
+            "Visits happen in person. For your safety:",
+          ],
+          points: [
+            "check the person's first name and photo before welcoming them or going to their home;",
+            "tell someone close to you if you wish, and do not go if in doubt;",
+            "in immediate danger, call 112 (or your local emergency number);",
+            "report any inappropriate behaviour with the \"Report\" button: our team is notified right away.",
+            "Minors use Mivtsa Now under their parents' responsibility.",
+          ],
+        },
+        {
+          titre: "6. Reports, blocks and sanctions",
+          texte: [
+            "You can report or block someone at any time. Our team reviews every report and may suspend or refuse an account that breaks these rules.",
+          ],
+          points: [],
+        },
+        {
+          titre: "7. Photos and reviews",
+          texte: [
+            "Only post photos of yourself and honest, respectful reviews. We may remove any content that breaks these rules.",
+          ],
+          points: [],
+        },
+        {
+          titre: "8. Liability",
+          texte: [
+            "Mivtsa Now does its best to keep the service working well and safely, but cannot be held responsible for users' behaviour during visits, or for the service being unavailable, within the limits allowed by law.",
+          ],
+          points: [],
+        },
+        {
+          titre: "9. Deleting your account",
+          texte: [
+            "You can delete your account at any time: Settings → Delete my account. All your data is then erased (see the privacy policy).",
+          ],
+          points: [],
+        },
+        {
+          titre: "10. Changes and applicable law",
+          texte: [
+            "We may update these terms; the date at the top of the page shows the latest version. These terms are governed by French law. For any question: {email}.",
+          ],
+          points: [],
+        },
+      ],
     },
   },
 

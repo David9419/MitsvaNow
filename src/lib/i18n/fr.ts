@@ -16,6 +16,8 @@ export const fr = {
     admin: "Administration — Mivtsa Now",
     verification: "Vérification du compte — Mivtsa Now",
     compteSupprime: "Compte supprimé — Mivtsa Now",
+    confidentialite: "Politique de confidentialité — Mivtsa Now",
+    conditions: "Conditions d'utilisation — Mivtsa Now",
   },
 
   commun: {
@@ -993,6 +995,212 @@ export const fr = {
       nbFois: (n: number) => `${n} signalement(s) au total`,
       service: "Demande",
       dejaSuspendu: "Compte déjà suspendu",
+    },
+  },
+
+  /** Pages « Confidentialité » et « Conditions d'utilisation » ({email} = adresse de contact). */
+  legal: {
+    maj: "Dernière mise à jour : 13 octobre 2026",
+    retour: "Retour à l'accueil",
+    liens: {
+      confidentialite: "Confidentialité",
+      conditions: "Conditions d'utilisation",
+      contact: "Contact",
+    },
+    acceptation: {
+      avant: "En créant un compte, vous acceptez les",
+      conditions: "conditions d'utilisation",
+      et: "et la",
+      confidentialite: "politique de confidentialité",
+      apres: ".",
+    },
+    confidentialite: {
+      titre: "Politique de confidentialité",
+      intro: "Mivtsa Now met en relation des personnes qui ont besoin d'une mitsva ou d'un service avec des intervenants bénévoles proches de chez elles. Cette page explique simplement quelles informations nous collectons, pourquoi, qui peut les voir et quels sont vos droits.",
+      sections: [
+        {
+          titre: "1. Qui est responsable de vos données",
+          texte: [
+            "Le service Mivtsa Now (site mivtsa-now.com et applications) est géré par l'équipe Mivtsa Now. Pour toute question sur vos données, écrivez-nous à {email}.",
+          ],
+          points: [],
+        },
+        {
+          titre: "2. Les informations que nous collectons",
+          texte: [],
+          points: [
+            "Votre compte : prénom, nom, adresse e-mail, numéro de téléphone, espace et rôle choisis, langue. Votre mot de passe est enregistré de façon chiffrée : personne ne peut le lire, pas même nous.",
+            "Votre photo du visage, si vous en ajoutez une (facultatif).",
+            "Votre position : l'adresse ou la position GPS que vous donnez, pour trouver les intervenants les plus proches. Pour un intervenant disponible, la position est mise à jour pendant qu'il utilise l'application.",
+            "Vos demandes : service, date, adresse, téléphone, message, suivi (acceptée, en route, terminée…), moyen de transport et délai d'arrivée de l'intervenant.",
+            "Les avis et les notes laissés après une intervention.",
+            "Les signalements et les blocages.",
+            "Des informations techniques : l'appareil enregistré pour recevoir les notifications, la date de votre dernier passage (pour savoir qui est en ligne) et des statistiques de visite anonymes.",
+          ],
+        },
+        {
+          titre: "3. Pourquoi nous les utilisons",
+          texte: [
+            "Nous utilisons vos informations uniquement pour :",
+          ],
+          points: [
+            "faire fonctionner la mise en relation entre demandeurs et intervenants ;",
+            "vérifier chaque compte avant de l'activer, pour la sécurité de la communauté ;",
+            "vous envoyer les notifications liées à vos demandes ;",
+            "traiter les signalements et protéger les utilisateurs ;",
+            "améliorer le service grâce à des statistiques anonymes.",
+          ],
+        },
+        {
+          titre: "4. Qui peut voir vos informations",
+          texte: [],
+          points: [
+            "Les intervenants à qui votre demande est proposée voient votre prénom, votre nom, votre photo, l'adresse, la distance et votre message. Votre numéro de téléphone n'est visible qu'après l'acceptation.",
+            "Quand une demande est acceptée, le demandeur voit le prénom, le nom, la photo, le téléphone, la note et les avis de l'intervenant.",
+            "Les administrateurs de Mivtsa Now, pour vérifier les comptes et traiter les signalements.",
+            "Nos prestataires techniques, seulement pour faire fonctionner le service : Supabase (base de données et comptes, serveurs en Irlande, dans l'Union européenne), Vercel (hébergement du site et statistiques de visite anonymes), les services de notification d'Apple, de Google et de Mozilla, OpenStreetMap (pour transformer une position en adresse), Google Maps ou Plans d'Apple quand vous touchez « Y aller », et Gmail pour les e-mails de mot de passe.",
+            "Nous ne vendons jamais vos données et nous ne faisons aucune publicité.",
+          ],
+        },
+        {
+          titre: "5. Combien de temps nous les gardons",
+          texte: [
+            "Vos informations sont gardées tant que votre compte existe. Si vous supprimez votre compte (Paramètres → Supprimer mon compte), votre profil, votre photo, votre position, vos demandes et les appareils enregistrés sont effacés immédiatement. Des copies de sauvegarde techniques peuvent subsister quelques jours avant d'être effacées automatiquement. Les signalements que vous avez faits restent, mais sans votre nom.",
+          ],
+          points: [],
+        },
+        {
+          titre: "6. Vos droits",
+          texte: [
+            "Vous pouvez à tout moment :",
+          ],
+          points: [
+            "voir et corriger vos informations dans les Paramètres ;",
+            "supprimer votre compte et toutes vos données depuis les Paramètres ;",
+            "demander une copie de vos données, vous opposer à un traitement ou en demander la limitation, en écrivant à {email} (réponse sous un mois) ;",
+            "déposer une réclamation auprès de la CNIL (www.cnil.fr) si vous estimez que vos droits ne sont pas respectés.",
+          ],
+        },
+        {
+          titre: "7. Sécurité",
+          texte: [
+            "Les échanges avec le site sont chiffrés (HTTPS), les mots de passe sont chiffrés, l'accès aux données est limité par des règles strictes, et chaque compte est vérifié par notre équipe avant d'être activé.",
+          ],
+          points: [],
+        },
+        {
+          titre: "8. Localisation et notifications",
+          texte: [
+            "La localisation et les notifications ne sont utilisées qu'avec votre accord. Vous pouvez les couper à tout moment dans les Paramètres de Mivtsa Now ou dans les réglages de votre téléphone.",
+          ],
+          points: [],
+        },
+        {
+          titre: "9. Enfants",
+          texte: [
+            "Si vous avez moins de 15 ans, l'accord d'un de vos parents est nécessaire pour utiliser Mivtsa Now.",
+          ],
+          points: [],
+        },
+        {
+          titre: "10. Changements",
+          texte: [
+            "Si cette politique change, nous mettrons à jour cette page et la date en haut. En cas de changement important, nous vous préviendrons dans l'application.",
+          ],
+          points: [],
+        },
+      ],
+    },
+    conditions: {
+      titre: "Conditions d'utilisation",
+      intro: "Ces conditions expliquent les règles de Mivtsa Now. En créant un compte, vous les acceptez.",
+      sections: [
+        {
+          titre: "1. Le service",
+          texte: [
+            "Mivtsa Now est un service gratuit qui met en relation des personnes qui ont besoin d'une mitsva ou d'un service (téfilines, mezouza, 'hallot, cours, visites…) avec des intervenants bénévoles proches : bahourim, hassidim, équipe féminine, soferim, rabbanim, rabbaniot et chlou'him.",
+          ],
+          points: [],
+        },
+        {
+          titre: "2. Votre compte",
+          texte: [],
+          points: [
+            "Vous donnez des informations exactes et à jour, et vous n'avez qu'un seul compte.",
+            "Chaque compte est vérifié par notre équipe avant d'être activé. Nous pouvons refuser ou suspendre un compte, notamment en cas d'informations fausses ou de comportement contraire à ces règles.",
+            "Vous gardez votre mot de passe secret. Vous êtes responsable de ce qui est fait avec votre compte.",
+          ],
+        },
+        {
+          titre: "3. Le rôle de Mivtsa Now",
+          texte: [
+            "Mivtsa Now est un simple intermédiaire. Les intervenants sont des bénévoles, pas des employés de Mivtsa Now. Nous ne garantissons pas qu'un intervenant soit disponible pour chaque demande. Aucun paiement ne doit être demandé pour une intervention.",
+          ],
+          points: [],
+        },
+        {
+          titre: "4. Les règles de conduite",
+          texte: [
+            "En utilisant Mivtsa Now, vous vous engagez à :",
+          ],
+          points: [
+            "être respectueux, poli et bienveillant avec chacun ;",
+            "être à l'heure, et prévenir ou annuler dans l'application si vous avez un empêchement ;",
+            "ne jamais harceler, menacer, insulter ou discriminer qui que ce soit ;",
+            "ne pas créer de faux profil ni vous faire passer pour quelqu'un d'autre ;",
+            "ne pas utiliser les numéros de téléphone ou les adresses à d'autres fins que l'intervention ;",
+            "ne pas utiliser Mivtsa Now à des fins commerciales ou publicitaires.",
+          ],
+        },
+        {
+          titre: "5. Votre sécurité",
+          texte: [
+            "Les interventions se passent en personne. Pour votre sécurité :",
+          ],
+          points: [
+            "vérifiez le prénom et la photo de la personne avant de la recevoir ou d'aller chez elle ;",
+            "prévenez un proche si vous le souhaitez, et n'y allez pas en cas de doute ;",
+            "en cas de danger immédiat, appelez le 17 (police) ou le 112 ;",
+            "signalez tout comportement inapproprié avec le bouton « Signaler » : notre équipe est prévenue tout de suite.",
+            "Les mineurs utilisent Mivtsa Now sous la responsabilité de leurs parents.",
+          ],
+        },
+        {
+          titre: "6. Signalements, blocages et sanctions",
+          texte: [
+            "Vous pouvez signaler ou bloquer une personne à tout moment. Notre équipe examine chaque signalement et peut suspendre ou refuser un compte qui ne respecte pas ces règles.",
+          ],
+          points: [],
+        },
+        {
+          titre: "7. Photos et avis",
+          texte: [
+            "Vous ne publiez que des photos de vous et des avis honnêtes et respectueux. Nous pouvons retirer tout contenu qui ne respecte pas ces règles.",
+          ],
+          points: [],
+        },
+        {
+          titre: "8. Responsabilité",
+          texte: [
+            "Mivtsa Now fait de son mieux pour que le service fonctionne bien et en sécurité, mais ne peut pas être tenu responsable du comportement des utilisateurs lors des rencontres, ni d'une indisponibilité du service, dans les limites prévues par la loi.",
+          ],
+          points: [],
+        },
+        {
+          titre: "9. Supprimer votre compte",
+          texte: [
+            "Vous pouvez supprimer votre compte à tout moment : Paramètres → Supprimer mon compte. Toutes vos données sont alors effacées (voir la politique de confidentialité).",
+          ],
+          points: [],
+        },
+        {
+          titre: "10. Changements et droit applicable",
+          texte: [
+            "Nous pouvons faire évoluer ces conditions ; la date en haut de la page indique la dernière version. Ces conditions sont soumises au droit français. Pour toute question : {email}.",
+          ],
+          points: [],
+        },
+      ],
     },
   },
 
