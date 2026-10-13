@@ -64,8 +64,10 @@ L'équipe ne sait pas coder. Claude doit :
   région eu-west-1). Ne jamais toucher aux autres projets du compte (IdeaVault, AutoFlow AI…).
 - **Vercel** : projet `mitsva-now`. L'adresse et la clé **publique** Supabase sont aussi
   écrites en secours dans `src/lib/supabase/config.ts` : ce ne sont pas des secrets.
-- **E-mails** (mot de passe oublié) : Gmail via le réglage SMTP de Supabase
-  (`smtp.gmail.com`, port 465, `david.avielpro@gmail.com` + mot de passe d'application Google).
+- **E-mails** (mot de passe oublié) : envoyés depuis `contact@mivtsa-now.com` (« Mivtsa Now ») via le
+  réglage SMTP de Supabase (SMTP Amen `smtp-fr.securemail.pro`, port 465, identifiant
+  `contact@mivtsa-now.com` ; mot de passe connu de l'équipe seulement). Lecture : Webmail Amen
+  (IMAP `mail-fr.securemail.pro`, port 993).
   Modèle « Reset Password » : `supabase/templates/mot-de-passe-oublie.html` (en français).
 - **Supabase Auth → URL Configuration** : Site URL `https://mivtsa-now.com`,
   Redirect URLs `https://mivtsa-now.com/**`, `https://www.mivtsa-now.com/**`,
@@ -283,6 +285,7 @@ services affichés par « Voir plus » sur l'accueil).
 ### Idées pour la suite (non faites)
 - Administration : vérification des comptes et tableau de bord faits ; reste la liste
   complète de toutes les demandes.
-- E-mails « mot de passe oublié » : passer de Gmail à `contact@mivtsa-now.com` (SMTP Amen `smtp-fr.securemail.pro`, port 465).
+- Application iPhone (compte Apple Developer au nom du père de David, qui a 16 ans) ; compte Google
+  Play également au nom de son père, David ajouté comme administrateur.
 
 @AGENTS.md
