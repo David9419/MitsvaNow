@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { Logo } from "@/components/logo"
+import { MenuMobile } from "@/components/menu-mobile"
 import { ModeToggle } from "@/components/mode-toggle"
 import { SelecteurLangue } from "@/components/selecteur-langue"
 import { Button } from "@/components/ui/button"
@@ -31,14 +32,14 @@ export async function SiteHeader() {
             </Link>
           ))}
         </nav>
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+        <div className="hidden shrink-0 items-center gap-2 md:flex">
           {user ? (
             <Button asChild size="sm">
               <Link href="/accueil">{t.commun.monEspace}</Link>
             </Button>
           ) : (
             <>
-              <Button asChild size="sm" variant="ghost" className="hidden sm:inline-flex">
+              <Button asChild size="sm" variant="ghost">
                 <Link href="/connexion">{t.commun.seConnecter}</Link>
               </Button>
               <Button asChild size="sm">
@@ -49,6 +50,8 @@ export async function SiteHeader() {
           <SelecteurLangue />
           <ModeToggle />
         </div>
+        {/* Téléphone : bouton ☰ */}
+        <MenuMobile liens={liens} connecte={Boolean(user)} />
       </div>
     </header>
   )

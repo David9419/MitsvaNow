@@ -64,6 +64,8 @@ export const fr = {
     comment: "Comment ça marche",
     espaces: "Les espaces",
     faq: "FAQ",
+    menu: "Menu",
+    fermerMenu: "Fermer le menu",
   },
 
   instagram: {

@@ -63,6 +63,8 @@ export const en: Dico = {
     comment: "How it works",
     espaces: "Spaces",
     faq: "FAQ",
+    menu: "Menu",
+    fermerMenu: "Close menu",
   },
 
   instagram: {
