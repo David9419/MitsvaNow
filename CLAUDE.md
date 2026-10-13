@@ -285,7 +285,7 @@ services affichés par « Voir plus » sur l'accueil).
 ### Idées pour la suite (non faites)
 - Administration : vérification des comptes et tableau de bord faits ; reste la liste
   complète de toutes les demandes.
-- Application iPhone (compte Apple Developer au nom du père de David, qui a 16 ans) ; compte Google
-  Play également au nom de son père, David ajouté comme administrateur.
+- Comptes développeur Google Play et Apple : ouverts au nom d'un adulte de la famille (titulaire majeur obligatoire),
+  David ajouté ensuite comme administrateur.
 
 @AGENTS.md
