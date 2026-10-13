@@ -6,6 +6,7 @@ import { Loader2, Quote, Send } from "lucide-react"
 import { useLangue, useT } from "@/components/i18n/langue-provider"
 import { BadgeStatut } from "@/components/tableau/badge-statut"
 import { ChoixNote, Etoiles } from "@/components/tableau/etoiles"
+import { BoutonSignaler } from "@/components/tableau/bouton-signaler"
 import { Button } from "@/components/ui/button"
 import { ilYa, nomService } from "@/lib/i18n"
 import { trouverEspace } from "@/lib/espaces"
@@ -92,6 +93,11 @@ export function HistoriqueDemandes({
             )}
             {d.statut === "terminee" && !d.note && (
               <FormulaireAvis onEnvoyer={(note, commentaire) => onNoter(d.id, note, commentaire)} />
+            )}
+            {d.statut === "terminee" && d.intervenant_prenom && (
+              <div className="mt-1 flex justify-end">
+                <BoutonSignaler demandeId={d.id} nom={d.intervenant_prenom} />
+              </div>
             )}
           </li>
         )

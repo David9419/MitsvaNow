@@ -29,6 +29,7 @@ import { Champ, ChampMotDePasse, MessageErreur } from "@/components/auth/champ"
 import { ChoixPhoto } from "@/components/choix-photo"
 import { useT } from "@/components/i18n/langue-provider"
 import { changerThemeAnime } from "@/lib/theme-anime"
+import { PersonnesBloquees } from "@/components/parametres/personnes-bloquees"
 import { SupprimerCompte } from "@/components/parametres/supprimer-compte"
 import { ChoixLangue } from "@/components/selecteur-langue"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
@@ -354,6 +355,7 @@ export function PageParametres({
             </div>
           </CarteWidget>
 
+          <PersonnesBloquees />
           <SupprimerCompte estAdmin={estAdmin} />
         </div>
       </div>

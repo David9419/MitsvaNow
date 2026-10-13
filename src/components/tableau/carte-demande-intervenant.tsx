@@ -23,6 +23,7 @@ import { Avatar } from "@/components/avatar"
 import { useLangue, useT } from "@/components/i18n/langue-provider"
 import { BadgeStatut } from "@/components/tableau/badge-statut"
 import { ICONES_TRANSPORT } from "@/components/tableau/transport"
+import { BoutonSignaler } from "@/components/tableau/bouton-signaler"
 import { Button } from "@/components/ui/button"
 import { useMaintenant } from "@/hooks/use-maintenant"
 import { formaterDateHeure, formaterDistance, ilYa, nomService } from "@/lib/i18n"
@@ -240,6 +241,7 @@ export function CarteDemandeIntervenant({
             <X /> {c.annuler}
           </Button>
         )}
+        <BoutonSignaler demandeId={d.id} nom={d.demandeur_prenom} className={cn(!active && "ms-auto")} />
       </div>
     </article>
   )

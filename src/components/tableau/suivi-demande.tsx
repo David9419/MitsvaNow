@@ -20,6 +20,7 @@ import { useLangue, useT } from "@/components/i18n/langue-provider"
 import { ResumeNote } from "@/components/tableau/etoiles"
 import { ListeAvis } from "@/components/tableau/liste-avis"
 import { ICONES_TRANSPORT } from "@/components/tableau/transport"
+import { BoutonSignaler } from "@/components/tableau/bouton-signaler"
 import { Button } from "@/components/ui/button"
 import { libelleType, trouverEspace } from "@/lib/espaces"
 import { formaterDateHeure, formaterDistance, formaterHeure, ilYa, nomService } from "@/lib/i18n"
@@ -189,6 +190,7 @@ export function SuiviDemande({
                   </a>
                 </Button>
               )}
+              {d.intervenant_prenom && <BoutonSignaler demandeId={d.id} nom={d.intervenant_prenom} />}
             </div>
 
             {/* Comment il vient, quand il arrive */}

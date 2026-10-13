@@ -527,7 +527,12 @@ export type Database = {
         Args: { p_decision: string; p_motif?: string; p_utilisateur: string }
         Returns: undefined
       }
+      admin_signalements: { Args: never; Returns: Json }
       admin_statistiques: { Args: never; Returns: Json }
+      admin_traiter_signalement: {
+        Args: { p_signalement: string; p_traite?: boolean }
+        Returns: undefined
+      }
       annuler_demande: {
         Args: { p_demande: string; p_motif?: string }
         Returns: undefined
@@ -541,6 +546,7 @@ export type Database = {
         Args: { p_demande: string }
         Returns: Database["public"]["Enums"]["statut_demande"]
       }
+      bloquer_personne: { Args: { p_demande: string }; Returns: undefined }
       compte_valide: { Args: never; Returns: boolean }
       confirmer_intervenant: {
         Args: { p_confirmer: boolean; p_demande: string }
@@ -558,6 +564,7 @@ export type Database = {
         }
         Returns: string
       }
+      debloquer_personne: { Args: { p_personne: string }; Returns: undefined }
       definir_langue: { Args: { p_langue: string }; Returns: undefined }
       definir_photo: { Args: { p_url: string }; Returns: undefined }
       email_inscrit: { Args: { p_email: string }; Returns: boolean }
@@ -587,6 +594,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      mes_blocages: { Args: never; Returns: Json }
       mon_statut_compte: { Args: never; Returns: Json }
       noms_service: {
         Args: { s: Database["public"]["Tables"]["services"]["Row"] }
@@ -612,6 +620,10 @@ export type Database = {
         Returns: undefined
       }
       secrets_push: { Args: never; Returns: Json }
+      signaler: {
+        Args: { p_bloquer?: boolean; p_demande: string; p_details?: string; p_motif: string }
+        Returns: undefined
+      }
       signaler_presence: { Args: never; Returns: undefined }
       supprimer_abonnement_push: {
         Args: { p_endpoint: string }

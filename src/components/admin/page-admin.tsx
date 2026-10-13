@@ -6,6 +6,7 @@ import {
   Ban,
   Check,
   Clock,
+  Flag,
   LayoutDashboard,
   Loader2,
   Mail,
@@ -25,6 +26,7 @@ import {
   type RoleAdmin,
   type StatistiquesAdmin,
 } from "@/components/admin/tableau-de-bord-admin"
+import { SignalementsAdmin, type SignalementAdmin } from "@/components/admin/signalements-admin"
 import { Avatar } from "@/components/avatar"
 import { useLangue, useT } from "@/components/i18n/langue-provider"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
@@ -71,7 +73,7 @@ const DANS_ONGLET: Record<Onglet, Verification[]> = {
 }
 
 /** Page Administration : vérifier les comptes avant de leur donner accès au site. */
-type Vue = "tableau" | "comptes"
+type Vue = "tableau" | "comptes" | "signalements"
 type FiltreRole = "tous" | "en_ligne" | RoleAdmin
 /** En ligne = passé sur le site dans les 3 dernières minutes */
 const EN_LIGNE_MS = 3 * 60 * 1000
@@ -80,10 +82,12 @@ export function PageAdmin({
   utilisateurId,
   initial,
   statistiques,
+  signalementsInitiaux,
 }: {
   utilisateurId: string
   initial: CompteAdmin[]
   statistiques: StatistiquesAdmin | null
+  signalementsInitiaux: SignalementAdmin[]
 }) {
   const t = useT()
   const a = t.admin
@@ -99,14 +103,18 @@ export function PageAdmin({
   const [enCours, setEnCours] = useState<string | null>(null)
   const [fenetre, setFenetre] = useState<{ compte: CompteAdmin; decision: "refuse" | "suspendu" } | null>(null)
   const [motif, setMotif] = useState("")
+  const [signalements, setSignalements] = useState(signalementsInitiaux)
+  const signalementsNouveaux = signalements.filter((x) => x.statut === "nouveau").length
 
   const recharger = useCallback(async () => {
-    const [{ data }, { data: s }] = await Promise.all([
+    const [{ data }, { data: s }, { data: sig }] = await Promise.all([
       supabase.rpc("admin_comptes"),
       supabase.rpc("admin_statistiques"),
+      supabase.rpc("admin_signalements"),
     ])
     if (data) setComptes(data as unknown as CompteAdmin[])
     if (s) setStats(s as unknown as StatistiquesAdmin)
+    if (sig) setSignalements(sig as unknown as SignalementAdmin[])
   }, [supabase])
 
   // Mise à jour toute seule toutes les 30 secondes (nouvelles inscriptions, personnes en ligne…)
@@ -114,6 +122,21 @@ export function PageAdmin({
     const minuteur = setInterval(recharger, 30000)
     return () => clearInterval(minuteur)
   }, [recharger])
+
+  /** Signalement traité (ou rouvert) */
+  const traiterSignalement = async (id: string, traite: boolean) => {
+    setEnCours(id)
+    const { error } = await supabase.rpc("admin_traiter_signalement", { p_signalement: id, p_traite: traite })
+    setEnCours(null)
+    if (error) toast.error(messageErreur(error, t))
+    await recharger()
+  }
+
+  /** Depuis un signalement : suspendre la personne (fenêtre avec motif) */
+  const suspendreDepuisSignalement = (cibleId: string) => {
+    const c = comptes.find((x) => x.id === cibleId)
+    if (c && !c.est_admin) setFenetre({ compte: c, decision: "suspendu" })
+  }
 
   /** Depuis le tableau de bord : ouvrir la liste des comptes filtrée */
   const voirRole = (role: RoleAdmin | "en_ligne") => {
@@ -228,11 +251,12 @@ export function PageAdmin({
             <p className="mt-1 opacity-85">{a.sousTitre}</p>
           </div>
         </div>
-        <div className="mt-5 inline-flex gap-1 rounded-xl bg-current/10 p-1 ring-1 ring-current/15">
+        <div className="mt-5 inline-flex flex-wrap gap-1 rounded-xl bg-current/10 p-1 ring-1 ring-current/15">
           {(
             [
               { id: "tableau", icon: LayoutDashboard },
               { id: "comptes", icon: Users },
+              { id: "signalements", icon: Flag },
             ] as const
           ).map((v) => (
             <button
@@ -244,9 +268,12 @@ export function PageAdmin({
                 vue === v.id ? "bg-background text-foreground shadow-md" : "hover:bg-current/10"
               )}
             >
-              <v.icon className="size-4" /> {a.vues[v.id]}
+              <v.icon className="size-4" /> {v.id === "signalements" ? t.signalement.admin.onglet : a.vues[v.id]}
               {v.id === "comptes" && nombres.attente > 0 && (
                 <span className="rounded-full bg-primary px-2 text-xs text-primary-foreground tabular-nums">{nombres.attente}</span>
+              )}
+              {v.id === "signalements" && signalementsNouveaux > 0 && (
+                <span className="rounded-full bg-destructive px-2 text-xs text-white tabular-nums">{signalementsNouveaux}</span>
               )}
             </button>
           ))}
@@ -254,6 +281,15 @@ export function PageAdmin({
       </section>
 
       {vue === "tableau" && stats && <TableauDeBordAdmin stats={stats} onVoirRole={voirRole} />}
+
+      {vue === "signalements" && (
+        <SignalementsAdmin
+          liste={signalements}
+          occupe={enCours}
+          onTraiter={traiterSignalement}
+          onSuspendre={suspendreDepuisSignalement}
+        />
+      )}
 
       {vue === "comptes" && (
       <>

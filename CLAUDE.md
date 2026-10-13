@@ -183,12 +183,21 @@ services affichés par « Voir plus » sur l'accueil).
 - Site : `chargerSession()` renvoie `compte`, `compteValide`, `estAdmin` ; un compte non
   validé ne voit que `CompteEnVerification` (`src/components/tableau/compte-en-verification.tsx`).
 - « Mot de passe oublié » ne dit plus si une adresse est inscrite (`email_inscrit` neutralisée).
+- **Signaler / Bloquer** (obligatoire App Store) : bouton « Signaler » (`src/components/tableau/bouton-signaler.tsx`)
+  sur les cartes de l'intervenant, le suivi et l'historique du demandeur. Tout part d'une
+  **demande** (jamais d'un identifiant de personne) : `signaler(p_demande, p_motif, p_details,
+  p_bloquer)`, `bloquer_personne(p_demande)` ; l'autre personne est trouvée par
+  `prive.autre_personne`. Tables `signalements` (lues seulement par les admins) et `blocages`
+  (`actif` à false pour débloquer : `debloquer_personne`, liste `mes_blocages`, carte
+  « Personnes bloquées » des Paramètres). `prive.peut_recevoir` exclut les personnes bloquées
+  (`prive.est_bloque`). Administration : onglet **Signalements** (`signalements-admin.tsx`,
+  `admin_signalements`, `admin_traiter_signalement`, suspendre depuis le signalement).
 
 ### Base de données (Supabase)
 - `espaces`, `services` (`nom`, `nom_he`, `nom_en`), `profiles` (+ `photo_url`, `langue`,
   `verification`, `communaute`, `referent`, `verifie_le`, `verifie_par`, `motif_verification`,
   `dernier_passage`),
-  `journal_verifications`,
+  `journal_verifications`, `signalements`, `blocages`,
   `intervenants`, `intervenant_services`, `demande_refus`, `demande_propositions`
   (à qui la demande est envoyée ; `active = false` au lieu de supprimer), `avis`,
   `abonnements_push`.
@@ -203,7 +212,8 @@ services affichés par « Voir plus » sur l'accueil).
   `tableau_demandeur`, `enregistrer_ma_position`, `ma_position`, `definir_photo`,
   `definir_langue`, `enregistrer_abonnement_push`, `compte_valide`, `mon_statut_compte`,
   `admin_comptes`, `admin_decider`, `admin_statistiques`, `signaler_presence`,
-  `supprimer_mon_compte`.
+  `supprimer_mon_compte`, `signaler`, `bloquer_personne`, `debloquer_personne`, `mes_blocages`,
+  `admin_signalements`, `admin_traiter_signalement`.
 
 ### Notifications
 - Un seul déclencheur `evenements_demande` (+ `evenement_avis`) → `notifier()` → pg_net
