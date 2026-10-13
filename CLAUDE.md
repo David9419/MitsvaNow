@@ -283,6 +283,6 @@ services affichés par « Voir plus » sur l'accueil).
 ### Idées pour la suite (non faites)
 - Administration : vérification des comptes et tableau de bord faits ; reste la liste
   complète de toutes les demandes.
-- Nom de domaine à nous et service d'e-mails dédié.
+- E-mails « mot de passe oublié » : passer de Gmail à `contact@mivtsa-now.com` (SMTP Amen `smtp-fr.securemail.pro`, port 465).
 
 @AGENTS.md
