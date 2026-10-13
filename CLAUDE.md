@@ -23,6 +23,22 @@ L'équipe ne sait pas coder. Claude doit :
 - quand une action doit être faite par nous (réglage Supabase, Google, Vercel…),
   donner les étapes **champ par champ**, avec les valeurs exactes à mettre.
 
+## Application iPhone / Android (en cours, objectif : sortie dans les stores)
+- Dossier **`application/`** (séparé du site, exclu de `tsconfig`) : projet **Capacitor 8**
+  (`capacitor.config.json`, identifiant `com.mivtsanow.app`, nom « Mivtsa Now »). L'application
+  ouvre le site en ligne `https://www.mivtsa-now.com/accueil` (`server.url`) ; page
+  `www/hors-ligne.html` si pas de connexion. Projets natifs `application/android` et
+  `application/ios` (Swift Package Manager). Autorisations : position, appareil photo, photos,
+  notifications (AndroidManifest.xml / Info.plist).
+- Icônes et écran de démarrage : images sources dans `application/assets/` (faites à partir de
+  `public/logo.png`), générées par `npm run icones` dans `application/`.
+- Pas d'outils Android / Mac dans l'environnement de Claude : l'APK de test est fabriqué par
+  GitHub Actions (`.github/workflows/application-android.yml`, artefact
+  « mivtsa-now-android-test »). L'iPhone se fabriquera avec un Mac en ligne (GitHub Actions macOS
+  ou Codemagic) une fois le compte Apple Developer prêt.
+- Reste à faire : notifications natives (Firebase pour Android, APNs pour iPhone), signature,
+  TestFlight / test fermé Google (12 testeurs, 14 jours), fiches des stores.
+
 ## Stack technique
 - **Next.js 16** (App Router, TypeScript) — le site/l'application.
   Attention : `src/proxy.ts` remplace l'ancien `middleware`, `searchParams` est

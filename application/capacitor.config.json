@@ -1,0 +1,27 @@
+{
+  "appId": "com.mivtsanow.app",
+  "appName": "Mivtsa Now",
+  "webDir": "www",
+  "server": {
+    "url": "https://www.mivtsa-now.com/accueil",
+    "cleartext": false,
+    "errorPath": "hors-ligne.html"
+  },
+  "android": {
+    "backgroundColor": "#ffffff"
+  },
+  "ios": {
+    "backgroundColor": "#ffffff",
+    "contentInset": "never",
+    "scrollEnabled": true
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "launchAutoHide": true,
+      "launchFadeOutDuration": 300,
+      "backgroundColor": "#ffffff",
+      "showSpinner": false
+    }
+  }
+}

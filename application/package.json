@@ -1,0 +1,21 @@
+{
+  "name": "mivtsa-now-application",
+  "private": true,
+  "description": "Application iPhone et Android de Mivtsa Now (Capacitor) : elle ouvre le site mivtsa-now.com avec les fonctions du téléphone.",
+  "scripts": {
+    "sync": "cap sync",
+    "icones": "capacitor-assets generate --iconBackgroundColor '#ffffff' --iconBackgroundColorDark '#0b1020' --splashBackgroundColor '#ffffff' --splashBackgroundColorDark '#0b1020'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/ios": "^8.5.3",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.3"
+  }
+}

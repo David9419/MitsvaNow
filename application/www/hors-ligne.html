@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Mivtsa Now</title>
+  <style>
+    :root { color-scheme: light dark; --fond: #f4f6fb; --texte: #0f172a; --doux: #64748b; --bleu: #2546d9; }
+    @media (prefers-color-scheme: dark) { :root { --fond: #0b1020; --texte: #f1f5f9; --doux: #94a3b8; --bleu: #6d8bff; } }
+    html, body { margin: 0; height: 100%; background: var(--fond); color: var(--texte); font-family: -apple-system, system-ui, "Segoe UI", Roboto, sans-serif; }
+    main { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; box-sizing: border-box; }
+    img { width: 96px; height: 96px; object-fit: contain; }
+    h1 { margin: 8px 0 0; font-size: 22px; }
+    p { margin: 0; color: var(--doux); max-width: 320px; line-height: 1.5; }
+    button { margin-top: 10px; border: 0; border-radius: 12px; padding: 14px 26px; font-size: 16px; font-weight: 600; color: #fff; background: var(--bleu); }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="logo.png" alt="" />
+    <h1 id="titre">Pas de connexion internet</h1>
+    <p id="texte">Vérifiez votre connexion (Wi-Fi ou données mobiles), puis réessayez.</p>
+    <button id="bouton" onclick="location.href='https://www.mivtsa-now.com/accueil'">Réessayer</button>
+  </main>
+  <script>
+    // Texte dans la langue du téléphone (hébreu ou anglais), français par défaut
+    var l = (navigator.language || "fr").slice(0, 2)
+    var T = {
+      he: ["אין חיבור לאינטרנט", "בדקו את החיבור (Wi-Fi או נתונים) ונסו שוב.", "לנסות שוב"],
+      en: ["No internet connection", "Check your connection (Wi-Fi or mobile data), then try again.", "Try again"],
+    }
+    if (T[l]) {
+      document.documentElement.lang = l
+      if (l === "he") document.documentElement.dir = "rtl"
+      document.getElementById("titre").textContent = T[l][0]
+      document.getElementById("texte").textContent = T[l][1]
+      document.getElementById("bouton").textContent = T[l][2]
+    }
+  </script>
+</body>
+</html>
