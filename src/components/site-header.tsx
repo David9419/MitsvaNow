@@ -13,6 +13,7 @@ export async function SiteHeader() {
     { href: "/#comment", label: t.nav.comment },
     { href: "/#espaces", label: t.nav.espaces },
     { href: "/#faq", label: t.nav.faq },
+    { href: "/contact", label: t.legal.liens.contact },
   ]
 
   return (

@@ -28,7 +28,6 @@ import { changerMotDePasseCompte } from "@/app/(auth)/actions"
 import { Champ, ChampMotDePasse, MessageErreur } from "@/components/auth/champ"
 import { ChoixPhoto } from "@/components/choix-photo"
 import { useT } from "@/components/i18n/langue-provider"
-import { EMAIL_CONTACT } from "@/lib/contact"
 import { changerThemeAnime } from "@/lib/theme-anime"
 import { PersonnesBloquees } from "@/components/parametres/personnes-bloquees"
 import { SupprimerCompte } from "@/components/parametres/supprimer-compte"
@@ -369,9 +368,9 @@ export function PageParametres({
         <Link href="/conditions" className="hover:text-foreground hover:underline">
           {t.legal.liens.conditions}
         </Link>
-        <a href={`mailto:${EMAIL_CONTACT}`} className="hover:text-foreground hover:underline">
+        <Link href="/contact" className="hover:text-foreground hover:underline">
           {t.legal.liens.contact}
-        </a>
+        </Link>
       </nav>
     </main>
   )

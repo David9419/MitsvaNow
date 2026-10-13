@@ -17,6 +17,7 @@ export const he: Dico = {
     compteSupprime: "החשבון נמחק — Mivtsa Now",
     confidentialite: "מדיניות פרטיות — Mivtsa Now",
     conditions: "תנאי שימוש — Mivtsa Now",
+    contact: "צור קשר — Mivtsa Now",
   },
 
   commun: {
@@ -1168,6 +1169,23 @@ export const he: Dico = {
         },
       ],
     },
+  },
+
+  contact: {
+    titre: "צרו איתנו קשר",
+    sousTitre: "שאלה, רעיון, בעיה? הצוות שלנו כאן כדי לעזור.",
+    telephone: "טלפון",
+    telephoneTexte: "התקשרו אלינו או כתבו לנו בוואטסאפ.",
+    appeler: "התקשרות",
+    whatsapp: "וואטסאפ",
+    instagram: "אינסטגרם",
+    instagramTexte: "עקבו אחרי החדשות ושלחו לנו הודעה פרטית.",
+    suivre: "פתיחת אינסטגרם",
+    email: "מייל",
+    emailTexte: "לבקשות מפורטות או לשאלות על המידע שלכם.",
+    ecrire: "שליחת מייל",
+    reponse: "בדרך כלל אנחנו עונים באותו יום.",
+    urgence: "בסכנה מיידית, התקשרו ל־100 (משטרה) או ל־112.",
   },
 
   erreursBase: {

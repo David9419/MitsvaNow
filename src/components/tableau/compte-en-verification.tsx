@@ -6,7 +6,6 @@ import { useTransition } from "react"
 import { Check, Hourglass, Loader2, LogOut, Phone, RefreshCw, Settings, ShieldAlert, ShieldCheck } from "lucide-react"
 
 import { deconnexion } from "@/app/(auth)/actions"
-import { LIEN_INSTAGRAM } from "@/components/bouton-instagram"
 import { useT } from "@/components/i18n/langue-provider"
 import { Button } from "@/components/ui/button"
 import type { StatutCompte } from "@/lib/tableau/charger"
@@ -101,9 +100,7 @@ export function CompteEnVerification({ prenom, compte }: { prenom: string; compt
           )}
           {bloque && (
             <Button asChild>
-              <a href={LIEN_INSTAGRAM} target="_blank" rel="noopener noreferrer">
-                {v.contacter}
-              </a>
+              <Link href="/contact">{v.contacter}</Link>
             </Button>
           )}
           <Button asChild variant="outline">

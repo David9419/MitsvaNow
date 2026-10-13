@@ -424,3 +424,32 @@ html.theme-anime::view-transition-new(root) {
 .animate-mot-langue {
   animation: mot-langue 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+/* Changement de page (src/app/template.tsx) : sortie vers le haut, entrée par le bas, en douceur */
+::view-transition-old(.page-sortie) {
+  animation: page-sortie 160ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+::view-transition-new(.page-entree) {
+  animation: page-entree 380ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both;
+}
+@keyframes page-sortie {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+    filter: blur(4px);
+  }
+}
+@keyframes page-entree {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation: none !important;
+  }
+}

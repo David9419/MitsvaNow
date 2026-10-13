@@ -1,7 +1,6 @@
 import Link from "next/link"
 
 import { Logo } from "@/components/logo"
-import { EMAIL_CONTACT } from "@/lib/contact"
 import { obtenirDico } from "@/lib/i18n/serveur"
 
 export async function SiteFooter() {
@@ -18,9 +17,9 @@ export async function SiteFooter() {
           <Link href="/conditions" className="hover:text-foreground">
             {l.conditions}
           </Link>
-          <a href={`mailto:${EMAIL_CONTACT}`} className="hover:text-foreground">
+          <Link href="/contact" className="hover:text-foreground">
             {l.contact}
-          </a>
+          </Link>
         </nav>
         <p>
           © {new Date().getFullYear()} Mivtsa Now — {t.commun.tousDroits}

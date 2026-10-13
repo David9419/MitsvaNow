@@ -18,6 +18,7 @@ export const fr = {
     compteSupprime: "Compte supprimé — Mivtsa Now",
     confidentialite: "Politique de confidentialité — Mivtsa Now",
     conditions: "Conditions d'utilisation — Mivtsa Now",
+    contact: "Contact — Mivtsa Now",
   },
 
   commun: {
@@ -1202,6 +1203,23 @@ export const fr = {
         },
       ],
     },
+  },
+
+  contact: {
+    titre: "Contactez-nous",
+    sousTitre: "Une question, une idée, un souci ? Notre équipe est là pour vous aider.",
+    telephone: "Téléphone",
+    telephoneTexte: "Appelez-nous ou écrivez-nous sur WhatsApp.",
+    appeler: "Appeler",
+    whatsapp: "WhatsApp",
+    instagram: "Instagram",
+    instagramTexte: "Suivez les nouveautés et écrivez-nous en message privé.",
+    suivre: "Ouvrir Instagram",
+    email: "E-mail",
+    emailTexte: "Pour les demandes détaillées ou les questions sur vos données.",
+    ecrire: "Écrire un e-mail",
+    reponse: "Nous répondons en général dans la journée.",
+    urgence: "En cas de danger immédiat, appelez le 17 (police) ou le 112.",
   },
 
   /** Messages d'erreur renvoyés par la base de données (clé = texte français d'origine). */

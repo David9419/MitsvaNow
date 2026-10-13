@@ -17,6 +17,7 @@ export const en: Dico = {
     compteSupprime: "Account deleted — Mivtsa Now",
     confidentialite: "Privacy policy — Mivtsa Now",
     conditions: "Terms of use — Mivtsa Now",
+    contact: "Contact — Mivtsa Now",
   },
 
   commun: {
@@ -1180,6 +1181,23 @@ export const en: Dico = {
         },
       ],
     },
+  },
+
+  contact: {
+    titre: "Contact us",
+    sousTitre: "A question, an idea, a problem? Our team is here to help.",
+    telephone: "Phone",
+    telephoneTexte: "Call us or message us on WhatsApp.",
+    appeler: "Call",
+    whatsapp: "WhatsApp",
+    instagram: "Instagram",
+    instagramTexte: "Follow our news and send us a private message.",
+    suivre: "Open Instagram",
+    email: "Email",
+    emailTexte: "For detailed requests or questions about your data.",
+    ecrire: "Send an email",
+    reponse: "We usually answer within the day.",
+    urgence: "In immediate danger, call 112 (or your local emergency number).",
   },
 
   erreursBase: {
