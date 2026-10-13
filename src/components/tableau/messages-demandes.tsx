@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { BellRing, RotateCcw, TimerOff, X } from "lucide-react"
 
 import { useT } from "@/components/i18n/langue-provider"
+import { BoutonSignaler } from "@/components/tableau/bouton-signaler"
 import { Button } from "@/components/ui/button"
 import { useMaintenant } from "@/hooks/use-maintenant"
 
@@ -19,6 +20,8 @@ export type MessageDemande = {
   motif?: string | null
   ton: "annulee" | "expiree"
   refaire?: () => void
+  /** Permet de signaler l'autre personne de la demande */
+  signaler?: { demandeId: string; nom: string }
 }
 
 function lireVus(): string[] {
@@ -93,6 +96,7 @@ export function MessagesDemandes({ messages }: { messages: MessageDemande[] }) {
                 <Button size="sm" variant="outline" onClick={() => marquer(m.id)}>
                   {t.messages.compris}
                 </Button>
+                {m.signaler && <BoutonSignaler demandeId={m.signaler.demandeId} nom={m.signaler.nom} />}
               </div>
             </div>
           </article>

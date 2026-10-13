@@ -192,6 +192,10 @@ services affichés par « Voir plus » sur l'accueil).
   « Personnes bloquées » des Paramètres). `prive.peut_recevoir` exclut les personnes bloquées
   (`prive.est_bloque`). Administration : onglet **Signalements** (`signalements-admin.tsx`,
   `admin_signalements`, `admin_traiter_signalement`, suspendre depuis le signalement).
+  Après une annulation on peut encore signaler : `demandes.dernier_intervenant_id` est rempli
+  quand l'intervenant annule / est écarté / est suspendu ; bouton « Signaler » aussi dans les
+  messages d'annulation et le bandeau « l'intervenant a annulé ». Chaque signalement envoie une
+  notification `signalement` aux administrateurs (ouvre `/accueil/admin`, champ `url` du push, `public/sw.js`).
 
 ### Base de données (Supabase)
 - `espaces`, `services` (`nom`, `nom_he`, `nom_en`), `profiles` (+ `photo_url`, `langue`,
@@ -221,7 +225,7 @@ services affichés par « Voir plus » sur l'accueil).
   vérification JWT, protégée par `x-secret`) qui écrit le texte dans la langue du destinataire.
 - Événements : intervenant ← `nouvelle`, `confirmee`, `refusee`, `annulee`, `avis` ;
   demandeur ← `acceptee`, `en_cours`, `terminee`, `annulee`, `expiree`, `relance`
-  (l'intervenant a annulé, la demande repart chez tous).
+  (l'intervenant a annulé, la demande repart chez tous) ; administrateurs ← `signalement`.
 - Clés dans le Vault : `push_vapid_public`, `push_vapid_prive`, `push_secret_declencheur`.
 - iPhone : seulement si le site est installé sur l'écran d'accueil.
 - Diagnostic : `abonnements_push`, `net._http_response`, logs de l'Edge Function.

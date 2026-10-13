@@ -12,6 +12,7 @@
 // Événements :
 //   pour l'intervenant : nouvelle, confirmee, refusee, annulee, avis
 //   pour le demandeur  : acceptee, en_cours, terminee, annulee, expiree, relance
+//   pour les administrateurs : signalement (ouvre la page Administration)
 import { createClient } from "npm:@supabase/supabase-js@2"
 import webpush from "npm:web-push@3.6.7"
 
@@ -141,6 +142,10 @@ function texte(evenement: string, i: Infos): { titre: string; corps: string } | 
         titre: `Nouvel avis ${"★".repeat(i.note ?? 0)}`,
         corps: `${i.demandeur} vous a laissé un avis (${service}).`,
       }),
+      signalement: () => ({
+        titre: "Nouveau signalement 🚩",
+        corps: `Demande : ${service}. Ouvrez l'Administration pour voir le détail.`,
+      }),
     },
     he: {
       nouvelle: () => ({
@@ -168,6 +173,7 @@ function texte(evenement: string, i: Infos): { titre: string; corps: string } | 
         corps: `${i.demandeur} מחכה לך: ${service}${prevue ? ` (${prevue})` : ""}.`,
       }),
       avis: () => ({ titre: `חוות דעת חדשה ${"★".repeat(i.note ?? 0)}`, corps: `${i.demandeur} השאיר/ה לך חוות דעת (${service}).` }),
+      signalement: () => ({ titre: "דיווח חדש 🚩", corps: `בקשה: ${service}. פתחו את דף הניהול כדי לראות את הפרטים.` }),
     },
     en: {
       nouvelle: () => ({
@@ -195,6 +201,7 @@ function texte(evenement: string, i: Infos): { titre: string; corps: string } | 
         corps: `${i.demandeur} is expecting you: ${service}${prevue ? ` (${prevue})` : ""}.`,
       }),
       avis: () => ({ titre: `New review ${"★".repeat(i.note ?? 0)}`, corps: `${i.demandeur} left you a review (${service}).` }),
+      signalement: () => ({ titre: "New report 🚩", corps: `Request: ${service}. Open the Administration page to see the details.` }),
     },
   }
   const f = (T[l] ?? T.fr)[evenement]
@@ -272,9 +279,12 @@ Deno.serve(async (req) => {
       const t = texte(corps.evenement, infos)
       if (!t) return reponse({ envoyes: 0 })
       const nouvelle = corps.evenement === "nouvelle"
+      const signalement = corps.evenement === "signalement"
       const envoyes = await envoyer(infos.abonnements, {
         ...t,
-        demande: infos.demande,
+        // Un signalement ouvre la page Administration (pas la demande)
+        demande: signalement ? undefined : infos.demande,
+        url: signalement ? "/accueil/admin" : undefined,
         // Boutons Accepter / Pas disponible seulement pour une nouvelle demande
         actions: nouvelle,
         boutons: nouvelle ? BOUTONS[infos.langue] ?? BOUTONS.fr : undefined,

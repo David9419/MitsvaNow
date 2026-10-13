@@ -162,6 +162,7 @@ export type Database = {
           confirmee: boolean
           created_at: string
           demandeur_id: string
+          dernier_intervenant_id: string | null
           eta_minutes: number | null
           id: string
           intervenant_id: string | null
@@ -184,6 +185,7 @@ export type Database = {
           confirmee?: boolean
           created_at?: string
           demandeur_id: string
+          dernier_intervenant_id?: string | null
           eta_minutes?: number | null
           id?: string
           intervenant_id?: string | null
@@ -206,6 +208,7 @@ export type Database = {
           confirmee?: boolean
           created_at?: string
           demandeur_id?: string
+          dernier_intervenant_id?: string | null
           eta_minutes?: number | null
           id?: string
           intervenant_id?: string | null

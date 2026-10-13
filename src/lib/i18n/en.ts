@@ -923,6 +923,7 @@ export const en: Dico = {
   },
 
   signalement: {
+    lIntervenant: "the volunteer",
     bouton: "Report",
     boutonTitre: "Report or block this person",
     titre: (nom: string) => `Report ${nom}`,

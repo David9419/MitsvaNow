@@ -354,6 +354,7 @@ export function TableauIntervenant({
       titre: t.messages.annuleeParDemandeur(d.demandeur_prenom, nomService(d.service_noms, d.service, langue)),
       motif: d.motif_annulation,
       ton: "annulee",
+      signaler: { demandeId: d.id, nom: d.demandeur_prenom },
     }))
 
   const widget: Record<string, ReactNode> = {

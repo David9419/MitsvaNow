@@ -229,8 +229,11 @@ export function TableauDemandeur({
       const service = nomService(d.service_noms, d.service, langue)
       const idService = services.find((s) => s.espace_slug === d.espace_slug && s.nom === d.service)?.id
       const refaire = idService ? () => preparer(d.espace_slug, idService) : undefined
+      // Un intervenant avait accepté puis annulé : on peut encore le signaler
+      const signaler =
+        d.annulee_par === "intervenant" ? { demandeId: d.id, nom: d.intervenant_prenom ?? t.signalement.lIntervenant } : undefined
       return d.statut === "expiree"
-        ? { id: `expiree-${d.id}`, date: d.updated_at, titre: t.messages.expiree(service), texte: t.messages.expireeTexte, ton: "expiree" as const, refaire }
+        ? { id: `expiree-${d.id}`, date: d.updated_at, titre: t.messages.expiree(service), texte: t.messages.expireeTexte, ton: "expiree" as const, refaire, signaler }
         : {
             id: `annulee-${d.id}`,
             date: d.updated_at,
@@ -238,6 +241,7 @@ export function TableauDemandeur({
             motif: d.motif_annulation,
             ton: "annulee" as const,
             refaire,
+            signaler,
           }
     })
 

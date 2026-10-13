@@ -911,6 +911,7 @@ export const he: Dico = {
   },
 
   signalement: {
+    lIntervenant: "המתנדב",
     bouton: "דיווח",
     boutonTitre: "דיווח או חסימה של אדם זה",
     titre: (nom: string) => `דיווח על ${nom}`,

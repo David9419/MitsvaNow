@@ -945,6 +945,7 @@ export const fr = {
   },
 
   signalement: {
+    lIntervenant: "l'intervenant",
     bouton: "Signaler",
     boutonTitre: "Signaler ou bloquer cette personne",
     titre: (nom: string) => `Signaler ${nom}`,

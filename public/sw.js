@@ -18,8 +18,8 @@ self.addEventListener("push", (event) => {
     body: m.corps || "",
     icon: "/icones/icone-192.png",
     badge: "/icones/icone-192.png",
-    tag: m.demande || "mivtsa-now",
-    data: { demande: m.demande || null },
+    tag: m.demande || m.url || "mivtsa-now",
+    data: { demande: m.demande || null, url: m.url || null },
     requireInteraction: Boolean(m.demande),
   }
   // Les boutons s'affichent sur Chrome, Edge et Android
@@ -34,8 +34,26 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   const demande = event.notification.data && event.notification.data.demande
+  const url = event.notification.data && event.notification.data.url
   const reponse = event.action // "accepter", "refuser" ou "" (clic sur la notification)
   event.notification.close()
+
+  // Notification avec une adresse précise (ex. un signalement → page Administration)
+  if (url) {
+    event.waitUntil(
+      (async () => {
+        const fenetres = await self.clients.matchAll({ type: "window", includeUncontrolled: true })
+        const ouverte = fenetres.find((f) => new URL(f.url).pathname.startsWith("/accueil"))
+        if (ouverte) {
+          await ouverte.focus()
+          await ouverte.navigate(url)
+        } else {
+          await self.clients.openWindow(url)
+        }
+      })()
+    )
+    return
+  }
 
   event.waitUntil(
     (async () => {

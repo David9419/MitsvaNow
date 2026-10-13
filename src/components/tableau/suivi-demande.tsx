@@ -142,6 +142,7 @@ export function SuiviDemande({
                     {t.tableau.motif} : {d.motif_annulation}
                   </p>
                 )}
+                <BoutonSignaler demandeId={d.id} nom={t.signalement.lIntervenant} className="-ms-3 mt-1" />
               </div>
             </div>
           )}
