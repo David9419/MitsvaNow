@@ -29,6 +29,7 @@ import { Champ, ChampMotDePasse, MessageErreur } from "@/components/auth/champ"
 import { ChoixPhoto } from "@/components/choix-photo"
 import { useT } from "@/components/i18n/langue-provider"
 import { changerThemeAnime } from "@/lib/theme-anime"
+import { SupprimerCompte } from "@/components/parametres/supprimer-compte"
 import { ChoixLangue } from "@/components/selecteur-langue"
 import { BarreTableau } from "@/components/tableau/barre-tableau"
 import { EtapesEcranAccueil } from "@/components/tableau/carte-notifications"
@@ -78,7 +79,15 @@ function Reglage({
   )
 }
 
-export function PageParametres({ utilisateurId, profil }: { utilisateurId: string; profil: Profil }) {
+export function PageParametres({
+  utilisateurId,
+  profil,
+  estAdmin = false,
+}: {
+  utilisateurId: string
+  profil: Profil
+  estAdmin?: boolean
+}) {
   const t = useT()
   const p = t.parametres
   const router = useRouter()
@@ -344,6 +353,8 @@ export function PageParametres({ utilisateurId, profil }: { utilisateurId: strin
               </div>
             </div>
           </CarteWidget>
+
+          <SupprimerCompte estAdmin={estAdmin} />
         </div>
       </div>
     </main>

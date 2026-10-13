@@ -14,6 +14,7 @@ export const en: Dico = {
     parametres: "Settings — Mivtsa Now",
     admin: "Administration — Mivtsa Now",
     verification: "Account verification — Mivtsa Now",
+    compteSupprime: "Account deleted — Mivtsa Now",
   },
 
   commun: {
@@ -787,6 +788,24 @@ export const en: Dico = {
     langue: "Language",
     langueTexte: "The whole site switches to the chosen language.",
     nomVerrouille: "Your name has been verified. To change it, contact an administrator.",
+    suppression: {
+      titre: "Delete my account",
+      sousTitre: "Permanent action",
+      texte: "Your account and all your information (profile, photo, requests, reviews) will be erased forever.",
+      bouton: "Delete my account",
+      fenetreTitre: "Permanently delete your account?",
+      consequences: [
+        "Your profile, photo and location will be erased.",
+        "Your open requests will be cancelled.",
+        "If you are a volunteer, your ongoing visits will be offered to others.",
+        "This cannot be undone.",
+      ],
+      motDePasse: "To confirm, enter your password",
+      confirmer: "Yes, delete my account",
+      enCours: "Deleting…",
+      annuler: "Cancel",
+      admin: "An administrator cannot delete their account from the site.",
+    },
   },
 
   verification: {
@@ -896,6 +915,13 @@ export const en: Dico = {
     },
   },
 
+  compteSupprime: {
+    titre: "Your account has been deleted",
+    texte:
+      "All your information has been erased. Thank you for being part of Mivtsa Now. You can create a new account whenever you like.",
+    accueil: "Back to home",
+  },
+
   erreursBase: {
     "Vous devez être connecté.": "You need to be logged in.",
     "Service introuvable.": "Service not found.",
@@ -924,5 +950,6 @@ export const en: Dico = {
     "Ce compte est celui d'un administrateur.": "This account belongs to an administrator.",
     "Indiquez le motif de la décision.": "Please give the reason for the decision.",
     "Votre nom a été vérifié : pour le changer, contactez un administrateur.": "Your name has been verified: to change it, contact an administrator.",
+    "Un administrateur ne peut pas supprimer son compte.": "An administrator cannot delete their account.",
   },
 }

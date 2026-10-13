@@ -139,7 +139,11 @@ services affichés par « Voir plus » sur l'accueil).
 8. **Paramètres** (`/accueil/parametres`, bouton ⚙️ de chaque espace) : photo (galerie ou
    appareil photo), prénom, nom, téléphone, e-mail non modifiable, changement de mot de
    passe (ancien + nouveau + confirmation), mot de passe oublié, notifications
-   (activer / couper), mode sombre, langue.
+   (activer / couper), mode sombre, langue, **« Supprimer mon compte »** (obligatoire App Store /
+   Google Play : `src/components/parametres/supprimer-compte.tsx`, action `supprimerMonCompte`
+   qui redemande le mot de passe, efface les photos via l'API Storage puis appelle la fonction
+   SQL `supprimer_mon_compte` → efface `auth.users`, tout suit en cascade ; page `/compte-supprime`).
+   Un administrateur ne peut pas supprimer son compte.
    Thème : bouton soleil / lune (`src/components/mode-toggle.tsx`) ; au clic le nouveau
    thème s'ouvre en cercle depuis le bouton (`src/lib/theme-anime.ts`, aussi utilisé par
    l'interrupteur des Paramètres). Langue : pastille drapeau + code ; au changement, un
@@ -198,7 +202,8 @@ services affichés par « Voir plus » sur l'accueil).
   `expirer_demandes`, `mettre_a_jour_intervenant`, `tableau_intervenant`,
   `tableau_demandeur`, `enregistrer_ma_position`, `ma_position`, `definir_photo`,
   `definir_langue`, `enregistrer_abonnement_push`, `compte_valide`, `mon_statut_compte`,
-  `admin_comptes`, `admin_decider`, `admin_statistiques`, `signaler_presence`.
+  `admin_comptes`, `admin_decider`, `admin_statistiques`, `signaler_presence`,
+  `supprimer_mon_compte`.
 
 ### Notifications
 - Un seul déclencheur `evenements_demande` (+ `evenement_avis`) → `notifier()` → pg_net

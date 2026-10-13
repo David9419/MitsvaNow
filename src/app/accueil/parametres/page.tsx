@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Paramètres du compte : photo, nom, mot de passe, notifications, thème, langue. */
 export default async function ParametresPage() {
-  const { supabase, user } = await chargerSession()
+  const { supabase, user, estAdmin } = await chargerSession()
   const { data: profil } = await supabase
     .from("profiles")
     .select("prenom, nom, telephone, email, photo_url, verification")
@@ -20,6 +20,7 @@ export default async function ParametresPage() {
   return (
     <PageParametres
       utilisateurId={user.id}
+      estAdmin={estAdmin}
       profil={{
         prenom: profil?.prenom ?? "",
         nom: profil?.nom ?? "",

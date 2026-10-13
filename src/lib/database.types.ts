@@ -617,6 +617,7 @@ export type Database = {
         Args: { p_endpoint: string }
         Returns: undefined
       }
+      supprimer_mon_compte: { Args: never; Returns: undefined }
       tableau_demandeur: { Args: never; Returns: Json }
       tableau_intervenant: { Args: never; Returns: Json }
     }

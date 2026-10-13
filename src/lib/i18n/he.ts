@@ -14,6 +14,7 @@ export const he: Dico = {
     parametres: "הגדרות — Mivtsa Now",
     admin: "ניהול — Mivtsa Now",
     verification: "אימות החשבון — Mivtsa Now",
+    compteSupprime: "החשבון נמחק — Mivtsa Now",
   },
 
   commun: {
@@ -777,6 +778,24 @@ export const he: Dico = {
     langue: "שפה",
     langueTexte: "כל האתר עובר לשפה שנבחרה.",
     nomVerrouille: "השם שלך אומת. כדי לשנות אותו, פנו למנהל.",
+    suppression: {
+      titre: "מחיקת החשבון שלי",
+      sousTitre: "פעולה סופית",
+      texte: "החשבון וכל המידע שלך (פרופיל, תמונה, בקשות, חוות דעת) יימחקו לצמיתות.",
+      bouton: "מחיקת החשבון שלי",
+      fenetreTitre: "למחוק את החשבון לצמיתות?",
+      consequences: [
+        "הפרופיל, התמונה והמיקום שלך יימחקו.",
+        "הבקשות הפתוחות שלך יבוטלו.",
+        "אם את/ה מתנדב/ת, הביקורים שבתהליך יוצעו לאחרים.",
+        "אי אפשר לבטל פעולה זו.",
+      ],
+      motDePasse: "לאישור, הזינו את הסיסמה",
+      confirmer: "כן, למחוק את החשבון",
+      enCours: "מוחק…",
+      annuler: "ביטול",
+      admin: "מנהל לא יכול למחוק את החשבון שלו מהאתר.",
+    },
   },
 
   verification: {
@@ -885,6 +904,12 @@ export const he: Dico = {
     },
   },
 
+  compteSupprime: {
+    titre: "החשבון שלך נמחק",
+    texte: "כל המידע שלך נמחק. תודה שהיית חלק מ־Mivtsa Now. אפשר ליצור חשבון חדש מתי שתרצו.",
+    accueil: "חזרה לדף הבית",
+  },
+
   erreursBase: {
     "Vous devez être connecté.": "צריך להתחבר.",
     "Service introuvable.": "השירות לא נמצא.",
@@ -913,5 +938,6 @@ export const he: Dico = {
     "Ce compte est celui d'un administrateur.": "זה חשבון של מנהל.",
     "Indiquez le motif de la décision.": "נא לציין את סיבת ההחלטה.",
     "Votre nom a été vérifié : pour le changer, contactez un administrateur.": "השם שלך אומת: כדי לשנות אותו, פנו למנהל.",
+    "Un administrateur ne peut pas supprimer son compte.": "מנהל לא יכול למחוק את החשבון שלו.",
   },
 }

@@ -251,3 +251,50 @@ export async function changerMotDePasseCompte(
 
   return { succes: t.auth.succes.mdpChange }
 }
+
+/**
+ * Paramètres : supprimer définitivement son compte (obligatoire pour l'App Store et Google Play).
+ * On redemande le mot de passe, on efface les photos, puis la base efface le compte et ses données.
+ */
+export async function supprimerMonCompte(
+  _etat: EtatFormulaire,
+  formData: FormData
+): Promise<EtatFormulaire> {
+  const t = await obtenirDico()
+  const e = t.auth.erreurs
+  const motDePasse = String(formData.get("mot_de_passe") ?? "")
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user?.email) return { erreur: e.generique }
+
+  // Le mot de passe confirme que c'est bien la personne
+  const { error: verif } = await supabase.auth.signInWithPassword({ email: user.email, password: motDePasse })
+  if (verif) {
+    const m = verif.message.toLowerCase()
+    return { erreur: m.includes("invalid login credentials") ? e.ancienFaux : traduireErreur(verif, t) }
+  }
+
+  // Un administrateur ne peut pas se supprimer ici (on vérifie avant d'effacer les photos)
+  const { data: statut } = await supabase.rpc("mon_statut_compte")
+  if ((statut as { est_admin?: boolean } | null)?.est_admin) return { erreur: t.parametres.suppression.admin }
+
+  // Les photos du dossier « photos/<id>/ »
+  const { data: fichiers } = await supabase.storage.from("photos").list(user.id, { limit: 1000 })
+  if (fichiers?.length) {
+    const { error: e1 } = await supabase.storage.from("photos").remove(fichiers.map((f) => `${user.id}/${f.name}`))
+    if (e1) console.error("Suppression du compte : photos non effacées", e1.message)
+  }
+
+  // Le compte et toutes ses données (fonction SQL supprimer_mon_compte)
+  const { error } = await supabase.rpc("supprimer_mon_compte")
+  if (error) {
+    console.error("Suppression du compte impossible", error.message)
+    return { erreur: t.erreursBase[error.message] ?? e.generique }
+  }
+
+  await supabase.auth.signOut({ scope: "local" })
+  redirect("/compte-supprime")
+}

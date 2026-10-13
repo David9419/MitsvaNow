@@ -15,6 +15,7 @@ export const fr = {
     parametres: "Paramètres — Mivtsa Now",
     admin: "Administration — Mivtsa Now",
     verification: "Vérification du compte — Mivtsa Now",
+    compteSupprime: "Compte supprimé — Mivtsa Now",
   },
 
   commun: {
@@ -809,6 +810,24 @@ export const fr = {
     langue: "Langue",
     langueTexte: "Tout le site passe dans la langue choisie.",
     nomVerrouille: "Votre nom a été vérifié. Pour le changer, contactez un administrateur.",
+    suppression: {
+      titre: "Supprimer mon compte",
+      sousTitre: "Action définitive",
+      texte: "Votre compte et toutes vos informations (profil, photo, demandes, avis) seront effacés pour toujours.",
+      bouton: "Supprimer mon compte",
+      fenetreTitre: "Supprimer définitivement votre compte ?",
+      consequences: [
+        "Votre profil, votre photo et votre position seront effacés.",
+        "Vos demandes en cours seront annulées.",
+        "Si vous êtes intervenant, vos interventions en cours seront proposées à d'autres.",
+        "Cette action ne peut pas être annulée.",
+      ],
+      motDePasse: "Pour confirmer, entrez votre mot de passe",
+      confirmer: "Oui, supprimer mon compte",
+      enCours: "Suppression…",
+      annuler: "Annuler",
+      admin: "Un administrateur ne peut pas supprimer son compte depuis le site.",
+    },
   },
 
   verification: {
@@ -918,6 +937,13 @@ export const fr = {
     },
   },
 
+  compteSupprime: {
+    titre: "Votre compte a été supprimé",
+    texte:
+      "Toutes vos informations ont été effacées. Merci d'avoir fait partie de Mivtsa Now. Vous pouvez créer un nouveau compte quand vous voulez.",
+    accueil: "Retour à l'accueil",
+  },
+
   /** Messages d'erreur renvoyés par la base de données (clé = texte français d'origine). */
   erreursBase: {
     "Vous devez être connecté.": "Vous devez être connecté.",
@@ -947,6 +973,7 @@ export const fr = {
     "Ce compte est celui d'un administrateur.": "Ce compte est celui d'un administrateur.",
     "Indiquez le motif de la décision.": "Indiquez le motif de la décision.",
     "Votre nom a été vérifié : pour le changer, contactez un administrateur.": "Votre nom a été vérifié : pour le changer, contactez un administrateur.",
+    "Un administrateur ne peut pas supprimer son compte.": "Un administrateur ne peut pas supprimer son compte.",
   } as Record<string, string>,
 }
 
