@@ -80,7 +80,7 @@ L'équipe ne sait pas coder. Claude doit :
   par `EMAIL_CONTACT` de `src/lib/contact.ts`). Liens dans le pied de page, sous le bouton
   « Créer mon compte » et en bas des Paramètres. Changer la date `legal.maj` à chaque modification.
 - **Page Contact** `/contact` : téléphone (appel + WhatsApp), Instagram, e-mail ; coordonnées dans
-  `src/lib/contact.ts`. Liens : menu du haut, pied de page, Paramètres, page « compte refusé ».
+  `src/lib/contact.ts` (e-mail `contact@mivtsa-now.com`, boîte Amen.fr incluse avec le domaine). Liens : menu du haut, pied de page, Paramètres, page « compte refusé ».
 - **Animations de changement de page** : `src/app/template.tsx` (`<ViewTransition>` de React,
   classes `page-entree` / `page-sortie` dans `globals.css`, coupées si « réduire les animations »).
 
