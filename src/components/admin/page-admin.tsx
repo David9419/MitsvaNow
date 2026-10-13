@@ -401,6 +401,8 @@ export function PageAdmin({
                     <Phone className="size-4 shrink-0" />
                     <span dir="ltr">{c.telephone ?? a.nonRenseigne}</span>
                   </div>
+                  {(c.communaute || c.referent) && (
+                  <>
                   <div className="rounded-xl bg-muted/50 p-2.5">
                     <dt className="text-xs font-semibold text-muted-foreground">{a.communaute}</dt>
                     <dd className={cn(!c.communaute && "text-muted-foreground italic")}>{c.communaute ?? a.nonRenseigne}</dd>
@@ -409,6 +411,8 @@ export function PageAdmin({
                     <dt className="text-xs font-semibold text-muted-foreground">{a.referent}</dt>
                     <dd className={cn(!c.referent && "text-muted-foreground italic")}>{c.referent ?? a.nonRenseigne}</dd>
                   </div>
+                  </>
+                  )}
                 </dl>
 
                 {(c.valide_automatiquement || c.verifie_par_nom || c.motif_verification) && (

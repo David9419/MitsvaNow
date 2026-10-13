@@ -316,16 +316,6 @@ export const en: Dico = {
       dejaInscrit: "Already registered?",
       verifierEmails: "Check your email",
       allerConnexion: "Go to login",
-      verification: "Account verification",
-      verificationTexte:
-        "For everyone's safety, each account is checked by a member of our team before it is activated. We may call you to get to know you.",
-      communaute: "Your community",
-      communautePh: "E.g. Chabad House of…, synagogue of…",
-      referent: "Someone who knows you",
-      referentPh: "Name and phone (rabbi, shaliach, community leader…)",
-      referentObligatoire: "Required for volunteers: we may call them to confirm.",
-      referentFacultatif: "Optional, but it speeds up the verification.",
-      accord: "I agree that the Mivtsa Now team may contact me to verify my account.",
     },
     oublie: {
       titre: "Forgot your password?",
@@ -369,9 +359,6 @@ export const en: Dico = {
       lienExpire: "The link has expired. Use \"Forgot password\" again to get a new email.",
       ancienFaux: "Your current password is incorrect.",
       confirmationDiff: "The two new passwords don't match.",
-      communaute: "Please enter your community.",
-      referent: "Please enter someone who knows you (name and phone).",
-      accord: "Tick the box to accept the verification of your account.",
     },
     succes: {
       inscription: (email: string) =>

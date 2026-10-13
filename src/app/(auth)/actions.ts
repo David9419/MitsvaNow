@@ -61,10 +61,7 @@ export async function inscription(
     email: texte(formData, "email").toLowerCase(),
     espace: texte(formData, "espace"),
     type_intervenant: texte(formData, "type_intervenant"),
-    communaute: texte(formData, "communaute").slice(0, 200),
-    referent: texte(formData, "referent").slice(0, 200),
   }
-  const accord = formData.get("accord") === "on"
   const motDePasse = String(formData.get("mot_de_passe") ?? "")
   const photo = lirePhoto(formData)
 
@@ -80,11 +77,7 @@ export async function inscription(
   if (intervenant && !espace.types.some((x) => x === champs.type_intervenant))
     return { erreur: e.precisezRole, champs }
 
-  // Vérification du compte : communauté obligatoire, référent obligatoire pour les intervenants
-  // (le compte reste « en attente » jusqu'à la validation par un administrateur, côté base)
-  if (champs.communaute.length < 2) return { erreur: e.communaute, champs }
-  if (intervenant && champs.referent.length < 4) return { erreur: e.referent, champs }
-  if (!accord) return { erreur: e.accord, champs }
+  // Le compte reste « en attente » jusqu'à la validation par un administrateur (contrôlé côté base)
 
   // Position donnée pendant l'inscription (facultative)
   const lat = Number(formData.get("lat"))
@@ -108,8 +101,6 @@ export async function inscription(
         telephone: champs.telephone,
         espace: espace.slug,
         langue,
-        communaute: champs.communaute,
-        ...(champs.referent ? { referent: champs.referent } : {}),
         ...(intervenant ? { type_intervenant: champs.type_intervenant } : {}),
         ...(positionValide ? { lat, lng, adresse: adresse || null } : {}),
       },

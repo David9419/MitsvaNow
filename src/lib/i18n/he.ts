@@ -313,16 +313,6 @@ export const he: Dico = {
       dejaInscrit: "כבר רשומים?",
       verifierEmails: "בדקו את תיבת המייל",
       allerConnexion: "למסך ההתחברות",
-      verification: "אימות החשבון",
-      verificationTexte:
-        "למען ביטחון כולם, כל חשבון נבדק על ידי חבר צוות לפני שהוא מופעל. ייתכן שנתקשר אליכם כדי להכיר.",
-      communaute: "הקהילה שלך",
-      communautePh: "לדוגמה: בית חב״ד של…, בית הכנסת של…",
-      referent: "אדם שמכיר אותך",
-      referentPh: "שם וטלפון (רב, שליח, אחראי…)",
-      referentObligatoire: "חובה למתנדבים: ייתכן שנתקשר אליו כדי לאשר.",
-      referentFacultatif: "לא חובה, אבל זה מזרז את האימות.",
-      accord: "אני מסכים/ה שצוות Mivtsa Now ייצור איתי קשר כדי לאמת את החשבון.",
     },
     oublie: {
       titre: "שכחת את הסיסמה?",
@@ -365,9 +355,6 @@ export const he: Dico = {
       lienExpire: "תוקף הקישור פג. השתמשו שוב ב„שכחתי סיסמה” כדי לקבל מייל חדש.",
       ancienFaux: "הסיסמה הנוכחית שגויה.",
       confirmationDiff: "שתי הסיסמאות החדשות אינן זהות.",
-      communaute: "נא לציין את הקהילה שלך.",
-      referent: "נא לציין אדם שמכיר אותך (שם וטלפון).",
-      accord: "סמנו את התיבה כדי לאשר את אימות החשבון.",
     },
     succes: {
       inscription: (email: string) =>

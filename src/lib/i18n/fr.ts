@@ -328,16 +328,6 @@ export const fr = {
       dejaInscrit: "Déjà inscrit ?",
       verifierEmails: "Vérifiez vos e-mails",
       allerConnexion: "Aller à la connexion",
-      verification: "Vérification de votre compte",
-      verificationTexte:
-        "Pour la sécurité de tous, chaque compte est vérifié par un membre de notre équipe avant d'être activé. Nous pourrons vous appeler pour faire connaissance.",
-      communaute: "Votre communauté",
-      communautePh: "Ex. : Beth Habad de Sarcelles, synagogue de…",
-      referent: "Une personne qui vous connaît",
-      referentPh: "Nom et téléphone (rav, chaliah, responsable…)",
-      referentObligatoire: "Obligatoire pour les intervenants : nous pourrons l'appeler pour confirmer.",
-      referentFacultatif: "Facultatif, mais cela accélère la vérification.",
-      accord: "J'accepte que l'équipe Mivtsa Now me contacte pour vérifier mon compte.",
     },
     oublie: {
       titre: "Mot de passe oublié ?",
@@ -381,9 +371,6 @@ export const fr = {
       lienExpire: "Le lien a expiré. Refaites « Mot de passe oublié » pour recevoir un nouvel e-mail.",
       ancienFaux: "Le mot de passe actuel est incorrect.",
       confirmationDiff: "Les deux nouveaux mots de passe ne sont pas identiques.",
-      communaute: "Indiquez votre communauté.",
-      referent: "Indiquez une personne qui vous connaît (nom et téléphone).",
-      accord: "Cochez la case pour accepter la vérification de votre compte.",
     },
     succes: {
       inscription: (email: string) =>

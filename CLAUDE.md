@@ -108,8 +108,8 @@ services affichés par « Voir plus » sur l'accueil).
 ### Règles du jeu
 1. **Inscription** : espace imposé quand on vient du bouton d'un espace ; photo du visage
    (facultative, réduite dans le navigateur, rangée dans Storage `photos/<id>/…`) ;
-   position (GPS ou adresse) ; **communauté** (obligatoire), **référent** = une personne
-   qui connaît le candidat (obligatoire pour les intervenants) et accord pour être contacté.
+   position (GPS ou adresse). Plus de champ communauté / référent (retirés le 13/10/2026 à la
+   demande de l'équipe ; les colonnes `communaute` et `referent` restent en base, vides).
    **Chaque nouveau compte est « en attente » jusqu'à sa validation par un administrateur**
    (voir « Sécurité » plus bas).
 2. **Demande** : service, **maintenant ou programmée** (jour + heure, 15 min à 3 mois),
